@@ -1,0 +1,4 @@
+codigo;nombres;apellidos;contrasena;programa;rol
+20201001;Ana;Pérez;clave123;Ingeniería de Sistemas;USUARIO
+20201002;Luis;Gómez;clave456;Ingeniería Civil;USUARIO
+ADMIN01;Servidor;Administrador;admin2026;Administración;ADMIN

@@ -1,0 +1,9 @@
+com\universidad\mensajeria\persistencia\dao\InformeDao.class
+com\universidad\mensajeria\persistencia\dao\LogDao.class
+com\universidad\mensajeria\persistencia\dao\ConexionDao.class
+com\universidad\mensajeria\persistencia\dao\MensajeDao.class
+com\universidad\mensajeria\persistencia\Persistencia.class
+com\universidad\mensajeria\persistencia\dao\UsuarioDao.class
+com\universidad\mensajeria\persistencia\IPersistencia.class
+com\universidad\mensajeria\persistencia\IRepositorioUsuarios.class
+com\universidad\mensajeria\persistencia\RepositorioUsuariosMemoria.class

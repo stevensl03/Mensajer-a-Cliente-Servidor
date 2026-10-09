@@ -1,0 +1,12 @@
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\FiltroBrillo.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\FiltroEscalaGrises.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\FiltroReduccionTamano.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\FiltroRotar180.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\FiltroSepia.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\IFiltroImagen.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\filtros\Pixeles.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\servicios\FabricaFiltros.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\servicios\PipelineFiltros.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\servicios\ProcesadorImagen.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\servicios\ProcesadorTexto.java
+C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\servicios\src\main\java\com\universidad\mensajeria\componentes\servicios\ServiciosProcesamiento.java

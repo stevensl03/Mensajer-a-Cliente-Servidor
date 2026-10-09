@@ -1,0 +1,5 @@
+com\universidad\mensajeria\componentes\canal\ManejadorLogout.class
+com\universidad\mensajeria\componentes\canal\ProtocoloClienteServidor.class
+com\universidad\mensajeria\componentes\canal\FabricaManejadoresComando.class
+com\universidad\mensajeria\componentes\canal\IManejadorComando.class
+com\universidad\mensajeria\componentes\canal\ManejadorLogin.class

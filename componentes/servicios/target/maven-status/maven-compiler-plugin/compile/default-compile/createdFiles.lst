@@ -1,0 +1,13 @@
+com\universidad\mensajeria\componentes\filtros\FiltroEscalaGrises.class
+com\universidad\mensajeria\componentes\filtros\FiltroSepia.class
+com\universidad\mensajeria\componentes\filtros\FiltroReduccionTamano.class
+com\universidad\mensajeria\componentes\filtros\Pixeles.class
+com\universidad\mensajeria\componentes\servicios\FabricaFiltros$1.class
+com\universidad\mensajeria\componentes\filtros\FiltroBrillo.class
+com\universidad\mensajeria\componentes\servicios\ServiciosProcesamiento.class
+com\universidad\mensajeria\componentes\filtros\IFiltroImagen.class
+com\universidad\mensajeria\componentes\servicios\PipelineFiltros.class
+com\universidad\mensajeria\componentes\filtros\FiltroRotar180.class
+com\universidad\mensajeria\componentes\servicios\FabricaFiltros.class
+com\universidad\mensajeria\componentes\servicios\ProcesadorImagen.class
+com\universidad\mensajeria\componentes\servicios\ProcesadorTexto.class

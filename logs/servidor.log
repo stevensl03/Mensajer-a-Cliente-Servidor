@@ -1,0 +1,38 @@
+2026-10-09 00:08:45.227 INFO  [main] c.u.m.c.usuarios.ImportadorUsuarios - Importados 3 usuarios desde .\config\usuarios.txt
+2026-10-09 00:08:45.345 INFO  [main] c.u.m.c.protocolo.ServidorTCP - Servidor TCP escuchando en 192.168.1.10:5050
+2026-10-09 00:08:45.347 INFO  [main] c.u.mensajeria.inicio.InicioServidor - Servidor iniciado. Ctrl+C para detenerlo.
+2026-10-09 00:08:57.096 INFO  [virtual-44] c.u.m.c.protocolo.ServidorBase - Conexión e1fa9ced-644e-458d-b761-08551d628ea9 abierta desde 127.0.0.1
+2026-10-09 00:08:57.259 WARN  [virtual-44] c.u.m.c.canal.ManejadorLogin - Login fallido para 20201001 desde 127.0.0.1
+2026-10-09 00:08:57.265 INFO  [virtual-44] c.u.m.c.canal.ManejadorLogin - Login de 20201001 en la conexión e1fa9ced-644e-458d-b761-08551d628ea9 desde 127.0.0.1
+2026-10-09 00:08:57.291 INFO  [virtual-46] c.u.m.c.protocolo.ServidorBase - Conexión 6d76ac73-713f-4e41-8ab7-02e218a8020a abierta desde 127.0.0.1
+2026-10-09 00:08:57.292 INFO  [virtual-46] c.u.m.c.canal.ManejadorLogin - Login de 20201001 en la conexión 6d76ac73-713f-4e41-8ab7-02e218a8020a desde 127.0.0.1
+2026-10-09 00:08:57.295 INFO  [virtual-48] c.u.m.c.protocolo.ServidorBase - Conexión 9abbcd15-4c3b-419d-b592-47a5eaff9702 abierta desde 127.0.0.1
+2026-10-09 00:08:57.319 INFO  [virtual-52] c.u.m.c.protocolo.ServidorBase - Conexión 6f97dd32-c328-4712-bef5-210e13ccd7b7 abierta desde 127.0.0.1
+2026-10-09 00:08:57.319 INFO  [virtual-50] c.u.m.c.protocolo.ServidorBase - Conexión eaea73d7-2cf1-440a-a5db-f774e163f199 abierta desde 127.0.0.1
+2026-10-09 00:08:57.334 INFO  [virtual-54] c.u.m.c.protocolo.ServidorBase - Conexión a6d4bd38-f334-4fa4-90e6-30984f0d27a2 abierta desde 127.0.0.1
+2026-10-09 00:08:57.335 INFO  [virtual-56] c.u.m.c.protocolo.ServidorBase - Conexión afb9a1fb-5402-403a-b5f7-cddf2c202dc9 abierta desde 127.0.0.1
+2026-10-09 00:08:57.350 INFO  [virtual-58] c.u.m.c.protocolo.ServidorBase - Conexión 88350809-5287-4dd1-b508-804fbc90de94 abierta desde 127.0.0.1
+2026-10-09 00:08:57.365 INFO  [virtual-60] c.u.m.c.protocolo.ServidorBase - Conexión 8a6e6da1-eaaa-4a33-8a8c-a522bcfc9a7c abierta desde 127.0.0.1
+2026-10-09 00:08:57.381 INFO  [virtual-62] c.u.m.c.protocolo.ServidorBase - Conexión b5ef007d-ec9f-4d08-97d3-15cd9de796fc abierta desde 127.0.0.1
+2026-10-09 00:08:57.382 INFO  [virtual-48] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión 9abbcd15-4c3b-419d-b592-47a5eaff9702 desde 127.0.0.1
+2026-10-09 00:08:57.385 INFO  [virtual-50] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión eaea73d7-2cf1-440a-a5db-f774e163f199 desde 127.0.0.1
+2026-10-09 00:08:57.391 INFO  [virtual-52] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión 6f97dd32-c328-4712-bef5-210e13ccd7b7 desde 127.0.0.1
+2026-10-09 00:08:57.394 INFO  [virtual-54] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión a6d4bd38-f334-4fa4-90e6-30984f0d27a2 desde 127.0.0.1
+2026-10-09 00:08:57.398 INFO  [virtual-56] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión afb9a1fb-5402-403a-b5f7-cddf2c202dc9 desde 127.0.0.1
+2026-10-09 00:08:57.400 INFO  [virtual-58] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión 88350809-5287-4dd1-b508-804fbc90de94 desde 127.0.0.1
+2026-10-09 00:08:57.402 INFO  [virtual-60] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión 8a6e6da1-eaaa-4a33-8a8c-a522bcfc9a7c desde 127.0.0.1
+2026-10-09 00:08:57.405 INFO  [virtual-62] c.u.m.c.canal.ManejadorLogin - Login de ADMIN01 en la conexión b5ef007d-ec9f-4d08-97d3-15cd9de796fc desde 127.0.0.1
+2026-10-09 00:08:57.407 WARN  [virtual-64] c.u.m.c.protocolo.ServidorBase - Cupo de sesiones lleno: se rechaza la conexión desde 127.0.0.1
+2026-10-09 00:08:57.431 INFO  [virtual-44] c.u.m.c.canal.ManejadorLogout - Logout de 20201001 en la conexión e1fa9ced-644e-458d-b761-08551d628ea9
+2026-10-09 00:08:57.438 INFO  [virtual-54] c.u.m.c.protocolo.ServidorBase - Conexión a6d4bd38-f334-4fa4-90e6-30984f0d27a2 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.434 INFO  [virtual-50] c.u.m.c.protocolo.ServidorBase - Conexión eaea73d7-2cf1-440a-a5db-f774e163f199 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.434 INFO  [virtual-48] c.u.m.c.protocolo.ServidorBase - Conexión 9abbcd15-4c3b-419d-b592-47a5eaff9702 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.434 INFO  [virtual-46] c.u.m.c.protocolo.ServidorBase - Conexión 6d76ac73-713f-4e41-8ab7-02e218a8020a cerrada (usuario 20201001)
+2026-10-09 00:08:57.434 INFO  [virtual-58] c.u.m.c.protocolo.ServidorBase - Conexión 88350809-5287-4dd1-b508-804fbc90de94 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.435 INFO  [virtual-60] c.u.m.c.protocolo.ServidorBase - Conexión 8a6e6da1-eaaa-4a33-8a8c-a522bcfc9a7c cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.436 INFO  [virtual-62] c.u.m.c.protocolo.ServidorBase - Conexión b5ef007d-ec9f-4d08-97d3-15cd9de796fc cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.436 INFO  [virtual-56] c.u.m.c.protocolo.ServidorBase - Conexión afb9a1fb-5402-403a-b5f7-cddf2c202dc9 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.439 INFO  [virtual-52] c.u.m.c.protocolo.ServidorBase - Conexión 6f97dd32-c328-4712-bef5-210e13ccd7b7 cerrada (usuario ADMIN01)
+2026-10-09 00:08:57.440 INFO  [virtual-44] c.u.m.c.protocolo.ServidorBase - Conexión e1fa9ced-644e-458d-b761-08551d628ea9 cerrada (usuario 20201001)
+2026-10-09 00:09:05.785 INFO  [virtual-70] c.u.m.c.protocolo.ServidorBase - Conexión f9f3acf4-0891-467f-b9ae-62ae53c393ee abierta desde 127.0.0.1
+2026-10-09 00:09:05.795 INFO  [virtual-70] c.u.m.c.protocolo.ServidorBase - Conexión f9f3acf4-0891-467f-b9ae-62ae53c393ee cerrada

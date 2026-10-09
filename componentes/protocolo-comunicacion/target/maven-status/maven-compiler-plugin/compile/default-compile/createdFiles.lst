@@ -1,0 +1,10 @@
+com\universidad\mensajeria\componentes\protocolo\CodificadorJSON.class
+com\universidad\mensajeria\componentes\protocolo\ICodificadorMensajes.class
+com\universidad\mensajeria\componentes\protocolo\TipoProtocolo.class
+com\universidad\mensajeria\componentes\protocolo\CanalTCP.class
+com\universidad\mensajeria\componentes\protocolo\CanalBase.class
+com\universidad\mensajeria\componentes\protocolo\ManejadorCliente.class
+com\universidad\mensajeria\componentes\protocolo\ServidorBase.class
+com\universidad\mensajeria\componentes\protocolo\FabricaProtocolos.class
+com\universidad\mensajeria\componentes\protocolo\CodificadorTramas.class
+com\universidad\mensajeria\componentes\protocolo\ServidorTCP.class
