@@ -14,14 +14,13 @@ public final class FiltroRotar180 implements IFiltroImagen {
 
     @Override
     public BufferedImage aplicar(BufferedImage img) {
-        int ancho = img.getWidth();
-        int alto = img.getHeight();
-        var destino = new BufferedImage(ancho, alto, BufferedImage.TYPE_INT_ARGB);
-        for (int y = 0; y < alto; y++) {
-            for (int x = 0; x < ancho; x++) {
-                destino.setRGB(ancho - 1 - x, alto - 1 - y, img.getRGB(x, y));
-            }
+        // Recorrer los píxeles al revés equivale a girar 180 grados.
+        int[] pixeles = Pixeles.leer(img);
+        for (int i = 0, j = pixeles.length - 1; i < j; i++, j--) {
+            int tmp = pixeles[i];
+            pixeles[i] = pixeles[j];
+            pixeles[j] = tmp;
         }
-        return destino;
+        return Pixeles.escribir(pixeles, img.getWidth(), img.getHeight());
     }
 }

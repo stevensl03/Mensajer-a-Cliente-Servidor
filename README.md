@@ -76,5 +76,5 @@ Las rutas de `config/servidor.properties` (`./config`, `./almacen`, `logs/`) son
 
 El servidor se construye por fases según `docs/plan_construccion.md`:
 
-- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales) Fase 2 (persistencia) y Fase 3 (AlmacenarInformacion y caché).
-- **Siguiente:** Fase 4 (componentes).
+- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales), Fase 2 (persistencia), Fase 3 (AlmacenarInformacion y caché) y Fase 4a (Servicios).
+- **Siguiente:** Fase 4b (Usuarios).

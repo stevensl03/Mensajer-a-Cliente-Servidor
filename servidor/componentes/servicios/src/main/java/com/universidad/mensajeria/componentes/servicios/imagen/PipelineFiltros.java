@@ -17,8 +17,8 @@ import java.util.Objects;
  * Cadena de filtros (Pipes &amp; Filters). Los filtros se ejecutan en el orden
  * en que se agregaron y cada uno recibe la salida del anterior.
  *
- * <p>Tolerancia a fallos: si un filtro lanza una excepción se omite su imagen,
- * se registra el error y la cadena continúa con la última imagen válida.</p>
+ * <p>Si un filtro falla, el procesamiento completo falla: un mensaje de imagen
+ * siempre tiene la ORIGINAL y las 5 versiones (la fachada registra el error).</p>
  */
 public final class PipelineFiltros {
 
@@ -59,21 +59,25 @@ public final class PipelineFiltros {
      * Ejecuta los filtros secuencialmente.
      *
      * @param img imagen de entrada (no se modifica).
-     * @return una imagen nueva (PNG) por cada filtro que terminó bien, en orden.
+     * @return una imagen nueva (PNG) por cada filtro, en orden.
+     * @throws IllegalStateException si algún filtro falla.
      */
     public List<ImagenProcesadaDTO> ejecutarSecuencial(BufferedImage img) {
         Objects.requireNonNull(img, "img");
         var resultado = new ArrayList<ImagenProcesadaDTO>(filtros.size());
         BufferedImage actual = img;
         for (IFiltroImagen filtro : filtros) {
+            BufferedImage salida;
+            byte[] datos;
             try {
-                BufferedImage salida = filtro.aplicar(actual);
-                byte[] datos = UtilImagen.aBytes(salida, FORMATO_SALIDA);
-                resultado.add(new ImagenProcesadaDTO(TipoFiltro.valueOf(filtro.nombre()), datos, hash.generar(datos)));
-                actual = salida;
+                salida = filtro.aplicar(actual);
+                datos = UtilImagen.aBytes(salida, FORMATO_SALIDA);
             } catch (IOException | RuntimeException e) {
-                LOG.error("Falló el filtro {}; se omite su imagen", filtro.nombre(), e);
+                throw new IllegalStateException("Falló el filtro " + filtro.nombre(), e);
             }
+            resultado.add(new ImagenProcesadaDTO(TipoFiltro.valueOf(filtro.nombre()), datos, hash.generar(datos)));
+            LOG.debug("Filtro {} aplicado ({} bytes)", filtro.nombre(), datos.length);
+            actual = salida;
         }
         return resultado;
     }
