@@ -19,18 +19,35 @@ import java.util.Optional;
  * Clase principal del componente Usuarios: autentica comparando el SHA-256 de
  * la clave recibida con el del catálogo en memoria. No conoce la persistencia:
  * recibe la lista ya cargada.
+ *
+ * <p>Falla al crearse si la lista tiene códigos repetidos o no tiene
+ * exactamente un ADMIN. Nunca expone el hash de la contraseña: todo lo que
+ * sale es {@link UsuarioDTO}.</p>
  */
 public final class ServicioUsuarios implements IUsuariosDisponibles {
 
     private final Map<String, UsuarioRegistroDTO> catalogo;
     private final IGeneradorHash hash;
+    private final UsuarioDTO administrador;
 
     public ServicioUsuarios(List<UsuarioRegistroDTO> registrados, IGeneradorHash hash) {
         Objects.requireNonNull(registrados, "registrados");
         this.hash = Objects.requireNonNull(hash, "hash");
         var mapa = new LinkedHashMap<String, UsuarioRegistroDTO>();
-        registrados.forEach(u -> mapa.put(u.codigo(), u));
+        for (UsuarioRegistroDTO u : registrados) {
+            if (mapa.putIfAbsent(u.codigo(), u) != null) {
+                throw new IllegalArgumentException("Código de usuario repetido: " + u.codigo());
+            }
+        }
+        List<UsuarioDTO> admins = mapa.values().stream()
+                .filter(u -> u.rol() == Rol.ADMIN)
+                .map(ServicioUsuarios::aDTO)
+                .toList();
+        if (admins.size() != 1) {
+            throw new IllegalArgumentException("Debe haber exactamente un usuario ADMIN y hay " + admins.size());
+        }
         this.catalogo = Collections.unmodifiableMap(mapa);
+        this.administrador = admins.get(0);
     }
 
     @Override
@@ -53,7 +70,7 @@ public final class ServicioUsuarios implements IUsuariosDisponibles {
 
     @Override
     public Optional<UsuarioDTO> buscar(String codigo) {
-        return Optional.ofNullable(catalogo.get(codigo)).map(ServicioUsuarios::aDTO);
+        return codigo == null ? Optional.empty() : Optional.ofNullable(catalogo.get(codigo)).map(ServicioUsuarios::aDTO);
     }
 
     @Override
@@ -63,11 +80,7 @@ public final class ServicioUsuarios implements IUsuariosDisponibles {
 
     @Override
     public UsuarioDTO administrador() {
-        return catalogo.values().stream()
-                .filter(u -> u.rol() == Rol.ADMIN)
-                .findFirst()
-                .map(ServicioUsuarios::aDTO)
-                .orElseThrow(() -> new IllegalStateException("No hay un usuario con rol ADMIN"));
+        return administrador;
     }
 
     private static UsuarioDTO aDTO(UsuarioRegistroDTO u) {
