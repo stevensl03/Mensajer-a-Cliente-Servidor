@@ -18,6 +18,8 @@
         <postgresql.version>42.7.14</postgresql.version>
         <hikaricp.version>7.1.0</hikaricp.version>
         <flyway.version>13.10.0</flyway.version>
+        <caffeine.version>3.3.1</caffeine.version>
+        <jedis.version>8.0.2</jedis.version>
         <!-- Pruebas con @Tag("integracion") (necesitan una BD real): se activan con -Pintegracion -->
         <pruebas.excluidas>integracion</pruebas.excluidas>
         <junit.version>5.10.2</junit.version>
@@ -93,6 +95,16 @@
                 <groupId>org.flywaydb</groupId>
                 <artifactId>flyway-database-postgresql</artifactId>
                 <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

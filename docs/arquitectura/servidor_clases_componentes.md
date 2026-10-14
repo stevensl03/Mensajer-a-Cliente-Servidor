@@ -900,6 +900,7 @@ Coordina BD, directorio y caché. Es el único que habla con Persistencia.
 - **`FabricaCaches`** — «Factory». Si cache.l2.habilitada=false devuelve solo L1.
   ```text
   + crear(nombre : String, tipo : Class<V>) : ICache<K, V>
+  + cerrar() : void  «cierra el pool de Redis en el apagado ordenado»
   ```
 - **`CacheDosNiveles`** — «Decorator · read-through» infraestructura.
   ```text
@@ -914,8 +915,10 @@ Coordina BD, directorio y caché. Es el único que habla con Persistencia.
   ```
 - **`CacheL2Redis`** — «L2 · Redis» infraestructura.
   ```text
-  - pool : JedisPool
+  - pool : JedisPool  «compartido, lo crea FabricaCaches»
+  - prefijo : String
   - ttl : Duration
+  «si Redis no responde, se registra y se comporta como fallo de caché»
   ```
 
 ### Capa de Persistencia

@@ -20,13 +20,19 @@ import java.util.Objects;
 /**
  * Carga inicial de usuarios desde el archivo plano ({@code usuarios.txt}).
  *
- * <p>Formato: {@code codigo;nombres;apellidos;contrasena;programa;rol}, con una
- * cabecera. Se ignoran líneas vacías y comentarios ({@code #}). Las
- * contraseñas se devuelven como hash SHA-256.</p>
+ * <p>Formato: UTF-8, separador {@code ;} y la primera línea es el encabezado
+ * {@code codigo;nombres;apellidos;contrasena;programa;rol}. Se ignoran las
+ * líneas vacías y los comentarios ({@code #}). Las contraseñas se devuelven
+ * como hash SHA-256.</p>
+ *
+ * <p>Si una línea está mal formada, un código se repite o no hay exactamente
+ * un ADMIN, el arranque se detiene con un mensaje que indica el número de
+ * línea (nunca la contraseña).</p>
  */
 public final class ImportadorUsuarios {
 
     private static final Logger LOG = LoggerFactory.getLogger(ImportadorUsuarios.class);
+    private static final String ENCABEZADO = "codigo;nombres;apellidos;contrasena;programa;rol";
     private static final int CAMPOS = 6;
 
     private final Path archivo;
@@ -38,8 +44,9 @@ public final class ImportadorUsuarios {
     }
 
     /**
-     * @return los usuarios válidos del archivo, en orden.
-     * @throws UncheckedIOException si el archivo no se puede leer.
+     * @return los usuarios del archivo, en orden.
+     * @throws UncheckedIOException  si el archivo no se puede leer.
+     * @throws IllegalStateException si el contenido no es válido.
      */
     public List<UsuarioRegistroDTO> leer() {
         List<String> lineas;
@@ -48,28 +55,31 @@ public final class ImportadorUsuarios {
         } catch (IOException e) {
             throw new UncheckedIOException("No se pudo leer el archivo de usuarios " + archivo, e);
         }
+        if (lineas.isEmpty() || !lineas.get(0).replace("﻿", "").strip().equalsIgnoreCase(ENCABEZADO)) {
+            throw new IllegalStateException(archivo + ", línea 1: se esperaba el encabezado " + ENCABEZADO);
+        }
         Map<String, UsuarioRegistroDTO> usuarios = new LinkedHashMap<>();
-        for (int i = 0; i < lineas.size(); i++) {
+        for (int i = 1; i < lineas.size(); i++) {
             String linea = lineas.get(i).strip();
-            if (linea.isEmpty() || linea.startsWith("#") || esCabecera(linea)) {
+            if (linea.isEmpty() || linea.startsWith("#")) {
                 continue;
             }
+            UsuarioRegistroDTO u;
             try {
-                UsuarioRegistroDTO u = parsear(linea);
-                if (usuarios.put(u.codigo(), u) != null) {
-                    LOG.warn("Línea {} de {}: código {} repetido, se conserva el último", i + 1, archivo, u.codigo());
-                }
+                u = parsear(linea);
             } catch (IllegalArgumentException e) {
-                // No se registra la línea: contiene una contraseña.
-                LOG.warn("Línea {} de {} omitida: {}", i + 1, archivo, e.getMessage());
+                throw new IllegalStateException(archivo + ", línea " + (i + 1) + ": " + e.getMessage(), e);
             }
+            if (usuarios.putIfAbsent(u.codigo(), u) != null) {
+                throw new IllegalStateException(archivo + ", línea " + (i + 1) + ": código repetido " + u.codigo());
+            }
+        }
+        long admins = usuarios.values().stream().filter(u -> u.rol() == Rol.ADMIN).count();
+        if (admins != 1) {
+            throw new IllegalStateException(archivo + ": debe haber exactamente un usuario ADMIN y hay " + admins);
         }
         LOG.info("Leídos {} usuarios desde {}", usuarios.size(), archivo);
         return List.copyOf(usuarios.values());
-    }
-
-    private static boolean esCabecera(String linea) {
-        return linea.toLowerCase(Locale.ROOT).startsWith("codigo;");
     }
 
     private UsuarioRegistroDTO parsear(String linea) {

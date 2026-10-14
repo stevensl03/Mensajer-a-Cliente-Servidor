@@ -13,33 +13,73 @@ import java.nio.file.Path;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ImportadorUsuariosTest {
 
-    private static final String ARCHIVO = """
-            codigo;nombres;apellidos;contrasena;programa;rol
-            # comentario
-            20201001;Ana;Pérez;clave123;Ingeniería de Sistemas;USUARIO
+    private static final String ENCABEZADO = "codigo;nombres;apellidos;contrasena;programa;rol\n";
+    private static final String ADMIN = "ADMIN01;Servidor;Administrador;admin2026;Administración;admin\n";
 
-            ADMIN01;Servidor;Administrador;admin2026;Administración;admin
-            20201003;Sin;Campos;clave;Programa
-            20201004;Rol;Malo;clave;Programa;JEFE
-            """;
+    private final GeneradorHashSHA256 hash = new GeneradorHashSHA256();
 
     @TempDir
     Path dir;
 
     @Test
-    void leeSoloLasLineasValidasYGuardaElHash() throws IOException {
-        Path archivo = Files.writeString(dir.resolve("usuarios.txt"), ARCHIVO, StandardCharsets.UTF_8);
-
-        List<UsuarioRegistroDTO> usuarios = new ImportadorUsuarios(archivo, new GeneradorHashSHA256()).leer();
+    void leeLasLineasValidasYGuardaElHash() throws IOException {
+        List<UsuarioRegistroDTO> usuarios = leer(ENCABEZADO + "# comentario\n"
+                + "20201001;Ana;Pérez;clave123;Ingeniería de Sistemas;USUARIO\n\n" + ADMIN);
 
         assertEquals(2, usuarios.size());
         assertEquals("Ingeniería de Sistemas", usuarios.get(0).programa());
         assertEquals(Rol.ADMIN, usuarios.get(1).rol());
-        assertEquals(64, usuarios.get(0).contrasenaHash().length());
-        assertNotEquals("clave123", usuarios.get(0).contrasenaHash());
+        assertEquals(hash.generar("clave123".getBytes(StandardCharsets.UTF_8)), usuarios.get(0).contrasenaHash());
+    }
+
+    @Test
+    void unaLineaMalFormadaDetieneLaCargaYNoMuestraLaClave() {
+        var e = assertThrows(IllegalStateException.class,
+                () -> leer(ENCABEZADO + ADMIN + "20201003;Sin;Campos;secreta99;Programa\n"));
+
+        assertTrue(e.getMessage().contains("línea 3"), e.getMessage());
+        assertFalse(e.getMessage().contains("secreta99"));
+    }
+
+    @Test
+    void rolDesconocidoYCodigoRepetido() {
+        var rol = assertThrows(IllegalStateException.class,
+                () -> leer(ENCABEZADO + ADMIN + "20201004;Rol;Malo;clave;Programa;JEFE\n"));
+        assertTrue(rol.getMessage().contains("rol desconocido"), rol.getMessage());
+
+        var repetido = assertThrows(IllegalStateException.class,
+                () -> leer(ENCABEZADO + ADMIN + "ADMIN01;Otro;Admin;x;Programa;USUARIO\n"));
+        assertTrue(repetido.getMessage().contains("código repetido ADMIN01"), repetido.getMessage());
+    }
+
+    @Test
+    void exigeExactamenteUnAdmin() {
+        assertThrows(IllegalStateException.class, () -> leer(ENCABEZADO + "20201001;Ana;Pérez;c;P;USUARIO\n"));
+        assertThrows(IllegalStateException.class,
+                () -> leer(ENCABEZADO + ADMIN + "ADMIN02;Otro;Admin;x;Programa;ADMIN\n"));
+    }
+
+    @Test
+    void exigeElEncabezado() {
+        assertThrows(IllegalStateException.class, () -> leer(ADMIN));
+    }
+
+    @Test
+    void elArchivoDelRepositorioEsValido() {
+        List<UsuarioRegistroDTO> usuarios = new ImportadorUsuarios(Path.of("../../config/usuarios.txt"), hash).leer();
+
+        assertEquals(10, usuarios.size());
+        assertEquals(1, usuarios.stream().filter(u -> u.rol() == Rol.ADMIN).count());
+    }
+
+    private List<UsuarioRegistroDTO> leer(String contenido) throws IOException {
+        Path archivo = Files.writeString(dir.resolve("usuarios.txt"), contenido, StandardCharsets.UTF_8);
+        return new ImportadorUsuarios(archivo, hash).leer();
     }
 }

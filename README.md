@@ -58,11 +58,16 @@ mvn verify -Pintegracion -pl paquetes/persistencia -am -Dbd.motor=MYSQL -Dbd.url
 - Para PostgreSQL usa `-Dbd.motor=POSTGRESQL` y una URL `jdbc:postgresql://…`.
 - El esquema lo crea Flyway (`db/migration/{mysql|postgresql}/V1__esquema.sql`).
 - Sin `-Dbd.url`, las pruebas se omiten.
+- La caché L2 se prueba contra un Redis real con `-pl paquetes/almacenar-informacion -Dredis.puerto=6379` (sin esa propiedad, la prueba se omite).
 
 Para tener una BD de pruebas rápida con Docker:
 
 ```bash
 docker run -d --name mensajeria-mysql -e MYSQL_ROOT_PASSWORD=secreto -e MYSQL_DATABASE=mensajeria_test -p 3306:3306 mysql:8.4
+```
+
+```bash
+docker run -d --name mensajeria-redis -p 6379:6379 redis:7.4
 ```
 
 Las rutas de `config/servidor.properties` (`./config`, `./almacen`, `logs/`) son relativas al directorio de trabajo. Por eso el servidor se ejecuta desde `servidor/`. Las carpetas `almacen/` y `logs/` se crean al ejecutarlo y no se versionan.
@@ -71,5 +76,5 @@ Las rutas de `config/servidor.properties` (`./config`, `./almacen`, `logs/`) son
 
 El servidor se construye por fases según `docs/plan_construccion.md`:
 
-- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales) y Fase 2 (persistencia).
-- **Siguiente:** Fase 3 (AlmacenarInformacion y caché).
+- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales) Fase 2 (persistencia) y Fase 3 (AlmacenarInformacion y caché).
+- **Siguiente:** Fase 4 (componentes).
