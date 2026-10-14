@@ -9,11 +9,14 @@ public final class DialectoPostgreSQL implements IDialectoSQL {
 
     @Override
     public String carpetaMigraciones() {
-        throw new UnsupportedOperationException("Fase 2");
+        return "db/migration/postgresql";
     }
 
     @Override
     public String limitar(String sql, int n) {
-        throw new UnsupportedOperationException("Fase 2");
+        if (n <= 0) {
+            throw new IllegalArgumentException("n debe ser mayor que 0: " + n);
+        }
+        return sql + " LIMIT " + n;
     }
 }

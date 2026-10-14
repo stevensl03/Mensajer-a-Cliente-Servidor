@@ -35,7 +35,7 @@ Aplicación cliente/servidor para enviar mensajes de texto e imágenes a la comu
 ## Requisitos
 
 - JDK 21 y Maven 3.9 o superior.
-- MySQL 8 (o PostgreSQL) para el servidor (a partir de la Fase 2).
+- MySQL 8.0.16 o superior (o PostgreSQL) para el servidor.
 - Redis, opcional (caché L2; se apaga con `cache.l2.habilitada=false`).
 
 ## Compilar y probar el servidor
@@ -45,11 +45,31 @@ cd servidor
 mvn verify
 ```
 
+### Pruebas de integración (base de datos real)
+
+Las pruebas marcadas con `@Tag("integracion")` necesitan una BD real, así que `mvn verify` las excluye. Se activan con el perfil `integracion` y los datos de conexión:
+
+```bash
+cd servidor
+mvn verify -Pintegracion -pl paquetes/persistencia -am -Dbd.motor=MYSQL -Dbd.url=jdbc:mysql://localhost:3306/mensajeria_test -Dbd.usuario=root -Dbd.clave=secreto
+```
+
+- Usa una base de datos **solo para pruebas**: se borran todas sus filas antes de cada prueba.
+- Para PostgreSQL usa `-Dbd.motor=POSTGRESQL` y una URL `jdbc:postgresql://…`.
+- El esquema lo crea Flyway (`db/migration/{mysql|postgresql}/V1__esquema.sql`).
+- Sin `-Dbd.url`, las pruebas se omiten.
+
+Para tener una BD de pruebas rápida con Docker:
+
+```bash
+docker run -d --name mensajeria-mysql -e MYSQL_ROOT_PASSWORD=secreto -e MYSQL_DATABASE=mensajeria_test -p 3306:3306 mysql:8.4
+```
+
 Las rutas de `config/servidor.properties` (`./config`, `./almacen`, `logs/`) son relativas al directorio de trabajo. Por eso el servidor se ejecuta desde `servidor/`. Las carpetas `almacen/` y `logs/` se crean al ejecutarlo y no se versionan.
 
 ## Estado
 
 El servidor se construye por fases según `docs/plan_construccion.md`:
 
-- **Terminadas:** Fase 0 (estructura) y Fase 1 (transversales).
-- **Siguiente:** Fase 2 (persistencia).
+- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales) y Fase 2 (persistencia).
+- **Siguiente:** Fase 3 (AlmacenarInformacion y caché).

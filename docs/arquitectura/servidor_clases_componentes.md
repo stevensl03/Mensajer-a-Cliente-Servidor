@@ -167,8 +167,8 @@ Reglas que se comprueban con `grep` en la revisión:
 
 1. `cfg = ConfiguracionServidor.cargar(Path.of("config/servidor.properties"), Path.of("config/bd.properties"))`. Si falta una clave, el arranque falla con un mensaje claro.
 2. `hash = new GeneradorHashSHA256()`, `json = new SerializadorJSON()`.
-3. `proveedor = new ProveedorConexionJDBC(cfg.bd())`, luego `proveedor.migrar()` (Flyway, carpeta según `bd.motor`).
-4. `repos = new FabricaRepositoriosJDBC(proveedor, dialecto)`, con el dialecto elegido por `bd.motor`.
+3. `dialecto` = `DialectoMySQL` o `DialectoPostgreSQL` según `bd.motor`; `proveedor = new ProveedorConexionJDBC(cfg.bd(), dialecto)`, luego `proveedor.migrar()` (Flyway, carpeta `dialecto.carpetaMigraciones()`).
+4. `repos = new FabricaRepositoriosJDBC(proveedor, dialecto, cfg.directorioArchivos())`; `repos.archivos()` es un `AlmacenamientoDirectorioLocal` sobre esa raíz.
 5. `caches = new FabricaCaches(cfg.cache(), json)`.
 6. `almacen = new AlmacenarInformacion(repos, repos.archivos(), new ImportadorUsuarios(cfg.archivoUsuarios(), hash), caches…)`, luego `almacen.inicializar()`:
    - si la tabla `usuarios` está vacía, importa `config/usuarios.txt`;
@@ -929,7 +929,9 @@ JDBC portable (MySQL / PostgreSQL), migraciones Flyway y directorio de archivos.
 - **`ProveedorConexionJDBC`** — «HikariCP» infraestructura.
   ```text
   - pool : HikariDataSource «bd.properties»
+  - dialecto : IDialectoSQL
   + migrar() : void  «Flyway: db/migration/{motor}»
+  + cerrar() : void  «apagado ordenado»
   ```
 - **`IDialectoSQL`** — «Strategy» interfaz. Diferencias de SQL entre motores.
   ```text
@@ -950,6 +952,7 @@ JDBC portable (MySQL / PostgreSQL), migraciones Flyway y directorio de archivos.
   ```text
   - proveedor : IProveedorConexionBD
   - dialecto : IDialectoSQL «bd.motor»
+  - archivos : AlmacenamientoDirectorioLocal «archivos.directorio»
   ```
 - **`IRepositorioUsuarios`** — «interface».
   ```text
@@ -981,6 +984,7 @@ JDBC portable (MySQL / PostgreSQL), migraciones Flyway y directorio de archivos.
   ```text
   + guardar(subdir : String, nombre : String, datos : byte[]) : Path
   + leer(ruta : String) : byte[]
+  + borrar(ruta : String) : void  «AlmacenarInformacion la usa si falla la transacción»
   ```
 - **`AlmacenamientoDirectorioLocal`** — clase.
   ```text
