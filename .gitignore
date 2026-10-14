@@ -1,1 +1,16 @@
+# Compilación (Maven)
 target/
+
+# Datos que generan las aplicaciones al ejecutarse
+logs/
+almacen/
+*.log
+*.mv.db
+*.trace.db
+
+# IDE y sistema operativo
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

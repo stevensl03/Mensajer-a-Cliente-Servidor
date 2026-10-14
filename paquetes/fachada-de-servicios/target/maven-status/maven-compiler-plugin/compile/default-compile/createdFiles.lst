@@ -1,6 +1,0 @@
-com\universidad\mensajeria\fachada\servicios\FachadaServidor.class
-com\universidad\mensajeria\fachada\servicios\comandos\DespachadorComandos.class
-com\universidad\mensajeria\fachada\servicios\comandos\ManejadorLogin.class
-com\universidad\mensajeria\fachada\servicios\comandos\ManejadorLogout.class
-com\universidad\mensajeria\fachada\servicios\comandos\FabricaManejadoresComando.class
-com\universidad\mensajeria\fachada\servicios\comandos\IManejadorComando.class
