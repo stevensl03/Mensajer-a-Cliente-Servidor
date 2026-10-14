@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.universidad</groupId>
+    <artifactId>mensajeria-servidor</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>Mensajeria Academica - Servidor (POM padre)</name>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <mysql.version>26.7.0</mysql.version>
+        <postgresql.version>42.7.14</postgresql.version>
+        <hikaricp.version>7.1.0</hikaricp.version>
+        <flyway.version>13.10.0</flyway.version>
+        <caffeine.version>3.3.1</caffeine.version>
+        <jedis.version>8.0.2</jedis.version>
+        <!-- Pruebas con @Tag("integracion") (necesitan una BD real): se activan con -Pintegracion -->
+        <pruebas.excluidas>integracion</pruebas.excluidas>
+        <junit.version>5.10.2</junit.version>
+        <surefire.version>3.5.4</surefire.version>
+        <jackson.version>2.19.2</jackson.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.5.18</logback.version>
+    </properties>
+
+    <modules>
+        <!-- transversales -->
+        <module>transversales/dto-records</module>
+        <module>transversales/utilerias-varias</module>
+        <module>transversales/fachada</module>
+
+        <!-- interfaces de componentes -->
+        <module>interfaces/interfaz-protocolo-comunicacion</module>
+        <module>interfaces/interfaz-cliente-servidor</module>
+        <module>interfaces/interfaz-servicios-disponibles</module>
+        <module>interfaces/interfaz-usuarios-disponibles</module>
+        <module>interfaces/interfaz-gestor-mensajes</module>
+
+        <!-- implementaciones de componentes -->
+        <module>componentes/protocolo-comunicacion</module>
+        <module>componentes/protocolo-cliente-servidor</module>
+        <module>componentes/servicios</module>
+        <module>componentes/usuarios</module>
+        <module>componentes/gestor-colas-de-mensajes</module>
+
+        <!-- paquetes de apoyo -->
+        <module>paquetes/mensajes</module>
+        <module>paquetes/log-de-eventos</module>
+        <module>paquetes/conexiones-clientes</module>
+        <module>paquetes/almacenar-informacion</module>
+        <module>paquetes/persistencia</module>
+        <module>paquetes/fachada-de-servicios</module>
+
+        <!-- presentacion -->
+        <module>presentacion/vista-consola</module>
+        <module>presentacion/vista-escritorio</module>
+        <module>presentacion/inicio-servidor</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- librerias de terceros -->
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.postgresql</groupId>
+                <artifactId>postgresql</artifactId>
+                <version>${postgresql.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.zaxxer</groupId>
+                <artifactId>HikariCP</artifactId>
+                <version>${hikaricp.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-core</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-mysql</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.flywaydb</groupId>
+                <artifactId>flyway-database-postgresql</artifactId>
+                <version>${flyway.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+
+            <!-- modulos internos -->
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>dto-records</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>utilerias-varias</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>fachada</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>interfaz-protocolo-comunicacion</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>interfaz-cliente-servidor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>interfaz-servicios-disponibles</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>interfaz-usuarios-disponibles</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>interfaz-gestor-mensajes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>mensajes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>persistencia</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>protocolo-comunicacion</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>protocolo-cliente-servidor</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>servicios</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>usuarios</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>gestor-colas-de-mensajes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>log-de-eventos</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>conexiones-clientes</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>almacenar-informacion</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>fachada-de-servicios</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>vista-consola</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>vista-escritorio</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                    <configuration>
+                        <excludedGroups>${pruebas.excluidas}</excludedGroups>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <profiles>
+        <!-- mvn verify -Pintegracion -Dbd.url=... -Dbd.usuario=... -Dbd.clave=... -->
+        <profile>
+            <id>integracion</id>
+            <properties>
+                <pruebas.excluidas>ninguna</pruebas.excluidas>
+            </properties>
+        </profile>
+    </profiles>
+</project>
