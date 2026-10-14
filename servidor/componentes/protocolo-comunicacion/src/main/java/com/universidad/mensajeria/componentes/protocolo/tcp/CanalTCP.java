@@ -1,5 +1,6 @@
 package com.universidad.mensajeria.componentes.protocolo.tcp;
 
+import com.universidad.mensajeria.componentes.protocolo.ProtocoloException;
 import com.universidad.mensajeria.fachada.ICanalCliente;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * solo encola, así un cliente lento no bloquea a quien le escribe y nunca hay
  * dos hilos escribiendo en el mismo socket. Si la cola se llena, el canal se
  * cierra. Lee únicamente el hilo de {@link ManejadorCliente}.</p>
+ *
+ * <p>Un mensaje de salida que supera {@code servidor.maxTramaBytes} se
+ * descarta y se registra; la conexión sigue abierta.</p>
  *
  * <p>{@link #cerrar()} entrega lo ya encolado y después cierra el socket; lo
  * que se encole después se descarta.</p>
@@ -130,7 +134,12 @@ public final class CanalTCP implements ICanalCliente {
                 if (json == FIN) {
                     break;
                 }
-                tramas.escribir(salidaSocket, json.getBytes(StandardCharsets.UTF_8));
+                try {
+                    tramas.escribir(salidaSocket, json.getBytes(StandardCharsets.UTF_8));
+                } catch (ProtocoloException e) {
+                    // CodificadorTramas valida antes de escribir: el flujo sigue intacto.
+                    LOG.error("Canal {}: se descarta un mensaje de salida: {}", id, e.getMessage());
+                }
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
