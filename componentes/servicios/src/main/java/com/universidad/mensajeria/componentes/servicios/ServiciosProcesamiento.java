@@ -1,20 +1,22 @@
 package com.universidad.mensajeria.componentes.servicios;
 
+import com.universidad.mensajeria.componentes.servicios.imagen.IProcesadorImagen;
+import com.universidad.mensajeria.componentes.servicios.texto.IProcesadorTexto;
 import com.universidad.mensajeria.dto.ResultadoImagenDTO;
 import com.universidad.mensajeria.dto.ResultadoTextoDTO;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
- * Componente "Servicios": delega en los procesadores de texto e imagen.
+ * Clase principal del componente Servicios: solo delega en el subcomponente
+ * que corresponde.
  */
 public final class ServiciosProcesamiento implements IServiciosDisponibles {
 
-    private final ProcesadorTexto texto;
-    private final ProcesadorImagen imagen;
+    private final IProcesadorTexto texto;
+    private final IProcesadorImagen imagen;
 
-    public ServiciosProcesamiento(ProcesadorTexto texto, ProcesadorImagen imagen) {
+    public ServiciosProcesamiento(IProcesadorTexto texto, IProcesadorImagen imagen) {
         this.texto = Objects.requireNonNull(texto, "texto");
         this.imagen = Objects.requireNonNull(imagen, "imagen");
     }
@@ -25,7 +27,7 @@ public final class ServiciosProcesamiento implements IServiciosDisponibles {
     }
 
     @Override
-    public ResultadoImagenDTO procesarImagen(byte[] datos, String nombre) throws IOException {
+    public ResultadoImagenDTO procesarImagen(byte[] datos, String nombre) {
         return imagen.procesar(datos, nombre);
     }
 }

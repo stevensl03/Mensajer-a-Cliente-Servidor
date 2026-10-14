@@ -20,5 +20,9 @@
             <groupId>com.universidad</groupId>
             <artifactId>dto-records</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.universidad</groupId>
+            <artifactId>utilerias-varias</artifactId>
+        </dependency>
     </dependencies>
 </project>

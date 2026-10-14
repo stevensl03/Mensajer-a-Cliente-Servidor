@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.universidad.mensajeria.dto.ContenidoDTO;
 import com.universidad.mensajeria.dto.EventoPushDTO;
 import com.universidad.mensajeria.dto.PeticionDTO;
-import com.universidad.mensajeria.dto.RespuestaDTO;
 import com.universidad.mensajeria.dto.TipoComando;
 import com.universidad.mensajeria.dto.TipoEventoPush;
 import com.universidad.mensajeria.dto.TipoMensaje;
@@ -46,17 +45,12 @@ class SerializadorJSONTest {
     @Test
     void eventoConFechaIsoYDatosJson() {
         JsonNode datos = JsonNodeFactory.instance.objectNode().put("canal", "FORO");
-        var evento = new EventoPushDTO(TipoEventoPush.MENSAJE_NUEVO, datos, LocalDateTime.of(2026, 10, 8, 23, 15, 30));
+        var evento = new EventoPushDTO(TipoEventoPush.MENSAJE_NUEVO, LocalDateTime.of(2026, 10, 8, 23, 15, 30), datos);
 
         String texto = json.aJson(evento);
 
         assertTrue(texto.contains("\"fecha\":\"2026-10-08T23:15:30\""), texto);
         assertEquals(evento, json.desdeJson(texto, EventoPushDTO.class));
-    }
-
-    @Test
-    void respuestaIncluyeIdPeticionAunqueSeaNulo() {
-        assertTrue(json.aJson(RespuestaDTO.error(null, "x")).contains("\"idPeticion\":null"));
     }
 
     @Test

@@ -1,70 +1,43 @@
 package com.universidad.mensajeria.componentes.gestor;
 
-import com.universidad.mensajeria.soporte.mensajes.Mensaje;
+import com.universidad.mensajeria.dto.SolicitudMensajeDTO;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * Implementación de las estructuras en memoria (componente
- * "GestorColasDeMensajes").
- *
- * <p>Usa las cinco estructuras elegidas (C-09), todas thread-safe:</p>
- * <ul>
- *   <li>{@link ConcurrentMap} {@code porId} para consulta O(1) por UUID.</li>
- *   <li>{@link ConcurrentMap} {@code porUsuario} (código → ids) para privados.</li>
- *   <li>{@link ConcurrentLinkedQueue} de difusión para el foro en orden FIFO.</li>
- *   <li>{@link ConcurrentLinkedDeque} de pendientes para encolar/desencolar.</li>
- * </ul>
+ * Clase principal del componente GestorColasDeMensajes: cola productor /
+ * consumidor de mensajes entrantes. El hilo de red solo encola; N hilos
+ * consumidores procesan. No conoce Mensajes ni la red.
  */
-public class GestorColasDeMensajes implements InterfazGestorMensajes {
+public final class GestorColasDeMensajes implements IGestorMensajes {
 
-    private final ConcurrentMap<String, Mensaje> porId = new ConcurrentHashMap<>();
-    private final ConcurrentMap<String, List<String>> porUsuario = new ConcurrentHashMap<>();
-    private final ConcurrentLinkedQueue<Mensaje> difusion = new ConcurrentLinkedQueue<>();
-    private final ConcurrentLinkedDeque<Mensaje> pendientes = new ConcurrentLinkedDeque<>();
+    private final BlockingQueue<SolicitudMensajeDTO> cola;
 
-    @Override
-    public void encolar(Mensaje mensaje) {
-        // TODO: porId.put, índices por usuario, difusión y cola de pendientes.
+    /**
+     * @param capacidad capacidad de la cola ({@code cola.capacidad}).
+     */
+    public GestorColasDeMensajes(int capacidad) {
+        this.cola = new LinkedBlockingQueue<>(capacidad);
     }
 
     @Override
-    public Optional<Mensaje> siguientePendiente() {
-        // TODO
-        throw new UnsupportedOperationException("Pendiente de implementar");
+    public void iniciar(int hilos, IConsumidorMensajes c) {
+        throw new UnsupportedOperationException("Fase 4c");
     }
 
     @Override
-    public Optional<Mensaje> buscarPorId(String id) {
-        // TODO
-        throw new UnsupportedOperationException("Pendiente de implementar");
+    public boolean encolar(SolicitudMensajeDTO s) {
+        throw new UnsupportedOperationException("Fase 4c");
     }
 
     @Override
-    public List<Mensaje> listarPorUsuario(String codigoUsuario) {
-        // TODO
-        throw new UnsupportedOperationException("Pendiente de implementar");
+    public int pendientes() {
+        return cola.size();
     }
 
     @Override
-    public List<Mensaje> listarTodos() {
-        // TODO
-        throw new UnsupportedOperationException("Pendiente de implementar");
-    }
-
-    @Override
-    public List<Mensaje> listarForo() {
-        // TODO: copia de la cola de difusión en orden cronológico.
-        throw new UnsupportedOperationException("Pendiente de implementar");
-    }
-
-    @Override
-    public void recargarDesdeHistorial(List<Mensaje> mensajes) {
-        // TODO (fase 2): estas estructuras pasan a AlmacenMensajesMemoria según el diagrama.
+    public void detener() {
+        throw new UnsupportedOperationException("Fase 4c");
     }
 }

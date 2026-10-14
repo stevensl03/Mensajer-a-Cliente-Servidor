@@ -1,84 +1,84 @@
 package com.universidad.mensajeria.soporte.almacenar;
 
-import com.universidad.mensajeria.dto.ConexionDTO;
-import com.universidad.mensajeria.dto.InformeDTO;
-import com.universidad.mensajeria.dto.LogDTO;
-import com.universidad.mensajeria.dto.MensajeImagenDTO;
-import com.universidad.mensajeria.dto.MensajeTextoDTO;
-import com.universidad.mensajeria.persistencia.IPersistencia;
+import com.universidad.mensajeria.dto.EventoLogDTO;
+import com.universidad.mensajeria.dto.ImagenProcesadaDTO;
+import com.universidad.mensajeria.dto.MensajeDTO;
+import com.universidad.mensajeria.dto.SesionDTO;
+import com.universidad.mensajeria.dto.TipoFiltro;
+import com.universidad.mensajeria.dto.UsuarioRegistroDTO;
+import com.universidad.mensajeria.persistencia.FabricaRepositorios;
+import com.universidad.mensajeria.persistencia.IAlmacenamientoArchivos;
+import com.universidad.mensajeria.soporte.almacenar.cache.ICache;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
- * Intermediario que recibe lo que debe persistir y lo entrega a la capa de
- * persistencia (paquete "AlmacenarInformación" del diagrama).
- *
- * <p>Persistencia dual (C-12): primero deja la copia física en el directorio de
- * almacenamiento ({@code ./almacen}) y luego persiste en MySQL a través de
- * {@link IPersistencia}.</p>
+ * {@link IAlmacenarInformacion} write-through: guarda archivos en
+ * {@code ./almacen} y filas en la BD; usa la caché en las lecturas.
  */
-public class AlmacenarInformacion {
+public final class AlmacenarInformacion implements IAlmacenarInformacion {
 
-    private final IPersistencia persistencia;
+    private final FabricaRepositorios repos;
+    private final IAlmacenamientoArchivos archivos;
+    private final ImportadorUsuarios importador;
+    private final ICache<String, MensajeDTO> cacheMensajes;
+    private final ICache<String, byte[]> cacheImagenes;
 
-    /**
-     * @param persistencia capa de persistencia a la que se delega.
-     */
-    public AlmacenarInformacion(IPersistencia persistencia) {
-        this.persistencia = persistencia;
+    public AlmacenarInformacion(FabricaRepositorios repos, IAlmacenamientoArchivos archivos,
+                                ImportadorUsuarios importador, ICache<String, MensajeDTO> cacheMensajes,
+                                ICache<String, byte[]> cacheImagenes) {
+        this.repos = Objects.requireNonNull(repos, "repos");
+        this.archivos = Objects.requireNonNull(archivos, "archivos");
+        this.importador = Objects.requireNonNull(importador, "importador");
+        this.cacheMensajes = Objects.requireNonNull(cacheMensajes, "cacheMensajes");
+        this.cacheImagenes = Objects.requireNonNull(cacheImagenes, "cacheImagenes");
     }
 
-    /**
-     * Persiste un mensaje de texto: copia en {@code ./almacen/texto/{id}.txt} y
-     * alta en BD.
-     *
-     * @param mensaje mensaje de texto.
-     */
-    public void guardarMensajeTexto(MensajeTextoDTO mensaje) {
-        // TODO: disco + persistencia.mensajes().guardarTexto(...).
+    @Override
+    public void inicializar() {
+        throw new UnsupportedOperationException("Fase 3");
     }
 
-    /**
-     * Persiste un mensaje de imagen: las 6 versiones en
-     * {@code ./almacen/imagenes/{id}/} y el alta transaccional en BD.
-     *
-     * @param mensaje mensaje de imagen con sus 6 versiones.
-     */
-    public void guardarMensajeImagen(MensajeImagenDTO mensaje) {
-        // TODO: disco + persistencia.mensajes().guardarImagen(...).
+    @Override
+    public List<UsuarioRegistroDTO> usuariosRegistrados() {
+        throw new UnsupportedOperationException("Fase 3");
     }
 
-    /**
-     * Persiste un log.
-     *
-     * @param log evento a registrar.
-     */
-    public void guardarLog(LogDTO log) {
-        // TODO
+    @Override
+    public MensajeDTO guardarMensaje(MensajeDTO m, List<ImagenProcesadaDTO> imgs) {
+        throw new UnsupportedOperationException("Fase 3");
     }
 
-    /**
-     * Persiste una conexión nueva.
-     *
-     * @param conexion conexión.
-     */
-    public void guardarConexion(ConexionDTO conexion) {
-        // TODO
+    @Override
+    public Optional<byte[]> leerImagen(String idMensaje, TipoFiltro etapa) {
+        throw new UnsupportedOperationException("Fase 3");
     }
 
-    /**
-     * Actualiza una conexión (desconexión y motivo).
-     *
-     * @param conexion conexión.
-     */
-    public void actualizarConexion(ConexionDTO conexion) {
-        // TODO
+    @Override
+    public void registrarConexion(SesionDTO s) {
+        throw new UnsupportedOperationException("Fase 3");
     }
 
-    /**
-     * Persiste un informe.
-     *
-     * @param informe informe a guardar.
-     */
-    public void guardarInforme(InformeDTO informe) {
-        // TODO
+    @Override
+    public void registrarDesconexion(String idSesion, LocalDateTime fin) {
+        throw new UnsupportedOperationException("Fase 3");
+    }
+
+    @Override
+    public void guardarLog(EventoLogDTO e) {
+        throw new UnsupportedOperationException("Fase 3");
+    }
+
+    @Override
+    public List<MensajeDTO> historialMensajes() {
+        throw new UnsupportedOperationException("Fase 3");
+    }
+
+    @Override
+    public List<EventoLogDTO> historialLogs() {
+        throw new UnsupportedOperationException("Fase 3");
     }
 }

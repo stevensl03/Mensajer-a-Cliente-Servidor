@@ -16,9 +16,5 @@
             <groupId>com.universidad</groupId>
             <artifactId>dto-records</artifactId>
         </dependency>
-        <dependency>
-            <groupId>com.universidad</groupId>
-            <artifactId>mensajes</artifactId>
-        </dependency>
     </dependencies>
 </project>

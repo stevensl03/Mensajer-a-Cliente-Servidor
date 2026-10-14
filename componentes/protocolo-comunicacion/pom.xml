@@ -18,19 +18,15 @@
         </dependency>
         <dependency>
             <groupId>com.universidad</groupId>
+            <artifactId>fachada</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.universidad</groupId>
             <artifactId>dto-records</artifactId>
         </dependency>
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>utilerias-varias</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.universidad</groupId>
-            <artifactId>conexiones-clientes</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.universidad</groupId>
-            <artifactId>interfaz-cliente-servidor</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

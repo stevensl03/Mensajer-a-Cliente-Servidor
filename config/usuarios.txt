@@ -1,4 +1,11 @@
 codigo;nombres;apellidos;contrasena;programa;rol
 20201001;Ana;Pérez;clave123;Ingeniería de Sistemas;USUARIO
 20201002;Luis;Gómez;clave456;Ingeniería Civil;USUARIO
+20201003;María;Rodríguez;clave789;Ingeniería Electrónica;USUARIO
+20201004;Carlos;Martínez;clave101;Ingeniería Agronómica;USUARIO
+20201005;Laura;Hernández;clave202;Licenciatura en Matemáticas;USUARIO
+20201006;Andrés;López;clave303;Administración de Empresas;USUARIO
+20201007;Camila;Díaz;clave404;Contaduría Pública;USUARIO
+20201008;Felipe;Torres;clave505;Medicina Veterinaria y Zootecnia;USUARIO
+20201009;Valentina;Ramírez;clave606;Enfermería;USUARIO
 ADMIN01;Servidor;Administrador;admin2026;Administración;ADMIN

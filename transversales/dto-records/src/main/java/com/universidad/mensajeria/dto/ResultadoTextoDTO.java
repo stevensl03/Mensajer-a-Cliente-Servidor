@@ -12,6 +12,9 @@ import java.util.Objects;
 public record ResultadoTextoDTO(String hash, int numCaracteres, int numPalabras) {
 
     public ResultadoTextoDTO {
+        if (numCaracteres < 0 || numPalabras < 0) {
+            throw new IllegalArgumentException("Los conteos no pueden ser negativos");
+        }
         Objects.requireNonNull(hash, "hash");
     }
 }

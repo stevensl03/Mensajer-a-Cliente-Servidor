@@ -1,1 +1,3 @@
-com\universidad\mensajeria\soporte\log\LogDeEventos.class
+com\universidad\mensajeria\soporte\log\FiltroLogs.class
+com\universidad\mensajeria\soporte\log\LogEventos.class
+com\universidad\mensajeria\soporte\log\ILogEventos.class

@@ -1,2 +1,4 @@
-com\universidad\mensajeria\inicio\ComponenteFactory.class
-com\universidad\mensajeria\inicio\InicioServidor.class
+com\universidad\mensajeria\inicio\ServidorApp.class
+com\universidad\mensajeria\inicio\TipoVista.class
+com\universidad\mensajeria\inicio\IVista.class
+com\universidad\mensajeria\inicio\FabricaVistas.class

@@ -1,2 +1,3 @@
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\fachada\src\main\java\com\universidad\mensajeria\fachada\EscuchaMensajes.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\fachada\src\main\java\com\universidad\mensajeria\fachada\IFachadaDeServicios.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\fachada\src\main\java\com\universidad\mensajeria\fachada\ICanalCliente.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\fachada\src\main\java\com\universidad\mensajeria\fachada\IFachadaServidor.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\fachada\src\main\java\com\universidad\mensajeria\fachada\IObservadorServidor.java

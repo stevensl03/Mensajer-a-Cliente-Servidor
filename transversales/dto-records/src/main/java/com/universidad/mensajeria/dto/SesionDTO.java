@@ -4,19 +4,19 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Una sesión (conexión) activa. Un usuario puede tener varias.
+ * Una sesión activa. Un usuario puede tener varias.
  *
- * @param idConexion     identificador de la conexión.
- * @param codigo         código del usuario, o {@code null} si aún no inició sesión.
- * @param nombreCompleto nombres y apellidos, o {@code null} si aún no inició sesión.
+ * @param idSesion       identificador de la sesión (igual al id del canal).
+ * @param codigo         código del usuario.
+ * @param nombreCompleto nombres y apellidos.
  * @param ip             IP remota del cliente.
- * @param desde          momento de la conexión.
+ * @param desde          momento del login.
  */
-public record SesionDTO(String idConexion, String codigo, String nombreCompleto,
+public record SesionDTO(String idSesion, String codigo, String nombreCompleto,
                         String ip, LocalDateTime desde) {
 
     public SesionDTO {
-        Objects.requireNonNull(idConexion, "idConexion");
+        Objects.requireNonNull(idSesion, "idSesion");
         Objects.requireNonNull(desde, "desde");
     }
 }

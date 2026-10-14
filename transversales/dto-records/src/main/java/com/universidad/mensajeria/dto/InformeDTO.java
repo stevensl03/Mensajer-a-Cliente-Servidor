@@ -1,15 +1,22 @@
 package com.universidad.mensajeria.dto;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Objects;
 
 /**
- * Instantánea de un informe generado.
+ * Informe generado.
  *
- * @param tipo          USUARIOS_REGISTRADOS, USUARIOS_CONECTADOS, MENSAJES o LOGS.
- * @param generadoEn    fecha y hora de generación.
- * @param generadoPor   usuario que lo generó, o {@code null}.
- * @param contenidoJson contenido serializado del informe.
+ * @param tipo        tipo de informe.
+ * @param generado    fecha y hora de generación.
+ * @param generadoPor código de quien lo pidió, o {@code null}.
+ * @param filas       filas del informe (el tipo depende de {@code tipo}).
  */
-public record InformeDTO(String tipo, LocalDateTime generadoEn,
-                         String generadoPor, String contenidoJson) {
+public record InformeDTO(TipoInforme tipo, LocalDateTime generado, String generadoPor, List<?> filas) {
+
+    public InformeDTO {
+        Objects.requireNonNull(tipo, "tipo");
+        Objects.requireNonNull(generado, "generado");
+        filas = filas == null ? List.of() : List.copyOf(filas);
+    }
 }

@@ -1,10 +1,6 @@
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\CanalBase.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\CanalTCP.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\CodificadorJSON.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\CodificadorTramas.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\FabricaProtocolos.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\ICodificadorMensajes.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\ManejadorCliente.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\ServidorBase.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\ServidorTCP.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\TipoProtocolo.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\FabricaProtocolos.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\tcp\CanalTCP.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\tcp\CodificadorTramas.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\tcp\ManejadorCliente.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\tcp\ServidorTCP.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-comunicacion\src\main\java\com\universidad\mensajeria\componentes\protocolo\TipoProtocolo.java

@@ -6,14 +6,12 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * Usuarios registrados y autenticación (interfaz
- * "InterfazUsuariosDisponibles" del diagrama).
+ * Catálogo de usuarios registrados y autenticación
+ * (InterfazUsuariosDisponibles). Sin CRUD.
  */
 public interface IUsuariosDisponibles {
 
     /**
-     * Valida código y contraseña.
-     *
      * @param codigo código del usuario.
      * @param clave  contraseña en claro recibida del cliente.
      * @return el usuario si las credenciales son válidas.
@@ -31,7 +29,10 @@ public interface IUsuariosDisponibles {
 
     /**
      * @param codigo código del usuario.
-     * @return {@code true} si el usuario existe y tiene rol ADMIN.
+     * @return {@code true} si el usuario está registrado.
      */
-    boolean esAdmin(String codigo);
+    boolean existe(String codigo);
+
+    /** @return el único usuario con rol ADMIN. */
+    UsuarioDTO administrador();
 }

@@ -1,3 +1,6 @@
-com\universidad\mensajeria\soporte\mensajes\Mensaje.class
-com\universidad\mensajeria\soporte\mensajes\MensajeTexto.class
 com\universidad\mensajeria\soporte\mensajes\MensajeImagen.class
+com\universidad\mensajeria\soporte\mensajes\Mensaje.class
+com\universidad\mensajeria\soporte\mensajes\AlmacenMensajesMemoria.class
+com\universidad\mensajeria\soporte\mensajes\FabricaMensajes.class
+com\universidad\mensajeria\soporte\mensajes\MensajeTexto.class
+com\universidad\mensajeria\soporte\mensajes\IAlmacenMensajes.class

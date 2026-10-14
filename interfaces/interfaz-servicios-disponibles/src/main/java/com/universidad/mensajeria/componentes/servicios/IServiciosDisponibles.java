@@ -3,13 +3,9 @@ package com.universidad.mensajeria.componentes.servicios;
 import com.universidad.mensajeria.dto.ResultadoImagenDTO;
 import com.universidad.mensajeria.dto.ResultadoTextoDTO;
 
-import java.io.IOException;
-
 /**
- * Procesamiento de los mensajes recibidos (interfaz
- * "InterfazServiciosDisponibles" del diagrama).
- *
- * <p>No persiste ni habla con la red: recibe datos y devuelve resultados.</p>
+ * Procesamiento de los mensajes recibidos (InterfazServiciosDisponibles).
+ * No persiste ni habla con la red: recibe datos y devuelve resultados.
  */
 public interface IServiciosDisponibles {
 
@@ -22,12 +18,12 @@ public interface IServiciosDisponibles {
     ResultadoTextoDTO procesarTexto(String texto);
 
     /**
-     * Calcula el SHA-256 de la imagen y aplica secuencialmente los filtros.
+     * Calcula el SHA-256 de la imagen y aplica secuencialmente los 5 filtros.
      *
      * @param datos  bytes de la imagen original.
      * @param nombre nombre del archivo recibido.
      * @return la original y una imagen nueva por cada filtro.
-     * @throws IOException si los bytes no son una imagen válida.
+     * @throws IllegalArgumentException si los bytes no son una imagen válida.
      */
-    ResultadoImagenDTO procesarImagen(byte[] datos, String nombre) throws IOException;
+    ResultadoImagenDTO procesarImagen(byte[] datos, String nombre);
 }

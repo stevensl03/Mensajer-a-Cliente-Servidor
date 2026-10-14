@@ -14,11 +14,20 @@
     <dependencies>
         <dependency>
             <groupId>com.universidad</groupId>
+            <artifactId>almacenar-informacion</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.universidad</groupId>
             <artifactId>dto-records</artifactId>
         </dependency>
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>utilerias-varias</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

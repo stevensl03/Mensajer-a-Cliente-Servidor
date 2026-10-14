@@ -1,33 +1,31 @@
 package com.universidad.mensajeria.soporte.conexiones;
 
+import com.universidad.mensajeria.dto.ConexionUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
 import com.universidad.mensajeria.dto.UsuarioDTO;
+import com.universidad.mensajeria.fachada.ICanalCliente;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
 
 /**
- * Conexiones activas con cupo global ({@code servidor.maxSesiones}).
+ * Sesiones activas con cupo global ({@code servidor.maxSesiones}).
  *
  * <p>El cupo cuenta TODAS las sesiones activas: un mismo usuario puede abrir
  * varias, y si ocupa las N los demás no pueden entrar. Seguro entre hilos.</p>
  */
 public final class GestorConexiones implements IGestorConexiones {
 
-    private record Registro(ICanalCliente canal, LocalDateTime desde) {
-    }
-
-    private final int maxSesiones;
     private final Semaphore cupo;
-    private final Map<String, Registro> conexiones = new ConcurrentHashMap<>();
-    private final Map<String, Set<ICanalCliente>> porUsuario = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, SesionActiva> sesiones = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, Set<String>> porUsuario = new ConcurrentHashMap<>();
 
     /**
      * @param maxSesiones máximo de sesiones simultáneas (mayor que 0).
@@ -36,96 +34,72 @@ public final class GestorConexiones implements IGestorConexiones {
         if (maxSesiones <= 0) {
             throw new IllegalArgumentException("maxSesiones debe ser mayor que 0: " + maxSesiones);
         }
-        this.maxSesiones = maxSesiones;
-        this.cupo = new Semaphore(maxSesiones);
-    }
-
-    /** @return el máximo de sesiones configurado. */
-    public int getMaxSesiones() {
-        return maxSesiones;
+        this.cupo = new Semaphore(maxSesiones, true);
     }
 
     @Override
-    public boolean registrar(ICanalCliente c) {
+    public boolean abrirSesion(ICanalCliente c, UsuarioDTO u) {
         Objects.requireNonNull(c, "c");
+        Objects.requireNonNull(u, "u");
         if (!cupo.tryAcquire()) {
             return false;
         }
-        if (conexiones.putIfAbsent(c.getId(), new Registro(c, LocalDateTime.now())) != null) {
+        if (sesiones.putIfAbsent(c.getId(), new SesionActiva(c, u, LocalDateTime.now())) != null) {
             cupo.release();
-            throw new IllegalStateException("La conexión ya estaba registrada: " + c.getId());
+            throw new IllegalStateException("El canal ya tiene sesión: " + c.getId());
         }
+        porUsuario.computeIfAbsent(u.codigo(), k -> ConcurrentHashMap.newKeySet()).add(c.getId());
         return true;
     }
 
     @Override
-    public void asociarUsuario(String id, UsuarioDTO u) {
-        Objects.requireNonNull(u, "u");
-        Registro registro = conexiones.get(id);
-        if (registro == null) {
-            return;
-        }
-        ICanalCliente canal = registro.canal();
-        canal.getUsuario()
-                .filter(anterior -> !anterior.codigo().equals(u.codigo()))
-                .ifPresent(anterior -> quitarDeUsuario(anterior.codigo(), canal));
-        canal.asociar(u);
-        porUsuario.computeIfAbsent(u.codigo(), k -> ConcurrentHashMap.newKeySet()).add(canal);
-        if (!conexiones.containsKey(id)) {
-            // Se cerró mientras se asociaba: no dejar referencias huérfanas.
-            quitarDeUsuario(u.codigo(), canal);
-        }
-    }
-
-    @Override
-    public void cerrar(String id) {
-        Registro registro = conexiones.remove(id);
-        if (registro == null) {
-            return;
+    public Optional<SesionDTO> cerrarSesion(String idSesion) {
+        SesionActiva sesion = sesiones.remove(idSesion);
+        if (sesion == null) {
+            return Optional.empty();
         }
         cupo.release();
-        registro.canal().getUsuario().ifPresent(u -> quitarDeUsuario(u.codigo(), registro.canal()));
-        registro.canal().cerrar();
+        porUsuario.computeIfPresent(sesion.usuario().codigo(), (k, ids) -> {
+            ids.remove(idSesion);
+            return ids.isEmpty() ? null : ids;
+        });
+        return Optional.of(sesion.aDTO());
     }
 
     @Override
-    public List<ICanalCliente> sesionesDe(String codigo) {
-        Set<ICanalCliente> canales = porUsuario.get(codigo);
-        return canales == null ? List.of() : List.copyOf(canales);
+    public Optional<UsuarioDTO> usuarioDe(String idSesion) {
+        return Optional.ofNullable(sesiones.get(idSesion)).map(SesionActiva::usuario);
     }
 
     @Override
-    public Collection<ICanalCliente> todas() {
-        return conexiones.values().stream().map(Registro::canal).toList();
+    public List<ICanalCliente> canalesDe(String codigo) {
+        Set<String> ids = porUsuario.get(codigo);
+        if (ids == null) {
+            return List.of();
+        }
+        return ids.stream().map(sesiones::get).filter(Objects::nonNull).map(SesionActiva::canal).toList();
+    }
+
+    @Override
+    public Collection<ICanalCliente> canalesActivos() {
+        return sesiones.values().stream().map(SesionActiva::canal).toList();
     }
 
     @Override
     public List<SesionDTO> resumen() {
-        return conexiones.values().stream()
-                .sorted(Comparator.comparing(Registro::desde))
-                .map(GestorConexiones::aSesion)
+        return sesiones.values().stream()
+                .sorted(Comparator.comparing(SesionActiva::desde))
+                .map(SesionActiva::aDTO)
                 .toList();
     }
 
     @Override
-    public boolean hayCupo() {
-        return cupo.availablePermits() > 0;
+    public List<ConexionUsuarioDTO> conteoPorUsuario() {
+        throw new UnsupportedOperationException("Fase 5");
     }
 
-    private void quitarDeUsuario(String codigo, ICanalCliente canal) {
-        porUsuario.computeIfPresent(codigo, (k, canales) -> {
-            canales.remove(canal);
-            return canales.isEmpty() ? null : canales;
-        });
-    }
-
-    private static SesionDTO aSesion(Registro registro) {
-        ICanalCliente canal = registro.canal();
-        UsuarioDTO u = canal.getUsuario().orElse(null);
-        return new SesionDTO(canal.getId(),
-                u == null ? null : u.codigo(),
-                u == null ? null : u.nombres() + " " + u.apellidos(),
-                canal.getIpRemota(),
-                registro.desde());
+    @Override
+    public int cuposLibres() {
+        return cupo.availablePermits();
     }
 }

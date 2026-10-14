@@ -12,7 +12,6 @@
     <artifactId>inicio-servidor</artifactId>
     <name>Presentacion - Inicio Servidor (raiz de ejecucion)</name>
     <dependencies>
-        <!-- transversal + interfaces -->
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>dto-records</artifactId>
@@ -45,8 +44,6 @@
             <groupId>com.universidad</groupId>
             <artifactId>interfaz-gestor-mensajes</artifactId>
         </dependency>
-
-        <!-- implementaciones de componentes -->
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>protocolo-comunicacion</artifactId>
@@ -67,8 +64,6 @@
             <groupId>com.universidad</groupId>
             <artifactId>gestor-colas-de-mensajes</artifactId>
         </dependency>
-
-        <!-- paquetes de apoyo -->
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>mensajes</artifactId>
@@ -93,8 +88,6 @@
             <groupId>com.universidad</groupId>
             <artifactId>fachada-de-servicios</artifactId>
         </dependency>
-
-        <!-- presentacion -->
         <dependency>
             <groupId>com.universidad</groupId>
             <artifactId>vista-consola</artifactId>
@@ -104,8 +97,18 @@
             <artifactId>vista-escritorio</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+        <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>

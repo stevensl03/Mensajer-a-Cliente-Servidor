@@ -12,6 +12,7 @@ import java.util.Objects;
 public record ResultadoImagenDTO(String hash, List<ImagenProcesadaDTO> imagenes) {
 
     public ResultadoImagenDTO {
+        Objects.requireNonNull(imagenes, "imagenes");
         Objects.requireNonNull(hash, "hash");
         imagenes = List.copyOf(imagenes);
     }

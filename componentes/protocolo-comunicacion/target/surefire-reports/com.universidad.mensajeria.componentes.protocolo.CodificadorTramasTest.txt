@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.universidad.mensajeria.componentes.protocolo.CodificadorTramasTest
--------------------------------------------------------------------------------
-Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.250 s -- in com.universidad.mensajeria.componentes.protocolo.CodificadorTramasTest

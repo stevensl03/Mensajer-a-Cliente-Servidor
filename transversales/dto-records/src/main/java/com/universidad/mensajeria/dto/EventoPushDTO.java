@@ -6,22 +6,17 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
- * Evento que el servidor envía al cliente sin que lo pida. El cliente lo
- * distingue de una {@link RespuestaDTO} porque trae el campo {@code tipo}.
+ * Evento que el servidor envía al cliente sin que lo pida. Siempre trae
+ * {@code evento} y nunca {@code idPeticion}.
  *
- * @param tipo  tipo del evento.
- * @param datos datos del evento, o {@code null}.
- * @param fecha momento en que se generó.
+ * @param evento tipo del evento.
+ * @param fecha  momento en que se generó.
+ * @param datos  datos del evento, o {@code null}.
  */
-public record EventoPushDTO(TipoEventoPush tipo, JsonNode datos, LocalDateTime fecha) {
+public record EventoPushDTO(TipoEventoPush evento, LocalDateTime fecha, JsonNode datos) {
 
     public EventoPushDTO {
-        Objects.requireNonNull(tipo, "tipo");
+        Objects.requireNonNull(evento, "evento");
         Objects.requireNonNull(fecha, "fecha");
-    }
-
-    /** Crea un evento con la fecha actual. */
-    public static EventoPushDTO de(TipoEventoPush tipo, JsonNode datos) {
-        return new EventoPushDTO(tipo, datos, LocalDateTime.now());
     }
 }

@@ -1,1 +1,2 @@
-com\universidad\mensajeria\componentes\gestor\InterfazGestorMensajes.class
+com\universidad\mensajeria\componentes\gestor\IConsumidorMensajes.class
+com\universidad\mensajeria\componentes\gestor\IGestorMensajes.class

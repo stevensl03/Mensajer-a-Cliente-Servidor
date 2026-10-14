@@ -1,33 +1,47 @@
 package com.universidad.mensajeria.componentes.canal;
 
+import com.universidad.mensajeria.dto.CodigoError;
 import com.universidad.mensajeria.dto.EventoPushDTO;
 import com.universidad.mensajeria.dto.PeticionDTO;
 import com.universidad.mensajeria.dto.RespuestaDTO;
-import com.universidad.mensajeria.soporte.conexiones.ICanalCliente;
-
-import java.util.Collection;
 
 /**
- * Lógica del protocolo cliente-servidor (interfaz "InterfazClienteServidor"
- * del diagrama): interpreta cada petición, independientemente del transporte.
+ * Contrato de la conversación cliente-servidor (InterfazClienteServidor):
+ * JSON a DTO y viceversa, y validación de peticiones. No conoce sockets.
  */
 public interface IClienteServidor {
 
     /**
-     * Atiende una petición. Nunca lanza excepciones por errores de negocio:
-     * los devuelve como respuesta con {@code exito = false}.
-     *
-     * @param p      petición recibida.
-     * @param origen canal por el que llegó (identifica al remitente).
-     * @return la respuesta para el cliente.
+     * @param json trama recibida.
+     * @return la petición validada.
+     * @throws PeticionInvalidaException si el JSON es inválido o la petición está incompleta.
      */
-    RespuestaDTO procesar(PeticionDTO p, ICanalCliente origen);
+    PeticionDTO interpretar(String json);
 
     /**
-     * Envía un evento a varios canales (solo encola, no bloquea).
-     *
-     * @param e        evento.
-     * @param destinos canales destino.
+     * @param r respuesta.
+     * @return su JSON.
      */
-    void notificar(EventoPushDTO e, Collection<ICanalCliente> destinos);
+    String serializar(RespuestaDTO r);
+
+    /**
+     * @param e evento push.
+     * @return su JSON.
+     */
+    String serializar(EventoPushDTO e);
+
+    /**
+     * @param idPeticion petición respondida.
+     * @param datos      datos del resultado, o {@code null}.
+     * @return una respuesta exitosa.
+     */
+    RespuestaDTO exito(String idPeticion, Object datos);
+
+    /**
+     * @param idPeticion petición respondida (puede ser {@code null}).
+     * @param c          código de error.
+     * @param detalle    descripción legible.
+     * @return una respuesta de error.
+     */
+    RespuestaDTO error(String idPeticion, CodigoError c, String detalle);
 }

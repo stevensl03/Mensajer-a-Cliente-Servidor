@@ -1,5 +1,3 @@
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\FabricaManejadoresComando.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\IManejadorComando.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\ManejadorLogin.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\ManejadorLogout.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\ProtocoloClienteServidor.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\FabricaClienteServidor.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\ProtocoloClienteServidorJSON.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\componentes\protocolo-cliente-servidor\src\main\java\com\universidad\mensajeria\componentes\canal\ValidadorPeticiones.java

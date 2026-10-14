@@ -1,20 +1,29 @@
 package com.universidad.mensajeria.dto;
 
+import java.util.Objects;
+
 /**
- * Una versión de imagen del pipeline (orden 0 a 5). Refleja lo guardado en
- * disco y en la tabla {@code imagenes_mensaje} (C-07).
+ * Una versión guardada de una imagen (fila de {@code imagenes_mensaje}).
  *
- * @param ordenSecuencia 0 a 5 (0 = original).
- * @param etapaFiltro    ORIGINAL, ESCALA_GRISES, SEPIA, ROTAR_180, BRILLO o REDUCCION_TAMANO.
- * @param nombreArchivo  nombre del archivo en disco.
- * @param datos          bytes de la imagen.
- * @param tamanoBytes    tamaño en bytes.
- * @param ancho          ancho en píxeles.
- * @param alto           alto en píxeles.
- * @param rutaArchivo    copia en el directorio de almacenamiento.
- * @param hashSha256     hash SHA-256 de la versión.
+ * @param orden         0 a 5 (0 = original).
+ * @param etapa         etapa del pipeline que la produjo.
+ * @param nombreArchivo nombre del archivo en disco.
+ * @param rutaArchivo   ruta en el directorio de almacenamiento.
+ * @param tamanoBytes   tamaño en bytes.
+ * @param hash          hash SHA-256 de la versión.
  */
-public record ImagenVersionDTO(int ordenSecuencia, String etapaFiltro, String nombreArchivo,
-                               byte[] datos, int tamanoBytes, Integer ancho, Integer alto,
-                               String rutaArchivo, String hashSha256) {
+public record ImagenVersionDTO(int orden, TipoFiltro etapa, String nombreArchivo,
+                               String rutaArchivo, long tamanoBytes, String hash) {
+
+    public ImagenVersionDTO {
+        Objects.requireNonNull(etapa, "etapa");
+        Objects.requireNonNull(nombreArchivo, "nombreArchivo");
+        Objects.requireNonNull(hash, "hash");
+        if (orden < 0 || orden > 5) {
+            throw new IllegalArgumentException("orden fuera de 0..5: " + orden);
+        }
+        if (tamanoBytes < 0) {
+            throw new IllegalArgumentException("tamanoBytes no puede ser negativo: " + tamanoBytes);
+        }
+    }
 }

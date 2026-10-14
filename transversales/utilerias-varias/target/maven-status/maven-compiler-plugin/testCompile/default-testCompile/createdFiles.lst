@@ -1,2 +1,5 @@
+com\universidad\mensajeria\utilerias\DtoJsonTest.class
 com\universidad\mensajeria\utilerias\SerializadorJSONTest.class
+com\universidad\mensajeria\utilerias\ConfiguracionServidorTest.class
+com\universidad\mensajeria\utilerias\UtilImagenTest.class
 com\universidad\mensajeria\utilerias\GeneradorHashSHA256Test.class

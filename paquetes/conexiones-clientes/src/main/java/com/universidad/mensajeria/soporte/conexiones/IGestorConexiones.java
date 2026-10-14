@@ -1,52 +1,48 @@
 package com.universidad.mensajeria.soporte.conexiones;
 
+import com.universidad.mensajeria.dto.ConexionUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
 import com.universidad.mensajeria.dto.UsuarioDTO;
+import com.universidad.mensajeria.fachada.ICanalCliente;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
- * Registro de las conexiones activas y del cupo global de sesiones.
+ * Sesiones activas en memoria con cupo global ({@code servidor.maxSesiones}).
+ * No persiste nada.
  */
 public interface IGestorConexiones {
 
     /**
-     * Registra una conexión nueva si hay cupo.
-     *
-     * @param c canal recién aceptado.
-     * @return {@code false} si se alcanzó el máximo de sesiones.
+     * @param c canal del cliente.
+     * @param u usuario autenticado.
+     * @return {@code false} si el cupo está lleno.
      */
-    boolean registrar(ICanalCliente c);
+    boolean abrirSesion(ICanalCliente c, UsuarioDTO u);
 
     /**
-     * Asocia un usuario autenticado a una conexión registrada (también lo
-     * asocia al canal).
+     * Libera el cupo una sola vez (idempotente).
      *
-     * @param id identificador de la conexión.
-     * @param u  usuario autenticado.
+     * @param idSesion sesión a cerrar.
+     * @return la sesión cerrada, o vacío si no existía.
      */
-    void asociarUsuario(String id, UsuarioDTO u);
+    Optional<SesionDTO> cerrarSesion(String idSesion);
 
-    /**
-     * Cierra una conexión y libera su cupo. Idempotente.
-     *
-     * @param id identificador de la conexión.
-     */
-    void cerrar(String id);
+    Optional<UsuarioDTO> usuarioDe(String idSesion);
 
-    /**
-     * @param codigo código de usuario.
-     * @return las conexiones activas de ese usuario (puede tener varias).
-     */
-    List<ICanalCliente> sesionesDe(String codigo);
+    /** @return los canales con sesión del usuario. */
+    List<ICanalCliente> canalesDe(String codigo);
 
-    /** @return todas las conexiones activas. */
-    Collection<ICanalCliente> todas();
+    /** @return todos los canales con sesión. */
+    Collection<ICanalCliente> canalesActivos();
 
-    /** @return el resumen de las conexiones activas, de la más antigua a la más reciente. */
+    /** @return las sesiones activas, de la más antigua a la más reciente. */
     List<SesionDTO> resumen();
 
-    /** @return {@code true} si se puede registrar al menos una conexión más. */
-    boolean hayCupo();
+    /** @return cuántas sesiones tiene cada usuario conectado. */
+    List<ConexionUsuarioDTO> conteoPorUsuario();
+
+    int cuposLibres();
 }

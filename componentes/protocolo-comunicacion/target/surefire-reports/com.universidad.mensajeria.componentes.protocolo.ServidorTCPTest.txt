@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.universidad.mensajeria.componentes.protocolo.ServidorTCPTest
--------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.940 s -- in com.universidad.mensajeria.componentes.protocolo.ServidorTCPTest

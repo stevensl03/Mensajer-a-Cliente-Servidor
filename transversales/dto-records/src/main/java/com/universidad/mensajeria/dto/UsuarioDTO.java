@@ -1,5 +1,7 @@
 package com.universidad.mensajeria.dto;
 
+import java.util.Objects;
+
 /**
  * Usuario registrado expuesto a la lógica y la presentación. No expone el hash
  * de la contraseña.
@@ -12,4 +14,12 @@ package com.universidad.mensajeria.dto;
  */
 public record UsuarioDTO(String codigo, String nombres, String apellidos,
                          String programa, Rol rol) {
+
+    public UsuarioDTO {
+        Objects.requireNonNull(codigo, "codigo");
+        Objects.requireNonNull(nombres, "nombres");
+        Objects.requireNonNull(apellidos, "apellidos");
+        Objects.requireNonNull(programa, "programa");
+        Objects.requireNonNull(rol, "rol");
+    }
 }

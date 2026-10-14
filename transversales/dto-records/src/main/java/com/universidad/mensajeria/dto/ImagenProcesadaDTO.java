@@ -5,14 +5,14 @@ import java.util.Objects;
 /**
  * Una imagen producida por el pipeline (o la original).
  *
- * @param filtro etapa que la produjo.
- * @param datos  bytes de la imagen (PNG para las filtradas).
- * @param hash   hash SHA-256 de {@code datos}.
+ * @param etapa etapa que la produjo.
+ * @param datos bytes de la imagen (PNG para las filtradas).
+ * @param hash  hash SHA-256 de {@code datos}.
  */
-public record ImagenProcesadaDTO(TipoFiltro filtro, byte[] datos, String hash) {
+public record ImagenProcesadaDTO(TipoFiltro etapa, byte[] datos, String hash) {
 
     public ImagenProcesadaDTO {
-        Objects.requireNonNull(filtro, "filtro");
+        Objects.requireNonNull(etapa, "etapa");
         Objects.requireNonNull(hash, "hash");
         datos = Objects.requireNonNull(datos, "datos").clone();
     }

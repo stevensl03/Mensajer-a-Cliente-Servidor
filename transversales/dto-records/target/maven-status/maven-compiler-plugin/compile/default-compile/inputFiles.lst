@@ -1,23 +1,26 @@
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\Canal.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ConexionDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ContenidoDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\EventoPushDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ImagenProcesadaDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ImagenVersionDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\InformeDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\LogDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\MensajeDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\MensajeImagenDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\MensajeTextoDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\PeticionDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\RespuestaDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ResultadoImagenDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ResultadoTextoDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\Rol.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\SesionDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoComando.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoEventoPush.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoFiltro.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoMensaje.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\UsuarioDTO.java
-C:\Users\Admin\Desktop\Arquitectura cliente servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\UsuarioRegistroDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\Canal.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\CodigoError.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ConexionUsuarioDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ContenidoDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\EstadoUsuarioDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\EventoLogDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\EventoPushDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ImagenProcesadaDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ImagenVersionDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\InformeDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\MensajeDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\PeticionDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\RespuestaDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ResultadoImagenDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\ResultadoTextoDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\Rol.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\SesionDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\SolicitudMensajeDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoComando.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoEvento.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoEventoPush.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoFiltro.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoInforme.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\TipoMensaje.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\UsuarioDTO.java
+C:\Users\Admin\Desktop\Mensajer-a-Cliente-Servidor\transversales\dto-records\src\main\java\com\universidad\mensajeria\dto\UsuarioRegistroDTO.java

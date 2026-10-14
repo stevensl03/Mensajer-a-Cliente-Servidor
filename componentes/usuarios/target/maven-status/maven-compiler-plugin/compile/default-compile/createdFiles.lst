@@ -1,2 +1,2 @@
 com\universidad\mensajeria\componentes\usuarios\ServicioUsuarios.class
-com\universidad\mensajeria\componentes\usuarios\ImportadorUsuarios.class
+com\universidad\mensajeria\componentes\usuarios\FabricaUsuarios.class
