@@ -193,7 +193,7 @@ Reglas que se comprueban con `grep` en la revisión:
 1. `ServidorTCP` acepta el socket, crea `CanalTCP` (id = UUID) y lanza un `ManejadorCliente` en un hilo virtual.
 2. `receptor.alConectar(canal)`: registra `CONEXION` (IP, sin usuario) y envía el push `INFO_SERVIDOR {ipServidor, puerto, protocolo, cuposLibres}`. La conexión TCP sola **no** ocupa cupo.
 3. El cliente envía `LOGIN {codigo, clave}`. `ManejadorCliente` lee la trama y llama a `receptor.alRecibir(canal, json)`.
-4. `peticion = clienteServidor.interpretar(json)`. Si lanza `PeticionInvalidaException`, se responde `PETICION_INVALIDA` y el canal sigue abierto.
+4. `peticion = clienteServidor.interpretar(json)`. Si lanza `PeticionInvalidaException`, se responde con su `codigo` (`PETICION_INVALIDA`, o `CONTENIDO_INVALIDO` si lo que falla es el `contenido`) y el `idPeticion` que se haya podido leer; el canal sigue abierto.
 5. `despachador.despachar(peticion, canal)` → `ManejadorLogin` → `controlSesiones.abrir(canal, codigo, clave)`:
    - Si las credenciales no son válidas: evento `LOGIN_FALLIDO` y `ExcepcionNegocio(CREDENCIALES_INVALIDAS)`.
    - Si el canal ya tiene sesión: `ExcepcionNegocio(PETICION_INVALIDA)`.
@@ -613,9 +613,10 @@ Transporte. Cambiar de protocolo (UDP, gRPC…) solo toca este componente.
   + exito(idPeticion : String, datos : Object) : RespuestaDTO
   + error(idPeticion : String, c : CodigoError, detalle : String) : RespuestaDTO
   ```
-- **`PeticionInvalidaException`** — «RuntimeException» clase. JSON mal formado o petición incompleta.
+- **`PeticionInvalidaException`** — «RuntimeException» clase. JSON mal formado, petición incompleta o contenido inválido.
   ```text
-  - idPeticion : String
+  - idPeticion : String  «null si no se pudo leer»
+  - codigo : CodigoError  «PETICION_INVALIDA o CONTENIDO_INVALIDO»
   ```
 
 #### ProtocoloClienteServidor  ·  _componente_

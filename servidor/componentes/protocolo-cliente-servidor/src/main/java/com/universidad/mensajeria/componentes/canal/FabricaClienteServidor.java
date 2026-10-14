@@ -14,9 +14,10 @@ public final class FabricaClienteServidor {
     /**
      * @param json serializador JSON.
      * @param cfg  configuración (límites de contenido).
-     * @return el protocolo cliente-servidor.
+     * @return el protocolo cliente-servidor en JSON.
      */
     public static IClienteServidor crear(ISerializador json, ConfiguracionServidor cfg) {
-        throw new UnsupportedOperationException("Fase 4d");
+        var validador = new ValidadorPeticiones(cfg.maxTextoCaracteres(), cfg.maxImagenBytes());
+        return new ProtocoloClienteServidorJSON(json, validador);
     }
 }
