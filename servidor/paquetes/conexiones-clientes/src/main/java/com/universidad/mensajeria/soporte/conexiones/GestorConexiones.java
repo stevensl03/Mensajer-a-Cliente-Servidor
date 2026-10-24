@@ -9,11 +9,14 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Semaphore;
+import java.util.stream.Collectors;
 
 /**
  * Sesiones activas con cupo global ({@code servidor.maxSesiones}).
@@ -95,7 +98,12 @@ public final class GestorConexiones implements IGestorConexiones {
 
     @Override
     public List<ConexionUsuarioDTO> conteoPorUsuario() {
-        throw new UnsupportedOperationException("Fase 5");
+        Map<String, List<SesionDTO>> porCodigo = sesiones.values().stream()
+                .map(SesionActiva::aDTO)
+                .collect(Collectors.groupingBy(SesionDTO::codigo, TreeMap::new, Collectors.toList()));
+        return porCodigo.values().stream()
+                .map(l -> new ConexionUsuarioDTO(l.get(0).codigo(), l.get(0).nombreCompleto(), l.size()))
+                .toList();
     }
 
     @Override
