@@ -41,7 +41,7 @@ public interface IGestorConexiones {
     /** @return las sesiones activas, de la más antigua a la más reciente. */
     List<SesionDTO> resumen();
 
-    /** @return cuántas sesiones tiene cada usuario conectado. */
+    /** @return cuántas sesiones tiene cada usuario conectado, ordenado por código. */
     List<ConexionUsuarioDTO> conteoPorUsuario();
 
     int cuposLibres();
