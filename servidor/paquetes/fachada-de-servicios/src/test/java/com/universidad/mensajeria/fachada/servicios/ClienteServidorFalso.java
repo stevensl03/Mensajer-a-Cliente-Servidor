@@ -1,6 +1,7 @@
 package com.universidad.mensajeria.fachada.servicios;
 
 import com.universidad.mensajeria.componentes.canal.IClienteServidor;
+import com.universidad.mensajeria.componentes.canal.PeticionInvalidaException;
 import com.universidad.mensajeria.dto.CodigoError;
 import com.universidad.mensajeria.dto.EventoPushDTO;
 import com.universidad.mensajeria.dto.PeticionDTO;
@@ -8,14 +9,18 @@ import com.universidad.mensajeria.dto.RespuestaDTO;
 import com.universidad.mensajeria.utilerias.ISerializador;
 import com.universidad.mensajeria.utilerias.SerializadorJSON;
 
-/** IClienteServidor de prueba: JSON con SerializadorJSON y sin validación. */
+/** IClienteServidor de prueba: JSON con SerializadorJSON; solo rechaza el JSON mal formado. */
 final class ClienteServidorFalso implements IClienteServidor {
 
     static final ISerializador JSON = new SerializadorJSON();
 
     @Override
     public PeticionDTO interpretar(String json) {
-        return JSON.desdeJson(json, PeticionDTO.class);
+        try {
+            return JSON.desdeJson(json, PeticionDTO.class);
+        } catch (IllegalArgumentException e) {
+            throw new PeticionInvalidaException(null, CodigoError.PETICION_INVALIDA, "JSON inválido");
+        }
     }
 
     @Override
