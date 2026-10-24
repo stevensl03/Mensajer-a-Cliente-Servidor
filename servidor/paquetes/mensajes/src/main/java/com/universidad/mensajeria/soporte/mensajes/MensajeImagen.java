@@ -37,7 +37,7 @@ public final class MensajeImagen extends Mensaje {
 
     @Override
     public MensajeDTO aDTO() {
-        // Las rutas de las versiones las asigna AlmacenarInformacion al guardar (fase 5).
+        // Sin rutas: AlmacenarInformacion.guardarMensaje escribe las versiones y devuelve el DTO con ellas.
         return new MensajeDTO(id, tipo(), canal, remitente, destinatario, fecha, hash,
                 null, 0, 0, nombreArchivo, List.of());
     }
