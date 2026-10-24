@@ -124,6 +124,22 @@ class LogEventosTest {
     }
 
     @Test
+    void losOyentesRecibenCadaEventoNuevoPeroNoElHistorial() {
+        var recibidos = new ArrayList<EventoLogDTO>();
+        log.suscribir(e -> {
+            throw new IllegalStateException("oyente roto");
+        });
+        log.suscribir(recibidos::add);
+        almacen.historial.add(new EventoLogDTO("h1", TipoEvento.CONEXION, "CONEXION", null, null, LocalDateTime.now()));
+
+        log.cargarHistorial();
+        log.conexion(SESION);
+
+        assertEquals(List.of(TipoEvento.LOGIN_OK), recibidos.stream().map(EventoLogDTO::tipo).toList());
+        assertEquals(2, log.todos().size(), "el oyente roto no impide registrar");
+    }
+
+    @Test
     void todosDevuelveUnaCopiaInmutable() {
         log.registrar(TipoEvento.CONEXION, "CONEXION", null, null);
         List<EventoLogDTO> copia = log.todos();

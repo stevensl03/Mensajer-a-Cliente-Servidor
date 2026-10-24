@@ -258,6 +258,16 @@ class FachadaServidorTest {
     }
 
     @Test
+    void lasVistasRecibenCadaEventoDelLog() {
+        var canal = new CanalGrabador();
+        receptor.alConectar(canal);
+        login(canal, ANA);
+
+        assertEquals(List.of(TipoEvento.CONEXION, TipoEvento.LOGIN_OK),
+                vista.eventos.stream().map(e -> e.tipo()).toList());
+    }
+
+    @Test
     void listarUsuariosMuestraAlAdminConectado() {
         login(new CanalGrabador(), ANA);
 

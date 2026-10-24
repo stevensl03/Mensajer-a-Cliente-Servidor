@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * {@link ILogEventos}: escribe en SLF4J (consola y archivo), indexa en memoria
@@ -30,6 +32,7 @@ public final class LogEventos implements ILogEventos {
     private final ConcurrentLinkedDeque<EventoLogDTO> eventos = new ConcurrentLinkedDeque<>();
     private final ConcurrentHashMap<TipoEvento, Queue<EventoLogDTO>> porTipo = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Queue<EventoLogDTO>> porUsuario = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<Consumer<EventoLogDTO>> oyentes = new CopyOnWriteArrayList<>();
     private final IAlmacenarInformacion almacenamiento;
 
     public LogEventos(IAlmacenarInformacion almacenamiento) {
@@ -47,6 +50,12 @@ public final class LogEventos implements ILogEventos {
             LOG.warn("No se pudo persistir el evento {} ({})", e.id(), t, ex);
         }
         indexar(e);
+        avisar(e);
+    }
+
+    @Override
+    public void suscribir(Consumer<EventoLogDTO> o) {
+        oyentes.addIfAbsent(Objects.requireNonNull(o, "o"));
     }
 
     @Override
@@ -95,6 +104,16 @@ public final class LogEventos implements ILogEventos {
         almacenamiento.historialLogs().stream()
                 .sorted(Comparator.comparing(EventoLogDTO::fecha))
                 .forEach(this::indexar);
+    }
+
+    private void avisar(EventoLogDTO e) {
+        for (Consumer<EventoLogDTO> o : oyentes) {
+            try {
+                o.accept(e);
+            } catch (RuntimeException ex) {
+                LOG.warn("Un oyente del log falló con el evento {}", e.id(), ex);
+            }
+        }
     }
 
     private void indexar(EventoLogDTO e) {

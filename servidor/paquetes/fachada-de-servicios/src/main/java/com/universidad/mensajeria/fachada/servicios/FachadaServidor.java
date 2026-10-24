@@ -77,6 +77,7 @@ public final class FachadaServidor implements IFachadaServidor {
 
         // Ensamblado interno (§6.1, paso 15): todas son clases de este paquete.
         notificador = new NotificadorObservadores();
+        log.suscribir(notificador::evento);
         enrutador = new EnrutadorMensajes(conexiones, clienteServidor, notificador, json);
         sesiones = new ControlSesiones(usuarios, conexiones, log, enrutador, notificador);
         informes = new GeneradorInformes(usuarios, conexiones, mensajes, log);
