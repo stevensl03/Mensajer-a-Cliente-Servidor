@@ -1,13 +1,11 @@
 package com.universidad.mensajeria.fachada.servicios.comandos;
 
 import com.universidad.mensajeria.componentes.canal.IClienteServidor;
-import com.universidad.mensajeria.dto.CodigoError;
 import com.universidad.mensajeria.dto.PeticionDTO;
 import com.universidad.mensajeria.dto.RespuestaDTO;
 import com.universidad.mensajeria.dto.UsuarioDTO;
 import com.universidad.mensajeria.fachada.ICanalCliente;
 import com.universidad.mensajeria.fachada.servicios.ControlSesiones;
-import com.universidad.mensajeria.fachada.servicios.ExcepcionNegocio;
 
 import java.util.Map;
 import java.util.Objects;
@@ -34,15 +32,10 @@ public final class ManejadorLogin implements IManejadorComando {
 
     @Override
     public RespuestaDTO ejecutar(PeticionDTO p, ICanalCliente c) {
-        String codigo = requerido(p, "codigo");
-        String clave = requerido(p, "clave");
+        String codigo = IManejadorComando.requerido(p, "codigo");
+        String clave = IManejadorComando.requerido(p, "clave");
         UsuarioDTO u = sesiones.abrir(c, codigo, clave);
         return clienteServidor.exito(p.idPeticion(),
                 Map.of("usuario", u, "idSesion", c.getId(), "ipServidor", ipServidor.get()));
-    }
-
-    private static String requerido(PeticionDTO p, String nombre) {
-        return p.parametro(nombre).orElseThrow(
-                () -> new ExcepcionNegocio(CodigoError.PETICION_INVALIDA, "Falta el parámetro " + nombre));
     }
 }
