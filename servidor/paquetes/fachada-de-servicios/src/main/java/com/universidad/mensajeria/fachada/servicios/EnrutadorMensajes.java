@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -67,6 +68,14 @@ public final class EnrutadorMensajes {
      */
     public void enviarA(String codigo, EventoPushDTO e) {
         enviar(conexiones.canalesDe(codigo), e);
+    }
+
+    /**
+     * @param c canal destinatario (aunque no tenga sesión).
+     * @param e evento a enviar.
+     */
+    public void enviarACanal(ICanalCliente c, EventoPushDTO e) {
+        enviar(List.of(c), e);
     }
 
     /**
