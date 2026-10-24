@@ -20,6 +20,9 @@ public record FiltroLogs(TipoEvento tipo, String usuario, LocalDateTime desde, L
      * @return {@code true} si el evento cumple el filtro.
      */
     public boolean acepta(EventoLogDTO e) {
-        throw new UnsupportedOperationException("Fase 5");
+        return (tipo == null || tipo == e.tipo())
+                && (usuario == null || usuario.equals(e.usuario()))
+                && (desde == null || !e.fecha().isBefore(desde))
+                && (hasta == null || !e.fecha().isAfter(hasta));
     }
 }
