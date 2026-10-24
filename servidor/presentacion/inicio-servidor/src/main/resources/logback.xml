@@ -1,14 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Gestor de logs del servidor (nota del diagrama: SLF4J + Logback). -->
+<!-- Gestor de logs del servidor (§10): consola con colores y archivo con rotación diaria de 30 días.
+     %X{usuario} y %X{ip} los pone LogEventos en el MDC. Las rutas son relativas a servidor/. -->
 <configuration>
-
     <appender name="CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %cyan(%logger{20}) - %msg%n</pattern>
+            <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %X{usuario} %X{ip} - %msg%n</pattern>
         </encoder>
     </appender>
-
     <appender name="ARCHIVO" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/servidor.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
@@ -17,10 +16,12 @@
         </rollingPolicy>
         <encoder>
             <charset>UTF-8</charset>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{36} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %X{usuario} %X{ip} %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-
+    <!-- HikariCP y Flyway son muy verbosos en INFO. -->
+    <logger name="com.zaxxer.hikari" level="WARN"/>
+    <logger name="org.flywaydb" level="WARN"/>
     <root level="INFO">
         <appender-ref ref="CONSOLA"/>
         <appender-ref ref="ARCHIVO"/>
