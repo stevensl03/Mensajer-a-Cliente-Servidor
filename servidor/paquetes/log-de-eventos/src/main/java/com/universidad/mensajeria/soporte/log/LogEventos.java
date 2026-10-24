@@ -51,13 +51,23 @@ public final class LogEventos implements ILogEventos {
 
     @Override
     public void conexion(SesionDTO s) {
-        almacenamiento.registrarConexion(s);
+        try {
+            almacenamiento.registrarConexion(s);
+        } catch (RuntimeException ex) {
+            // conexiones_usuario es solo historial: un fallo de la BD no debe dejar el LOGIN a medias.
+            LOG.warn("No se pudo persistir la conexión {}", s.idSesion(), ex);
+        }
         registrar(TipoEvento.LOGIN_OK, "LOGIN_OK sesion=" + s.idSesion(), s.codigo(), s.ip());
     }
 
     @Override
     public void desconexion(SesionDTO s, String motivo) {
-        almacenamiento.registrarDesconexion(s.idSesion(), LocalDateTime.now());
+        try {
+            almacenamiento.registrarDesconexion(s.idSesion(), LocalDateTime.now());
+        } catch (RuntimeException ex) {
+            // Si no se registra aquí, cerrarHuerfanas la cierra en el próximo arranque.
+            LOG.warn("No se pudo persistir la desconexión {}", s.idSesion(), ex);
+        }
         registrar(TipoEvento.DESCONEXION, "DESCONEXION sesion=" + s.idSesion() + " motivo=" + motivo,
                 s.codigo(), s.ip());
     }

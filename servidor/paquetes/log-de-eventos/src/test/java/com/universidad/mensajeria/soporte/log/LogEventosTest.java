@@ -113,6 +113,17 @@ class LogEventosTest {
     }
 
     @Test
+    void siLaBdFallaLaConexionYLaDesconexionNoInterrumpenElCasoDeUso() {
+        almacen.fallarAlRegistrarConexiones = true;
+
+        log.conexion(SESION);
+        log.desconexion(SESION, "LOGOUT");
+
+        assertEquals(List.of(TipoEvento.LOGIN_OK, TipoEvento.DESCONEXION),
+                log.todos().stream().map(EventoLogDTO::tipo).toList());
+    }
+
+    @Test
     void todosDevuelveUnaCopiaInmutable() {
         log.registrar(TipoEvento.CONEXION, "CONEXION", null, null);
         List<EventoLogDTO> copia = log.todos();
@@ -129,6 +140,7 @@ class LogEventosTest {
         final List<SesionDTO> conexiones = new ArrayList<>();
         final List<String> desconexiones = new ArrayList<>();
         boolean fallarAlGuardarLogs;
+        boolean fallarAlRegistrarConexiones;
 
         @Override
         public void guardarLog(EventoLogDTO e) {
@@ -145,11 +157,17 @@ class LogEventosTest {
 
         @Override
         public void registrarConexion(SesionDTO s) {
+            if (fallarAlRegistrarConexiones) {
+                throw new IllegalStateException("BD caída");
+            }
             conexiones.add(s);
         }
 
         @Override
         public void registrarDesconexion(String idSesion, LocalDateTime fin) {
+            if (fallarAlRegistrarConexiones) {
+                throw new IllegalStateException("BD caída");
+            }
             desconexiones.add(idSesion);
         }
 
