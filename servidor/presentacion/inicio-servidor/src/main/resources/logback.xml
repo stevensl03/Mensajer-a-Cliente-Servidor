@@ -2,9 +2,11 @@
 <!-- Gestor de logs del servidor (§10): consola con colores y archivo con rotación diaria de 30 días.
      %X{usuario} y %X{ip} los pone LogEventos en el MDC. Las rutas son relativas a servidor/. -->
 <configuration>
+    <!-- La consola usa la codificación del terminal (stdout.encoding: p. ej. cp850 en Windows, UTF-8 en Linux),
+         la misma que System.out, para que las tildes del log y del menú se vean bien. El archivo sigue en UTF-8. -->
     <appender name="CONSOLA" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <charset>UTF-8</charset>
+            <charset>${stdout.encoding:-UTF-8}</charset>
             <pattern>%d{HH:mm:ss.SSS} %highlight(%-5level) [%thread] %X{usuario} %X{ip} - %msg%n</pattern>
         </encoder>
     </appender>

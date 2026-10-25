@@ -6,11 +6,29 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MenuConsolaTest {
+
+    @Test
+    void elSeparadorSeAdaptaALaCodificacionDelTerminal() {
+        var utf8 = new ByteArrayOutputStream();
+        new MenuConsola(new BufferedReader(new StringReader("")), new PrintStream(utf8, true, StandardCharsets.UTF_8),
+                new ReentrantLock()).mostrarOpciones();
+        assertTrue(utf8.toString(StandardCharsets.UTF_8).contains("─".repeat(62)));
+
+        var latin1 = new ByteArrayOutputStream();
+        new MenuConsola(new BufferedReader(new StringReader("")), new PrintStream(latin1, true, StandardCharsets.ISO_8859_1),
+                new ReentrantLock()).mostrarOpciones();
+        String texto = latin1.toString(StandardCharsets.ISO_8859_1);
+        assertTrue(texto.contains("-".repeat(62)));
+        assertFalse(texto.contains("?"), "ningún carácter queda como «?»");
+    }
 
     @Test
     void leerOpcionDistingueValidasInvalidasYFinDeEntrada() {

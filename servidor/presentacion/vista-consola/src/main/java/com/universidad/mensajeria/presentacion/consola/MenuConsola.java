@@ -24,12 +24,16 @@ public final class MenuConsola {
     /** Lo devuelve {@link #leerOpcion()} cuando se cerró la entrada estándar. */
     public static final int FIN_DE_ENTRADA = -2;
 
-    static final String SEPARADOR = "─".repeat(62);
+    /** Línea del menú; si el terminal no puede mostrar «─» (p. ej. Windows-1252) se usa «-». */
+    private static final char LINEA = '─';
+    private static final char LINEA_ASCII = '-';
+    private static final int ANCHO = 62;
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("HH:mm");
 
     private final BufferedReader entrada;
     private final PrintStream salida;
     private final ReentrantLock bloqueo;
+    private final String separador;
 
     /**
      * @param bloqueo el mismo bloqueo que usa la vista al imprimir avisos.
@@ -38,16 +42,18 @@ public final class MenuConsola {
         this.entrada = Objects.requireNonNull(entrada, "entrada");
         this.salida = Objects.requireNonNull(salida, "salida");
         this.bloqueo = Objects.requireNonNull(bloqueo, "bloqueo");
+        char linea = salida.charset().newEncoder().canEncode(LINEA) ? LINEA : LINEA_ASCII;
+        this.separador = String.valueOf(linea).repeat(ANCHO);
     }
 
     public void mostrarOpciones() {
         imprimir(String.join(System.lineSeparator(),
-                SEPARADOR,
+                separador,
                 "  1) Ver sesiones activas          5) Publicar en el foro (ADMIN)",
                 "  2) Informe: usuarios registrados 6) Mensaje privado (ADMIN)",
                 "  3) Informe: usuarios conectados  7) Cerrar una sesión",
                 "  4) Informe: mensajes / logs      0) Detener servidor",
-                SEPARADOR));
+                separador));
     }
 
     /** @return la opción 0–7, {@link #OPCION_INVALIDA} o {@link #FIN_DE_ENTRADA}. */
