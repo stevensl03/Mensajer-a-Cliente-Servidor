@@ -132,7 +132,7 @@ public final class AlmacenarInformacion implements IAlmacenarInformacion {
 
     private MensajeDTO escribirTexto(MensajeDTO m, List<String> escritos) {
         Path ruta = archivos.guardar(TEXTOS, m.id() + ".txt", m.texto().getBytes(StandardCharsets.UTF_8));
-        escritos.add(ruta.toString());
+        escritos.add(portable(ruta));
         return m;
     }
 
@@ -145,13 +145,21 @@ public final class AlmacenarInformacion implements IAlmacenarInformacion {
             Path ruta = etapa == TipoFiltro.ORIGINAL
                     ? archivos.guardar(ORIGINALES, m.id() + "_" + m.nombreArchivo(), datos)
                     : archivos.guardar(FILTRADAS, m.id() + "_" + orden + "_" + etapa + ".png", datos);
-            escritos.add(ruta.toString());
+            escritos.add(portable(ruta));
             // La ORIGINAL conserva el nombre que envió el usuario: de ahí sale MensajeDTO.nombreArchivo al leer.
             String nombre = etapa == TipoFiltro.ORIGINAL ? m.nombreArchivo() : ruta.getFileName().toString();
-            versiones.add(new ImagenVersionDTO(orden, etapa, nombre, ruta.toString(), datos.length, img.hash()));
+            versiones.add(new ImagenVersionDTO(orden, etapa, nombre, portable(ruta), datos.length, img.hash()));
         }
         return new MensajeDTO(m.id(), m.tipo(), m.canal(), m.remitente(), m.destinatario(), m.fecha(), m.hash(),
                 m.texto(), m.numCaracteres(), m.numPalabras(), m.nombreArchivo(), versiones);
+    }
+
+    /**
+     * Ruta tal como se guarda en la BD: siempre con {@code /}, sin importar el
+     * sistema donde corre el servidor (Windows la acepta y Linux la necesita).
+     */
+    static String portable(Path ruta) {
+        return ruta.toString().replace('\\', '/');
     }
 
     private Optional<MensajeDTO> buscarMensaje(String id) {

@@ -79,7 +79,7 @@ Reglas: `CHECK ((canal='FORO' AND destinatario_codigo IS NULL) OR (canal='PRIVAD
 | `mensaje_id` | CHAR(36) | no | FK → `mensajes(id)` `ON DELETE CASCADE` |
 | `etapa` | VARCHAR(20) | no | `CHECK (etapa IN ('ORIGINAL','ESCALA_GRISES','SEPIA','ROTAR_180','BRILLO','REDUCCION_TAMANO'))` |
 | `nombre_archivo` | VARCHAR(255) | no | |
-| `ruta_archivo` | VARCHAR(500) | no | `./almacen/originales/…` o `./almacen/filtradas/…` |
+| `ruta_archivo` | VARCHAR(500) | no | `./almacen/originales/…` o `./almacen/filtradas/…`; siempre con `/` (portable entre Windows y Linux) |
 | `tamano_bytes` | BIGINT | no | |
 | `hash_sha256` | CHAR(64) | no | hash de **esa** versión |
 
