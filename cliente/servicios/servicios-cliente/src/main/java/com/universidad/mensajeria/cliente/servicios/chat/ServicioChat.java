@@ -185,6 +185,11 @@ public final class ServicioChat implements IServicioChat {
                 .thenApplyAsync(r -> descargada(ExcepcionServidor.exigirExito(r), idMensaje, etapa));
     }
 
+    @Override
+    public long mensajesGuardados() {
+        return usuario == null ? 0 : repo.contar();
+    }
+
     private byte[] descargada(RespuestaDTO r, String idMensaje, TipoFiltro etapa) {
         byte[] datos = Base64.getDecoder().decode(r.datos().path("datosBase64").asText(""));
         String nombre = r.datos().path("nombreArchivo").asText(etapa.name().toLowerCase(Locale.ROOT));

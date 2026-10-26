@@ -592,6 +592,9 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **10a** · `ProveedorConexionH2` mantiene una conexión de guarda mientras la base está abierta; cada operación pide la suya. El esquema se ejecuta con `RUNSCRIPT FROM 'classpath:/schema.sql'`. Un adjunto sin su mensaje lanza `IllegalArgumentException` (R-55); los demás errores SQL, `IllegalStateException`.
 - **10b** · `ServicioUsuarios.login` abre H2 con `thenApplyAsync` (fuera del hilo lector, R-39). Si la base local no abre, envía LOGOUT para liberar el cupo del servidor y falla con `IllegalStateException`.
 - **10b** · `ServicioChat` valida el contenido con las reglas de `ValidadorPeticiones` del servidor (R-50) antes de enviar; nada inválido llega a la red. El ORIGINAL de una imagen enviada se guarda con la respuesta ENCOLADO o con el push, el que llegue último (R-48), y se descarta si la sesión se cerró.
+- **10c** · `IServicioChat.mensajesGuardados()` (D-12): la fachada no puede ver el repositorio, así que el conteo pasa por el servicio de chat.
+- **10c** · `FachadaCliente` termina la sesión una sola vez (R-49): `logout()` no avisa; `SESION_CERRADA` o la caída avisan un único `onDesconexion`, después de cerrar lo local en otro hilo (el LOGOUT de cortesía no debe bloquear al hilo lector que entrega la desconexión). `logout()` sin sesión cierra solo la conexión, para que `AppCliente.stop()` pueda llamarlo siempre.
+- **10c** · Un observador que falla no impide avisar a los demás; el primer error se relanza para que `DespachadorEventos` lo registre (la fachada no tiene SLF4J en la matriz).
 
 ---
 
@@ -622,7 +625,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 3 | 9c ✅ | 9b | Protocolo JSON + push (17 pruebas; 52 en total) |
 | 4 | 10a ✅ | 9a | H2 + repositorios + esquema (22 pruebas; 74 en total) |
 | 5 | 10b ✅ | 9c, 10a | Servicios (26 pruebas; 100 en total) |
-| 6 | 10c | 10b | Fachada + observadores |
+| 6 | 10c ✅ | 10b | Fachada + observadores (13 pruebas; 113 en total) |
 | 7 | 11a | 10c | AppCliente + navegación |
 | 8 | 11b | 11a | C1 |
 | 9 | 11c | 11b | C2 |

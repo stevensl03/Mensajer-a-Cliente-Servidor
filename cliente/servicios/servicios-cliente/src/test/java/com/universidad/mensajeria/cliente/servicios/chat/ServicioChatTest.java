@@ -125,6 +125,7 @@ class ServicioChatTest {
         chat.recibir(ajeno);
 
         assertEquals(2, repo.contar());
+        assertEquals(2, chat.mensajesGuardados());
         assertEquals(List.of("m1", "m2"), ids(chat.historial("FORO")));
     }
 
@@ -210,6 +211,7 @@ class ServicioChatTest {
         chat.cerrarSesion();
 
         assertThrows(IllegalStateException.class, () -> chat.historial("20201002"));
+        assertEquals(0, chat.mensajesGuardados());
         chat.recibir(mensaje("m1", Canal.FORO, "20201002", null, T0));
         assertEquals(0, repo.contar());
     }

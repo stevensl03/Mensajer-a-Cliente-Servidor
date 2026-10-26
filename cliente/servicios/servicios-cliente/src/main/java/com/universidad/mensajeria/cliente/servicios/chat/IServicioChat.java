@@ -62,4 +62,7 @@ public interface IServicioChat {
      * @return los bytes de H2 o, si no están, de {@code OBTENER_IMAGEN} (y se guardan en H2).
      */
     CompletableFuture<byte[]> imagen(String idMensaje, TipoFiltro etapa);
+
+    /** @return los mensajes guardados en la base local, o 0 sin sesión (D-12). Lee H2. */
+    long mensajesGuardados();
 }
