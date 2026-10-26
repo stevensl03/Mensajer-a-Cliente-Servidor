@@ -449,6 +449,7 @@ Vista de escritorio (Swing) del servidor.
 - **`PanelInformes`** — «JPanel» clase. Los cuatro informes en tablas y su JSON.
   ```text
   + mostrar(t : TipoInforme, json : String) : void
+  - detalle(m : MensajeDTO) : void  «ficha del mensaje y sus 6 miniaturas, pedidas con fachada.imagen»
   ```
 
 ### Capa de Servicios
@@ -1246,6 +1247,7 @@ Configuración, hash, JSON e imágenes.
   + desdeJson(s : String, t : Class<T>) : T
   + aArbol(o : Object) : JsonNode
   + convertir(n : JsonNode, t : Class<T>) : T
+  + sangrar(json : String) : String  «JSON con sangría para mostrarlo en las vistas»
   ```
 - **`SerializadorJSON`** — «Jackson» clase.
   ```text

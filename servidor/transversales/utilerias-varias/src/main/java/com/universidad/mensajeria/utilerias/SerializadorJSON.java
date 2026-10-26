@@ -62,4 +62,14 @@ public final class SerializadorJSON implements ISerializador {
                     + e.getOriginalMessage(), e);
         }
     }
+
+    @Override
+    public String sangrar(String json) {
+        Objects.requireNonNull(json, "json");
+        try {
+            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(mapper.readTree(json));
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("JSON inválido: " + e.getOriginalMessage(), e);
+        }
+    }
 }
