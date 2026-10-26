@@ -14,7 +14,7 @@
 
 ## Vista de escritorio (Swing): `VentanaPrincipal`
 
-**Título de la ventana:** `Servidor de Mensajería · Unillanos — ADMIN`.
+**Título de la ventana:** `Servidor de Mensajería Académica - ADMIN`.
 
 **Barra de estado superior** (igual en S1, S2 y S3), con fondo verde claro mientras el servidor está activo:
 

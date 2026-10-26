@@ -113,7 +113,7 @@ class PanelMonitorTest {
 
     @Test
     void textoDeLaBarraDeEstado() {
-        var d = new VentanaPrincipal.Datos("TCP", 5000, "MYSQL", 10);
+        var d = new VentanaPrincipal.Datos("TCP", 5000, "MYSQL", 10, 4000, 5_242_880);
         assertEquals("Activo · Protocolo TCP · Puerto 5000 · IP 192.168.1.10 · Motor BD MYSQL · Sesiones 3 / 10",
                 VentanaPrincipal.textoEstado(d, "192.168.1.10", 3));
     }
