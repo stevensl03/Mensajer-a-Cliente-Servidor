@@ -602,6 +602,11 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **11b** · `LoginViewModel` recibe la lista de protocolos (nombres de `TipoProtocolo`) desde `AppCliente`: el ViewModel no puede importar `comunicacion`. El texto de `CUPO_LLENO` no lleva N/N (R-16) y un `host:puerto` mal escrito se rechaza sin tocar la red.
 - **11b** · El ícono 💬 se dibuja con un `SVGPath` (la fuente de emoji no está disponible en este equipo, R-70). El formulario tiene ancho fijo y C1 no es redimensionable (en Hyprland queda flotante a 420×560).
 - **11b** · `FabricaVistasFxmlTest` carga el FXML real con su controlador (se omite sin entorno gráfico). Detectó que FXMLLoader oculta la causa al fallar: `FabricaVistas` ahora informa la causa raíz.
+- **11c** · **D-19** `IFachadaCliente.getPuerto()`: la barra de C2 muestra «TCP :{puerto}» y ningún ViewModel conocía el puerto. Pendiente de reflejar en `docs/`.
+- **11c** · Un único `ChatViewModel` para toda la aplicación (lo crea `AppCliente` y se suscribe una vez): la fachada no tiene `desuscribir`, y un ViewModel por login seguiría recibiendo avisos. `iniciar()` lo deja en cero en cada sesión; fuera de una sesión ignora los avisos.
+- **11c** · Sin emoji en C2 (📎, 📊, ➤, 🔍; R-70): textos «Imagen», «Informes», «Enviar» y el botón de cierre propio de las pestañas. Los motivos `CERRADA_POR_ADMIN` / `SERVIDOR_DETENIDO` se muestran en palabras.
+- **11c** · Cada pestaña privada se crea una vez y se conserva al cerrarla: si llega un mensaje de esa conversación, vuelve a mostrarse. Un privado nuevo de otra persona abre su pestaña sin quitar el foco.
+- **11c** · «enviando…» se apaga con el `MENSAJE_NUEVO` propio, con el rechazo del servidor o a los 15 s con «No se pudo confirmar el envío» (R-32). Las imágenes (miniatura y 5 filtros) se construyen fuera del hilo de JavaFX y se guardan en memoria por sesión.
 
 ---
 
@@ -635,7 +640,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 6 | 10c ✅ | 10b | Fachada + observadores (13 pruebas; 113 en total) |
 | 7 | 11a ✅ | 10c | AppCliente + navegación (1 prueba de pila completa; 114 en total) |
 | 8 | 11b ✅ | 11a | C1 (9 pruebas; 123 en total) |
-| 9 | 11c | 11b | C2 |
+| 9 | 11c ✅ | 11b | C2 (14 pruebas; 137 en total) |
 | 10 | 11d | 11b | C3 |
 | 11 | 11e | 11c, 11d | CSS y pulido |
 | 12 | 12 | todas | Integración + README |

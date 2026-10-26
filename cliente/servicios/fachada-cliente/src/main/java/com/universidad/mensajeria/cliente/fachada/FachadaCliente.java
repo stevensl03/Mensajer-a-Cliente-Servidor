@@ -149,6 +149,11 @@ public final class FachadaCliente implements IFachadaCliente, IOyentePush {
     }
 
     @Override
+    public int getPuerto() {
+        return puerto;
+    }
+
+    @Override
     public void suscribir(IObservadorCliente o) {
         observadores.addIfAbsent(Objects.requireNonNull(o, "o"));
     }

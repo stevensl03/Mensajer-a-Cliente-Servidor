@@ -64,6 +64,9 @@ public interface IFachadaCliente {
     /** @return la IP del servidor, o {@code null} si nunca se conectó. */
     String getIpServidor();
 
+    /** @return el puerto del servidor conectado, o 0 si nunca se conectó (D-19, barra de estado de C2). */
+    int getPuerto();
+
     void suscribir(IObservadorCliente o);
 
     /** @return el usuario de la sesión (D-05). */

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+
+<!-- C2 · Chat (mockups_cliente.md): cabecera, usuarios, pestañas Foro + privados, escritura y barra de estado. -->
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.universidad.mensajeria.cliente.vistas.VistaChat" styleClass="chat">
+
+    <top>
+        <HBox styleClass="barra-titulo" spacing="12" alignment="CENTER_LEFT">
+            <StackPane>
+                <Circle radius="18" styleClass="avatar"/>
+                <Label fx:id="lblIniciales" styleClass="avatar-texto"/>
+            </StackPane>
+            <VBox alignment="CENTER_LEFT">
+                <Label fx:id="lblNombre" styleClass="cabecera-nombre"/>
+                <Label fx:id="lblPrograma" styleClass="cabecera-programa"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Informes" onAction="#onInformes" styleClass="boton-cabecera"/>
+            <Button text="Salir" onAction="#onSalir" styleClass="boton-peligro"/>
+        </HBox>
+    </top>
+
+    <left>
+        <VBox styleClass="panel-usuarios" spacing="8" prefWidth="270">
+            <padding>
+                <Insets top="12" right="10" bottom="10" left="12"/>
+            </padding>
+            <Label fx:id="lblConectados" styleClass="titulo-seccion"/>
+            <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código"/>
+            <ListView fx:id="lstUsuarios" VBox.vgrow="ALWAYS" styleClass="lista-usuarios"/>
+            <Label text="Doble clic: abrir conversación privada" styleClass="texto-suave"/>
+        </VBox>
+    </left>
+
+    <center>
+        <TabPane fx:id="tabs" tabClosingPolicy="ALL_TABS">
+            <Tab fx:id="tabForo" text="# Foro" closable="false">
+                <ListView fx:id="lstForo" styleClass="lista-mensajes"/>
+            </Tab>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <VBox>
+            <HBox styleClass="barra-escritura" spacing="8" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="8" right="12" bottom="8" left="12"/>
+                </padding>
+                <TextField fx:id="txtMensaje" onAction="#onEnviar" HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblEnviando" text="enviando…" styleClass="texto-suave"/>
+                <Button text="Imagen" onAction="#onAdjuntarImagen"/>
+                <Button fx:id="btnEnviar" text="Enviar" onAction="#onEnviar" styleClass="boton-primario"/>
+            </HBox>
+            <Label fx:id="lblError" styleClass="error" maxWidth="Infinity">
+                <VBox.margin>
+                    <Insets right="12" bottom="6" left="12"/>
+                </VBox.margin>
+            </Label>
+            <HBox styleClass="barra-estado" spacing="8" alignment="CENTER_LEFT">
+                <padding>
+                    <Insets top="5" right="12" bottom="5" left="12"/>
+                </padding>
+                <Circle fx:id="punto" radius="5"/>
+                <Label fx:id="lblEstado"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblResumen" styleClass="texto-suave"/>
+            </HBox>
+        </VBox>
+    </bottom>
+</BorderPane>

@@ -65,6 +65,7 @@ class FachadaClienteTest {
         assertEquals(2, protocolo.conexiones.get());
         assertEquals(1, protocolo.desconexiones.get());
         assertEquals("192.168.20.31", fachada.getIpServidor());
+        assertEquals(5000, fachada.getPuerto());
         assertTrue(observador.desconexiones.isEmpty(), "sin sesión no se avisa desconexión");
     }
 

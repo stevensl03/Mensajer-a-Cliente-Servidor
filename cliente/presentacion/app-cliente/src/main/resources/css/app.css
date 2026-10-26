@@ -89,3 +89,88 @@
     -fx-font-weight: bold;
     -fx-text-fill: -color-titulo;
 }
+
+/* C2 · Chat */
+.avatar {
+    -fx-fill: #546E7A;
+}
+
+.avatar-texto {
+    -fx-font-weight: bold;
+}
+
+.cabecera-nombre {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.barra-titulo .cabecera-programa {
+    -fx-text-fill: #CFD8DC;
+}
+
+.boton-cabecera {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-border-color: #90A4AE;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+}
+
+.panel-usuarios {
+    -fx-background-color: white;
+    -fx-border-color: transparent -color-borde transparent transparent;
+}
+
+.titulo-seccion {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-titulo;
+}
+
+.usuario-nombre {
+    -fx-font-weight: bold;
+}
+
+.lista-mensajes {
+    -fx-background-color: -color-fondo;
+}
+
+.lista-mensajes .list-cell,
+.lista-mensajes .list-cell:filled:selected,
+.lista-mensajes .list-cell:filled:hover {
+    -fx-background-color: transparent;
+    -fx-text-fill: black;
+    -fx-padding: 4 8;
+}
+
+.burbuja {
+    -fx-padding: 8 12;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+}
+
+.burbuja-ajena {
+    -fx-background-color: white;
+    -fx-border-color: -color-borde;
+}
+
+.burbuja-propia {
+    -fx-background-color: -color-propio;
+    -fx-border-color: #BBDEFB;
+}
+
+.burbuja-encabezado {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-texto-suave;
+}
+
+.barra-escritura {
+    -fx-background-color: white;
+    -fx-border-color: -color-borde transparent transparent transparent;
+}
+
+.barra-estado {
+    -fx-background-color: #ECEFF1;
+    -fx-border-color: -color-borde transparent transparent transparent;
+}

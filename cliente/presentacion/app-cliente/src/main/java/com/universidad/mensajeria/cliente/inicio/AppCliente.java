@@ -15,7 +15,9 @@ import com.universidad.mensajeria.cliente.servicios.informes.ServicioInformes;
 import com.universidad.mensajeria.cliente.servicios.usuarios.ServicioUsuarios;
 import com.universidad.mensajeria.cliente.utilerias.ConfiguracionCliente;
 import com.universidad.mensajeria.cliente.utilerias.SerializadorJSON;
+import com.universidad.mensajeria.cliente.viewmodels.ChatViewModel;
 import com.universidad.mensajeria.cliente.viewmodels.LoginViewModel;
+import com.universidad.mensajeria.cliente.vistas.VistaChat;
 import com.universidad.mensajeria.cliente.vistas.VistaLogin;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -44,6 +46,8 @@ public final class AppCliente extends Application {
 
     private static final Logger LOG = LoggerFactory.getLogger(AppCliente.class);
     static final Path CONFIG = Path.of("config/cliente.properties");
+    /** Espera del MENSAJE_NUEVO de un envío propio antes de avisar (R-32). */
+    static final Duration ESPERA_CONFIRMACION = Duration.ofSeconds(15);
 
     private IFachadaCliente fachada;
     private ExecutorService fondo;
@@ -124,6 +128,21 @@ public final class AppCliente extends Application {
         List<String> protocolos = Arrays.stream(TipoProtocolo.values()).map(Enum::name).toList();
         fabrica.registrar(VistaLogin.class, c -> new VistaLogin(new LoginViewModel(c.fachada(), c.hiloUI(), c.fondo(),
                 c.servidorInicial(), protocolos, () -> c.navegar().accept(TipoVista.CHAT))));
+        // Un único ChatViewModel, suscrito una vez: la fachada no tiene desuscribir (ver ChatViewModel).
+        var chat = new AtomicReference<ChatViewModel>();
+        fabrica.registrar(VistaChat.class, c -> new VistaChat(chat.updateAndGet(vm -> vm != null ? vm : nuevoChat(c))));
+    }
+
+    private static ChatViewModel nuevoChat(FabricaVistas.Contexto c) {
+        var vm = new ChatViewModel(c.fachada(), c.hiloUI(), c.fondo(), ESPERA_CONFIRMACION,
+                () -> c.navegar().accept(TipoVista.LOGIN),
+                () -> c.navegar().accept(TipoVista.INFORMES),
+                motivo -> {
+                    aviso("Se cerró la sesión", motivo);
+                    c.navegar().accept(TipoVista.LOGIN);
+                });
+        c.fachada().suscribir(vm);
+        return vm;
     }
 
     /** Una pantalla que no se puede abrir se informa en un diálogo, no solo en el log. */
@@ -134,6 +153,13 @@ public final class AppCliente extends Application {
             LOG.error("No se pudo abrir la pantalla {}", t, e);
             error("No se pudo abrir la pantalla", e.getMessage());
         }
+    }
+
+    private static void aviso(String titulo, String detalle) {
+        var alerta = new Alert(Alert.AlertType.INFORMATION, detalle);
+        alerta.setTitle("Mensajería Académica");
+        alerta.setHeaderText(titulo);
+        alerta.showAndWait();
     }
 
     private static void error(String titulo, String detalle) {

@@ -26,6 +26,12 @@ public class FachadaFalsa implements IFachadaCliente {
     public BiFunction<String, String, CompletableFuture<UsuarioDTO>> login =
             (c, k) -> CompletableFuture.failedFuture(new IllegalStateException("login no configurado"));
     public volatile UsuarioDTO actual;
+    public final Map<String, List<MensajeDTO>> historiales = new java.util.concurrent.ConcurrentHashMap<>();
+    public volatile List<EstadoUsuarioDTO> listaUsuarios = List.of();
+    /** Respuesta de los envíos (por defecto, ENCOLADO). */
+    public java.util.function.Supplier<CompletableFuture<Void>> respuestaEnvio = () -> CompletableFuture.completedFuture(null);
+    public final List<ContenidoDTO> contenidos = new CopyOnWriteArrayList<>();
+    public volatile long guardados;
 
     @Override
     public String conectar(String host, int puerto) {
@@ -54,25 +60,27 @@ public class FachadaFalsa implements IFachadaCliente {
     @Override
     public CompletableFuture<List<EstadoUsuarioDTO>> usuarios() {
         llamadas.add("usuarios");
-        return CompletableFuture.completedFuture(List.of());
+        return CompletableFuture.completedFuture(listaUsuarios);
     }
 
     @Override
     public CompletableFuture<Void> enviarForo(ContenidoDTO c) {
         llamadas.add("enviarForo");
-        return CompletableFuture.completedFuture(null);
+        contenidos.add(c);
+        return respuestaEnvio.get();
     }
 
     @Override
     public CompletableFuture<Void> enviarPrivado(String destino, ContenidoDTO c) {
         llamadas.add("enviarPrivado " + destino);
-        return CompletableFuture.completedFuture(null);
+        contenidos.add(c);
+        return respuestaEnvio.get();
     }
 
     @Override
     public List<MensajeDTO> historial(String conversacion) {
         llamadas.add("historial " + conversacion);
-        return List.of();
+        return historiales.getOrDefault(conversacion, List.of());
     }
 
     @Override
@@ -93,6 +101,11 @@ public class FachadaFalsa implements IFachadaCliente {
     }
 
     @Override
+    public int getPuerto() {
+        return 5000;
+    }
+
+    @Override
     public void suscribir(IObservadorCliente o) {
         observadores.add(o);
     }
@@ -109,6 +122,6 @@ public class FachadaFalsa implements IFachadaCliente {
 
     @Override
     public long mensajesGuardados() {
-        return 0;
+        return guardados;
     }
 }
