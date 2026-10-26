@@ -6,7 +6,7 @@
 > `docs/arquitectura/servidor_clases_componentes.md` §7 (**«servidor §7»**).
 > **Stack: Java 21 + JavaFX 21 (LTS) + FXML + MVVM + Maven multimódulo + H2.**
 > Estado: **en ejecución**. D-03…D-14 aprobadas por el usuario (25-oct-2026) con las recomendaciones de §0. Sesión 0 hecha.
-> Fases 9a–11c terminadas (137 pruebas). **Integrada** la actualización del servidor (fases 7c–8, `origin/develop` 9f19799):
+> **Cliente completo (fases 9a–12).** 145 pruebas + 1 de integración contra el servidor real (§8.1). **Integrada** la actualización del servidor (fases 7c–8, `origin/develop` 9f19799):
 > el contrato §7 no cambió y no hubo que tocar el cliente (`warning.md` §0.2).
 > El servidor **no se modifica**. Los riesgos citados (R-xx) están en `cliente/warning.md`.
 
@@ -438,6 +438,51 @@ textos en español. Prueba manual contra los mockups, sin excepciones en consola
 3. `README.md` raíz y `cliente/README.md`: requisitos, instalación de `dto-records`, ejecución y pruebas.
 4. `mvn -q verify` en `servidor/` y `cliente/`.
 
+### 8.1 Fase 12 · Resultado de la integración final (25-oct-2026)
+
+**Entorno:** servidor de desarrollo (`develop` 9f19799, jar reconstruido) en `192.168.20.31:5000`, MySQL 8.4 en
+Docker (`mensajeria_academica`), `maxSesiones=10`; cliente con JDK 21 y JavaFX 21.0.13 en Linux/Hyprland (Wayland + XWayland).
+
+**1. Prueba automatizada `ClienteContraServidorRealTest`** (`@Tag("integracion")`, perfil `-Pintegracion`): dos pilas
+completas del cliente (Ana y Luis), ensambladas igual que `AppCliente`, contra el servidor real. **En verde (1,5 s).**
+
+| Requisito pedido | Comprobado |
+|---|---|
+| Inicio de sesión y catálogo/estados de usuario | Login incorrecto → `CREDENCIALES_INVALIDAS` y reintento por la misma conexión; 10 usuarios, ADMIN conectado; Ana recibe `USUARIO_CONECTADO` de Luis |
+| Mensajería concurrente en foro y privado | 5 + 5 mensajes simultáneos al foro llegan a los dos y quedan en H2; privado Ana → Luis llega a ambos y está en el `HISTORIAL` de Luis |
+| Imágenes y validación | 6 versiones en orden; el ORIGINAL de Ana sale de su H2 idéntico al enviado; Luis descarga SEPIA y la segunda vez sale de H2; `.webp` y 5 MB + 1 byte se rechazan en el cliente |
+| Informes y JSON | Los 4 informes con filas y JSON con sangría; filtro `LOGS tipoEvento=LOGIN_OK`; Luis aparece en `USUARIOS_CONECTADOS` |
+| Cierre de sesión y desconexión limpia | Luis sale sin aviso de caída; Ana lo ve desconectarse (`USUARIO_DESCONECTADO`); Luis guardó ≥ 12 mensajes en H2 |
+
+El log del servidor coincide: 1 `LOGIN_FALLIDO`, 2 `LOGIN_OK`, 10 `MENSAJE_FORO` de texto procesados por los 4 consumidores,
+1 `MENSAJE_PRIVADO`, 1 imagen, 2 `DESCONEXION motivo=LOGOUT` y ningún `ERROR`.
+
+**2. Recorrido con dos ventanas reales.** `javafx:run` abre la app en este equipo, pero `wtype` (teclado virtual de
+Wayland) no llega a las ventanas de JavaFX, que corren sobre XWayland: el texto llegaba desordenado o no llegaba (R-28).
+Por eso el recorrido se hizo con un arnés temporal (no versionado) que, dentro de la JVM, crea **dos `AppCliente`
+reales** con ventanas reales contra el servidor y acciona los controles y los manejadores de teclado reales (como TestFX),
+con una captura por paso:
+
+- Ana y Luis entran; Ana ve 3 conectados (ADMIN, Ana, Luis).
+- Foro en ambas ventanas, con el historial de la prueba automatizada y la **miniatura real** de la imagen (`OBTENER_IMAGEN`).
+- Ana abre el privado **solo con teclado** (Ctrl+F, «Luis», ↓, Enter) y escribe; en la ventana de Luis se abre sola la pestaña «Ana Pérez».
+- Alt+I abre C3: tarjetas (2 sesiones, 2 conectados, 16 mensajes de hoy), pestaña Logs con 27 registros, «Ver JSON» con sangría y Esc lo cierra.
+- Luis pulsa Salir y vuelve a C1; Ana ve «2 conectados» y a Luis en gris.
+
+Para el recorrido por teclado se agregaron atajos que también sirven a cualquier usuario: ↓ desde la búsqueda pasa a la
+lista, Enter en la lista abre el privado, y Alt+I / Alt+S / Alt+M / Alt+J.
+
+**3. Defectos encontrados y corregidos en la fase 12** (no los detectaron las pruebas anteriores):
+
+- **C3, columnas aplastadas (R-29):** al cambiar de pestaña sobre una tabla ya dibujada, «Hora» se quedaba con casi todo el
+  ancho y Tipo/Usuario con cero. Ahora las columnas se reemplazan de una vez (`setAll`) y cada una tiene un ancho
+  preferido desde el ViewModel (`Columna.ancho`). La prueba de FXML reproduce la secuencia real (dibujar → cambiar de
+  pestaña → dibujar); se comprobó que **falla sin el arreglo** y pasa con él.
+- **C2, barra horizontal en los mensajes:** el ancho de las burbujas no dejaba sitio a la barra vertical; ahora sí.
+
+**Pendiente fuera de `cliente/`:** reflejar D-15…D-19 y las adiciones menores en `docs/arquitectura/cliente_clases_componentes.md`
+y su `.drawio`, y actualizar el estado del `README.md` raíz (dice «Siguiente: Fase 9»).
+
 ---
 
 ## 9. Componentes de UI por pantalla
@@ -660,7 +705,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | — | Integración ✅ | 11c | Pull del servidor (fases 7c–8): contrato sin cambios, 316 pruebas del servidor y 137 del cliente en verde |
 | 10 | 11d ✅ | 11b | C3 (9 pruebas; 145 en total) |
 | 11 | 11e ✅ | 11c, 11d | CSS y pulido (145 pruebas; prueba de C2 ampliada) |
-| 12 | 12 | todas | Integración + README |
+| 12 | 12 ✅ | todas | Integración con el servidor real + README (1 prueba de integración; 146 en total) |
 
 ---
 

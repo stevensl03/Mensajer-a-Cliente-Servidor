@@ -49,8 +49,15 @@ public final class InformesViewModel {
     static final String FECHAS_INVERTIDAS = "La fecha «Desde» es posterior a «Hasta».";
     private static final DateTimeFormatter HORA = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss");
 
-    /** Una columna de la tabla: título y cómo se lee de la fila. */
-    public record Columna(String titulo, Function<Map<String, Object>, String> valor) {
+    /**
+     * Una columna de la tabla: título, cómo se lee de la fila y ancho preferido
+     * (la última columna ocupa el resto).
+     */
+    public record Columna(String titulo, Function<Map<String, Object>, String> valor, double ancho) {
+
+        public Columna(String titulo, Function<Map<String, Object>, String> valor) {
+            this(titulo, valor, 130);
+        }
     }
 
     private final IFachadaCliente fachada;
@@ -207,10 +214,11 @@ public final class InformesViewModel {
                     new Columna("Hora", f -> hora(f.get("fecha"))), columna("Tipo", "tipo"), columna("Canal", "canal"),
                     columna("Remitente", "remitente"),
                     new Columna("Destino", f -> f.get("destinatario") == null ? "todos" : texto(f.get("destinatario"))),
-                    new Columna("Hash", f -> abreviar(texto(f.get("hash")))));
+                    new Columna("Hash", f -> abreviar(texto(f.get("hash"))), 160));
             case LOGS -> List.of(
-                    new Columna("Hora", f -> hora(f.get("fecha"))), columna("Tipo", "tipo"), columna("Usuario", "usuario"),
-                    columna("IP", "ip"), columna("Descripción", "descripcion"));
+                    new Columna("Hora", f -> hora(f.get("fecha"))), new Columna("Tipo", f -> texto(f.get("tipo")), 120),
+                    new Columna("Usuario", f -> texto(f.get("usuario")), 100), new Columna("IP", f -> texto(f.get("ip")), 120),
+                    new Columna("Descripción", f -> texto(f.get("descripcion")), 420));
         };
     }
 

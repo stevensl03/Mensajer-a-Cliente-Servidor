@@ -91,8 +91,8 @@
                 <Button text="Actualizar" onAction="#onActualizar">
                     <tooltip><Tooltip text="Volver a pedir este informe al servidor"/></tooltip>
                 </Button>
-                <Button text="{ } Ver JSON" onAction="#onVerJson">
-                    <tooltip><Tooltip text="Ver la respuesta del servidor tal como llegó (Esc cierra)"/></tooltip>
+                <Button text="{ } Ver _JSON" onAction="#onVerJson">
+                    <tooltip><Tooltip text="Ver la respuesta del servidor tal como llegó (Alt+J; Esc cierra)"/></tooltip>
                 </Button>
             </HBox>
             <TableView fx:id="tblDatos" VBox.vgrow="ALWAYS"/>

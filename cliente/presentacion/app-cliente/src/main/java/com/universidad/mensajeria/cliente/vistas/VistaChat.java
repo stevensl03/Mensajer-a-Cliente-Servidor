@@ -116,9 +116,21 @@ public final class VistaChat {
         sinUsuarios.textProperty().bind(Bindings.when(Bindings.isEmpty(vm.usuarios()))
                 .then("Cargando usuarios…").otherwise("Ningún usuario coincide con la búsqueda"));
         lstUsuarios.setPlaceholder(sinUsuarios);
+        // Teclado: Esc limpia la búsqueda, ↓ pasa a la lista y Enter abre el privado.
         txtBuscar.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ESCAPE) {
                 txtBuscar.clear();
+            } else if (e.getCode() == KeyCode.DOWN && !lstUsuarios.getItems().isEmpty()) {
+                lstUsuarios.requestFocus();
+                lstUsuarios.getSelectionModel().selectFirst();
+                e.consume();
+            }
+        });
+        lstUsuarios.setOnKeyPressed(e -> {
+            EstadoUsuarioDTO u = lstUsuarios.getSelectionModel().getSelectedItem();
+            if (e.getCode() == KeyCode.ENTER && u != null) {
+                onAbrirPrivado(u);
+                e.consume();
             }
         });
         lstUsuarios.setCellFactory(l -> new CeldaUsuario());
@@ -202,6 +214,7 @@ public final class VistaChat {
             Tab tab = crearTab(codigo);
             mostrar(tab);
             tabs.getSelectionModel().select(tab);
+            txtMensaje.requestFocus();
         }
     }
 
@@ -373,7 +386,9 @@ public final class VistaChat {
             }
             var fila = new HBox(burbuja);
             fila.setAlignment(propio ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-            fila.prefWidthProperty().bind(getListView().widthProperty().subtract(28));
+            // Margen para la barra vertical y el relleno de la celda: sin él aparece una barra horizontal.
+            fila.prefWidthProperty().bind(getListView().widthProperty().subtract(44));
+            fila.setMinWidth(0);
             setGraphic(fila);
         }
     }

@@ -64,6 +64,18 @@ El mockup C3 dice «columnas según el informe (las mismas que en el servidor, S
 listaba otras columnas para `MENSAJES` (texto, caracteres, palabras…). **Corregido** a las de S3:
 Hora, Tipo, Canal, Remitente, Destino (`todos` si es FORO) y Hash abreviado.
 
+### R-28 · **[nuevo, fase 12]** `wtype` no llega a las ventanas de JavaFX
+
+JavaFX 21 no tiene backend Wayland y corre sobre XWayland. El teclado virtual de Wayland (`wtype`) llegaba
+desordenado («20201001» → «1121121234567») o no llegaba. **No es un defecto de la app** (con el teclado real funciona);
+afecta solo a la automatización. El recorrido de la fase 12 se hizo dentro de la JVM (`planCliente.md` §8.1).
+
+### R-29 · **[nuevo, fase 12, corregido]** Columnas de C3 aplastadas al cambiar de informe
+
+Reconstruir las columnas una a una sobre una tabla ya dibujada hacía que la política de redimensionado diera casi
+todo el ancho a la primera. Corregido con `getColumns().setAll(...)` y anchos preferidos; la prueba de FXML reproduce
+la secuencia real y falla sin el arreglo.
+
 ---
 
 ## 1. Qué se revisó

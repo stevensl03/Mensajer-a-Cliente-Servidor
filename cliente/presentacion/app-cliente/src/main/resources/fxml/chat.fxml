@@ -30,11 +30,11 @@
                 <Label fx:id="lblPrograma" styleClass="cabecera-programa"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Informes" onAction="#onInformes" styleClass="boton-cabecera">
-                <tooltip><Tooltip text="Ver los informes del servidor en otra ventana"/></tooltip>
+            <Button text="_Informes" onAction="#onInformes" styleClass="boton-cabecera">
+                <tooltip><Tooltip text="Ver los informes del servidor en otra ventana (Alt+I)"/></tooltip>
             </Button>
-            <Button text="Salir" onAction="#onSalir" styleClass="boton-peligro">
-                <tooltip><Tooltip text="Cerrar la sesión y volver al inicio"/></tooltip>
+            <Button text="_Salir" onAction="#onSalir" styleClass="boton-peligro">
+                <tooltip><Tooltip text="Cerrar la sesión y volver al inicio (Alt+S)"/></tooltip>
             </Button>
         </HBox>
     </top>
@@ -47,7 +47,7 @@
             <Label fx:id="lblConectados" styleClass="titulo-seccion"/>
             <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código (Ctrl+F)"/>
             <ListView fx:id="lstUsuarios" VBox.vgrow="ALWAYS" styleClass="lista-usuarios"/>
-            <Label text="Doble clic: abrir conversación privada" styleClass="texto-suave"/>
+            <Label text="Doble clic o Enter: abrir conversación privada" styleClass="texto-suave" wrapText="true"/>
         </VBox>
     </left>
 
@@ -67,8 +67,8 @@
                 </padding>
                 <TextField fx:id="txtMensaje" onAction="#onEnviar" HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblEnviando" text="enviando…" styleClass="texto-suave"/>
-                <Button fx:id="btnImagen" text="Imagen" onAction="#onAdjuntarImagen">
-                    <tooltip><Tooltip text="Enviar una imagen png, jpg, jpeg, gif o bmp de hasta 5 MB"/></tooltip>
+                <Button fx:id="btnImagen" text="I_magen" onAction="#onAdjuntarImagen">
+                    <tooltip><Tooltip text="Enviar una imagen png, jpg, jpeg, gif o bmp de hasta 5 MB (Alt+M)"/></tooltip>
                 </Button>
                 <Button fx:id="btnEnviar" text="Enviar" onAction="#onEnviar" styleClass="boton-primario"/>
             </HBox>

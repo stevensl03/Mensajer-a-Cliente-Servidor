@@ -165,6 +165,13 @@ class FabricaVistasFxmlTest {
                 .registrar(VistaInformes.class, c -> new VistaInformes(vm));
 
         Parent raiz = enFx(() -> fabrica.crear(TipoVista.INFORMES));
+        // Como en la app: la tabla se dibuja primero con las columnas de «Usuarios registrados».
+        enFx(() -> {
+            new javafx.scene.Scene(raiz, 1000, 680);
+            raiz.applyCss();
+            raiz.layout();
+            return null;
+        });
 
         var tabla = (TableView<?>) raiz.lookup("#tblDatos");
         var filtros = raiz.lookup("#filtros");
@@ -183,6 +190,16 @@ class FabricaVistasFxmlTest {
         assertTrue(filtros.isVisible());
         assertEquals(List.of("Hora", "Tipo", "Usuario", "IP", "Descripción"),
                 tabla.getColumns().stream().map(TableColumnBase::getText).toList());
+        // Regresión (fase 12): tras reconstruir las columnas sobre una tabla ya dibujada, «Hora» se quedaba con casi todo el ancho.
+        enFx(() -> {
+            raiz.applyCss();
+            raiz.layout();
+            return null;
+        });
+        double ancho = tabla.getWidth();
+        assertTrue(tabla.getColumns().stream().allMatch(c -> c.getWidth() >= 60), "ninguna columna aplastada");
+        assertTrue(tabla.getColumns().get(0).getWidth() < ancho * 0.4,
+                "Hora no debe ocupar casi todo el ancho: " + tabla.getColumns().get(0).getWidth() + " de " + ancho);
         assertEquals("Mensajería Académica — Informes del servidor", fabrica.titulo(TipoVista.INFORMES));
     }
 

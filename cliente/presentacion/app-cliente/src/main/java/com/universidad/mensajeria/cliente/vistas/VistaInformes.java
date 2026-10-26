@@ -20,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
 
@@ -183,12 +184,21 @@ public final class VistaInformes {
         filtros.setManaged(logs);
     }
 
+    /**
+     * Reemplaza las columnas de una sola vez y con ancho explícito: al quitarlas
+     * y agregarlas una a una sobre una tabla ya dibujada, la política de
+     * redimensionado repartía el ancho en cada paso y la primera se quedaba con
+     * casi todo (visto en la prueba de la fase 12).
+     */
     private void mostrarColumnas(TipoInforme t) {
-        tblDatos.getColumns().clear();
+        var nuevas = new ArrayList<TableColumn<Map<String, Object>, ?>>();
         for (InformesViewModel.Columna c : vm.columnas(t)) {
             var columna = new TableColumn<Map<String, Object>, String>(c.titulo());
             columna.setCellValueFactory(f -> new ReadOnlyStringWrapper(c.valor().apply(f.getValue())));
-            tblDatos.getColumns().add(columna);
+            columna.setPrefWidth(c.ancho());
+            columna.setMinWidth(60);
+            nuevas.add(columna);
         }
+        tblDatos.getColumns().setAll(nuevas);
     }
 }
