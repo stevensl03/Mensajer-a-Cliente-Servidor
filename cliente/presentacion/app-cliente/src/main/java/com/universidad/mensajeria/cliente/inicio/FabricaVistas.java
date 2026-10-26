@@ -72,7 +72,12 @@ public final class FabricaVistas {
         try {
             return loader.load();
         } catch (IOException e) {
-            throw new UncheckedIOException("No se pudo cargar " + t.fxml() + ": " + e.getMessage(), e);
+            // FXMLLoader envuelve la causa real (p. ej. un controlador sin registrar) sin repetir su mensaje.
+            Throwable raiz = e;
+            while (raiz.getCause() != null) {
+                raiz = raiz.getCause();
+            }
+            throw new UncheckedIOException("No se pudo cargar " + t.fxml() + ": " + raiz.getMessage(), e);
         }
     }
 

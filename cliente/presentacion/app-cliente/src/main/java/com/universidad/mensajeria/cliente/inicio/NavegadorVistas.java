@@ -41,6 +41,8 @@ public final class NavegadorVistas {
         }
         stage.setScene(escena(raiz, t));
         stage.setTitle(fabrica.titulo(t));
+        // C1 tiene tamaño fijo (mockup); los gestores de ventanas en mosaico suelen dejarla flotante.
+        stage.setResizable(t != TipoVista.LOGIN);
         stage.setMinWidth(t == TipoVista.LOGIN ? t.ancho() : 800);
         stage.setMinHeight(t == TipoVista.LOGIN ? t.alto() : 560);
         stage.centerOnScreen();

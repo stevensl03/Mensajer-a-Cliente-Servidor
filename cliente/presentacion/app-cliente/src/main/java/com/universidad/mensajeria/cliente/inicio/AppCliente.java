@@ -15,6 +15,8 @@ import com.universidad.mensajeria.cliente.servicios.informes.ServicioInformes;
 import com.universidad.mensajeria.cliente.servicios.usuarios.ServicioUsuarios;
 import com.universidad.mensajeria.cliente.utilerias.ConfiguracionCliente;
 import com.universidad.mensajeria.cliente.utilerias.SerializadorJSON;
+import com.universidad.mensajeria.cliente.viewmodels.LoginViewModel;
+import com.universidad.mensajeria.cliente.vistas.VistaLogin;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.control.Alert;
@@ -24,6 +26,8 @@ import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
 import java.time.Duration;
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
@@ -65,7 +69,7 @@ public final class AppCliente extends Application {
         fondo = Executors.newVirtualThreadPerTaskExecutor();
         var navegador = new AtomicReference<NavegadorVistas>();
         var fabrica = new FabricaVistas(fachada, Platform::runLater, fondo, cfg.host() + ":" + cfg.puerto(),
-                t -> navegador.get().ir(t));
+                t -> navegar(navegador.get(), t));
         registrarVistas(fabrica);
         navegador.set(new NavegadorVistas(stage, fabrica));
         try {
@@ -117,7 +121,19 @@ public final class AppCliente extends Application {
 
     /** Registra el controlador de cada pantalla con su ViewModel (fases 11b–11d). */
     private static void registrarVistas(FabricaVistas fabrica) {
-        // Las pantallas C1–C3 se registran aquí a medida que se construyen.
+        List<String> protocolos = Arrays.stream(TipoProtocolo.values()).map(Enum::name).toList();
+        fabrica.registrar(VistaLogin.class, c -> new VistaLogin(new LoginViewModel(c.fachada(), c.hiloUI(), c.fondo(),
+                c.servidorInicial(), protocolos, () -> c.navegar().accept(TipoVista.CHAT))));
+    }
+
+    /** Una pantalla que no se puede abrir se informa en un diálogo, no solo en el log. */
+    private static void navegar(NavegadorVistas navegador, TipoVista t) {
+        try {
+            navegador.ir(t);
+        } catch (RuntimeException e) {
+            LOG.error("No se pudo abrir la pantalla {}", t, e);
+            error("No se pudo abrir la pantalla", e.getMessage());
+        }
     }
 
     private static void error(String titulo, String detalle) {

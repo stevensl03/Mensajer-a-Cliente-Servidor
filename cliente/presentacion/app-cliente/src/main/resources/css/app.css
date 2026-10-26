@@ -73,3 +73,19 @@
     -fx-padding: 8 10;
     -fx-wrap-text: true;
 }
+
+/* C1 · Inicio de sesión */
+.login-icono {
+    -fx-fill: -color-primario;
+}
+
+.login-titulo {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-titulo;
+}
+
+.login-etiqueta {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-titulo;
+}

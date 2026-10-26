@@ -599,6 +599,9 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **11a** · `TipoVista` lleva su FXML y su tamaño inicial; `FabricaVistas.titulo(t)` da el título de cada ventana (C2 con el nombre del usuario). INFORMES se abre en una ventana secundaria, que se cierra al volver a LOGIN.
 - **11a** · `AppCliente.ensamblar(cfg)` es de paquete (no privado) para probar la pila completa sin JavaFX; `fondo` = hilos virtuales; `stop()` llama siempre a `fachada.logout()`.
 - **11a** · Verificado con `javafx:run` en este equipo (Wayland + JDK 21 + JavaFX 21.0.13): arranca, carga `config/cliente.properties` y muestra el error esperado hasta que exista C1.
+- **11b** · `LoginViewModel` recibe la lista de protocolos (nombres de `TipoProtocolo`) desde `AppCliente`: el ViewModel no puede importar `comunicacion`. El texto de `CUPO_LLENO` no lleva N/N (R-16) y un `host:puerto` mal escrito se rechaza sin tocar la red.
+- **11b** · El ícono 💬 se dibuja con un `SVGPath` (la fuente de emoji no está disponible en este equipo, R-70). El formulario tiene ancho fijo y C1 no es redimensionable (en Hyprland queda flotante a 420×560).
+- **11b** · `FabricaVistasFxmlTest` carga el FXML real con su controlador (se omite sin entorno gráfico). Detectó que FXMLLoader oculta la causa al fallar: `FabricaVistas` ahora informa la causa raíz.
 
 ---
 
@@ -631,7 +634,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 5 | 10b ✅ | 9c, 10a | Servicios (26 pruebas; 100 en total) |
 | 6 | 10c ✅ | 10b | Fachada + observadores (13 pruebas; 113 en total) |
 | 7 | 11a ✅ | 10c | AppCliente + navegación (1 prueba de pila completa; 114 en total) |
-| 8 | 11b | 11a | C1 |
+| 8 | 11b ✅ | 11a | C1 (9 pruebas; 123 en total) |
 | 9 | 11c | 11b | C2 |
 | 10 | 11d | 11b | C3 |
 | 11 | 11e | 11c, 11d | CSS y pulido |
