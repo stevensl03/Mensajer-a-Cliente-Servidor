@@ -597,7 +597,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 |---|---|---|---|
 | 0 | Documentación ✅ | aprobación de D-03…D-14 | `cliente_clases_componentes.md` + `.drawio` actualizados |
 | 1 | 9a ✅ | 0 | POM padre + utilerías + configuración (13 pruebas en verde) |
-| 2 | 9b | 9a | TCP + tramas + reconexión |
+| 2 | 9b ✅ | 9a | TCP + tramas + reconexión (20 pruebas; 33 en total) |
 | 3 | 9c | 9b | Protocolo JSON + push |
 | 4 | 10a | 9a | H2 + repositorios + esquema |
 | 5 | 10b | 9c, 10a | Servicios |
