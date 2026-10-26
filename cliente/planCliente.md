@@ -35,6 +35,15 @@ Cada una, una vez aprobada, se refleja **primero** en `cliente_clases_componente
 
 `logout()` se mantiene `void` (catálogo) con espera acotada (R-14); no es una desviación.
 
+Surgidas al implementar la fase 10b (aplicadas; pendientes de reflejar en `docs/`):
+
+| ID | Decisión | Motivo |
+|---|---|---|
+| D-15 | `IServicioUsuarios.login(codigo, clave, puerto)` | `SESION.PUERTO` es obligatorio y la respuesta de LOGIN solo trae `ipServidor`; la fachada conoce el puerto desde `conectar` |
+| D-16 | `ExcepcionServidor(codigo, mensaje)` en `utilerias-cliente`, con `exigirExito(r)` | La UI necesita el `CodigoError` para elegir el texto (C1, envío, informes); es transversal porque la lanzan los servicios y la ve la presentación |
+| D-17 | `IServicioChat.sincronizar(conv) : CompletableFuture<List<MensajeDTO>>` (devuelve solo los nuevos) y `cerrarSesion()` | Concreta D-11 sin que un servicio llame a los observadores; tras el logout no se escribe en una base cerrada |
+| D-18 | `CacheMensajesSesion.cargar(conv, lista)`, `contiene(conv)` y `limpiar()`; `agregar` solo añade a conversaciones cargadas | Un mensaje suelto en la caché ocultaría el historial de H2 |
+
 ---
 
 ## 1. Objetivo y alcance
@@ -581,6 +590,8 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **10a** · `RepositorioMensajesH2.guardar` usa `INSERT` e ignora la clave duplicada (SQLState `23505`) en lugar de `MERGE … KEY(ID)`: así conserva el primer `SESION_ID` y `PROPIO` (R-54) y es atómico si push e `HISTORIAL` llegan a la vez. Los adjuntos sí usan `MERGE … KEY(MENSAJE_ID, ETAPA)`. Pendiente de reflejar en cliente §8.
 - **10a** · `IRepositorioMensajesLocal` expone `FORO` y `claveConversacion(a, b)` / `claveConversacion(m)` como miembros estáticos (como el servidor), para que los servicios calculen la clave `menor|mayor`.
 - **10a** · `ProveedorConexionH2` mantiene una conexión de guarda mientras la base está abierta; cada operación pide la suya. El esquema se ejecuta con `RUNSCRIPT FROM 'classpath:/schema.sql'`. Un adjunto sin su mensaje lanza `IllegalArgumentException` (R-55); los demás errores SQL, `IllegalStateException`.
+- **10b** · `ServicioUsuarios.login` abre H2 con `thenApplyAsync` (fuera del hilo lector, R-39). Si la base local no abre, envía LOGOUT para liberar el cupo del servidor y falla con `IllegalStateException`.
+- **10b** · `ServicioChat` valida el contenido con las reglas de `ValidadorPeticiones` del servidor (R-50) antes de enviar; nada inválido llega a la red. El ORIGINAL de una imagen enviada se guarda con la respuesta ENCOLADO o con el push, el que llegue último (R-48), y se descarta si la sesión se cerró.
 
 ---
 
@@ -610,7 +621,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 2 | 9b ✅ | 9a | TCP + tramas + reconexión (20 pruebas; 33 en total) |
 | 3 | 9c ✅ | 9b | Protocolo JSON + push (17 pruebas; 52 en total) |
 | 4 | 10a ✅ | 9a | H2 + repositorios + esquema (22 pruebas; 74 en total) |
-| 5 | 10b | 9c, 10a | Servicios |
+| 5 | 10b ✅ | 9c, 10a | Servicios (26 pruebas; 100 en total) |
 | 6 | 10c | 10b | Fachada + observadores |
 | 7 | 11a | 10c | AppCliente + navegación |
 | 8 | 11b | 11a | C1 |
