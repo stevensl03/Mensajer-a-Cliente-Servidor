@@ -89,9 +89,10 @@ public final class ServidorApp {
 
     /**
      * Pasos 2 a 15 de §6.1. Los recursos que hay que cerrar al apagar (pool de
-     * BD y Redis) quedan registrados en {@link #CIERRES}.
+     * BD y Redis) quedan registrados en {@link #CIERRES}. Visible en el paquete
+     * para que la prueba de punta a punta ensamble exactamente lo mismo que {@code main}.
      */
-    private static IFachadaServidor ensamblar(ConfiguracionServidor cfg, ISerializador json) {
+    static IFachadaServidor ensamblar(ConfiguracionServidor cfg, ISerializador json) {
         IGeneradorHash hash = new GeneradorHashSHA256();
 
         IDialectoSQL dialecto = switch (cfg.bd().getProperty("bd.motor").trim().toUpperCase(Locale.ROOT)) {
