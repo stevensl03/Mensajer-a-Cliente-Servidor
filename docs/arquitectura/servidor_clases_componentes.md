@@ -59,6 +59,9 @@
 - Hoy solo **TCP**; el cambio de protocolo debe ser sencillo y quedar dentro de `ProtocoloComunicacion`.
 - La BD es MySQL, pero el código debe funcionar también con PostgreSQL.
 - `Servicios` se divide en dos subcomponentes (texto e imágenes) para respetar la responsabilidad única.
+- Los mensajes privados solo los ven sus participantes en el chat (`HISTORIAL`, `MENSAJE_NUEVO`, `OBTENER_IMAGEN`), pero **cualquier cliente puede verlos en los informes** (`INFORME MENSAJES`), que incluyen todos los mensajes con su detalle.
+- Los DTO pueden exponer rutas internas del servidor (`rutaArchivo` de las imágenes): se acepta por ser un proyecto académico.
+- El ADMIN **puede iniciar sesión desde un cliente**; en ese caso esa sesión ocupa cupo como cualquier otra. Desde las vistas del servidor sigue sin ocuparlo.
 
 ## 2. Estructura del diagrama original (obligatoria)
 
