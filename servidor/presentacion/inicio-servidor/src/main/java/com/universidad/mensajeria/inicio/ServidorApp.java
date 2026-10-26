@@ -67,8 +67,9 @@ public final class ServidorApp {
             ConfiguracionServidor cfg = ConfiguracionServidor.cargar(
                     Path.of("config/servidor.properties"), Path.of("config/bd.properties"));
             tipo = tipoVista(args, cfg.vista());
-            fachada = ensamblar(cfg);
-            vista = FabricaVistas.crear(tipo, fachada);
+            ISerializador json = new SerializadorJSON();
+            fachada = ensamblar(cfg, json);
+            vista = FabricaVistas.crear(tipo, fachada, json);
             fachada.iniciarServidor();
         } catch (RuntimeException e) {
             LOG.error("El servidor no pudo arrancar: {} (causa: {})", primeraLinea(e), primeraLinea(causaRaiz(e)));
@@ -90,9 +91,8 @@ public final class ServidorApp {
      * Pasos 2 a 15 de §6.1. Los recursos que hay que cerrar al apagar (pool de
      * BD y Redis) quedan registrados en {@link #CIERRES}.
      */
-    private static IFachadaServidor ensamblar(ConfiguracionServidor cfg) {
+    private static IFachadaServidor ensamblar(ConfiguracionServidor cfg, ISerializador json) {
         IGeneradorHash hash = new GeneradorHashSHA256();
-        ISerializador json = new SerializadorJSON();
 
         IDialectoSQL dialecto = switch (cfg.bd().getProperty("bd.motor").trim().toUpperCase(Locale.ROOT)) {
             case "MYSQL" -> new DialectoMySQL();
