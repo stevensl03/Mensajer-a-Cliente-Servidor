@@ -1,0 +1,75 @@
+/*
+ * Estilo común del cliente (mockups_cliente.md, reglas comunes). Base de la
+ * fase 11a; cada pantalla agrega sus clases y la fase 11e lo pule.
+ */
+.root {
+    -color-fondo: #FAFAFA;
+    -color-titulo: #37474F;
+    -color-primario: #1565C0;
+    -color-primario-hover: #0D47A1;
+    -color-peligro: #C62828;
+    -color-peligro-fondo: #FFEBEE;
+    -color-propio: #E3F2FD;
+    -color-borde: #CFD8DC;
+    -color-texto-suave: #607D8B;
+    -color-conectado: #2E7D32;
+    -color-admin: #F9A825;
+    -color-desconectado: #9E9E9E;
+
+    -fx-background-color: -color-fondo;
+    -fx-font-family: "System";
+    -fx-font-size: 13px;
+}
+
+/* Barra de título (cabeceras de C2 y C3). */
+.barra-titulo {
+    -fx-background-color: -color-titulo;
+    -fx-padding: 10 16;
+}
+
+.barra-titulo .label {
+    -fx-text-fill: white;
+}
+
+.texto-suave {
+    -fx-text-fill: -color-texto-suave;
+}
+
+/* Botones */
+.boton-primario {
+    -fx-background-color: -color-primario;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-padding: 6 16;
+    -fx-cursor: hand;
+}
+
+.boton-primario:hover {
+    -fx-background-color: -color-primario-hover;
+}
+
+.boton-primario:disabled {
+    -fx-opacity: 0.5;
+}
+
+.boton-peligro {
+    -fx-background-color: -color-peligro-fondo;
+    -fx-text-fill: -color-peligro;
+    -fx-border-color: -color-peligro;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 5 14;
+    -fx-cursor: hand;
+}
+
+/* Área de error (C1) */
+.error {
+    -fx-background-color: -color-peligro-fondo;
+    -fx-text-fill: -color-peligro;
+    -fx-border-color: -color-peligro;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8 10;
+    -fx-wrap-text: true;
+}

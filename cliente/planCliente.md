@@ -595,6 +595,10 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **10c** · `IServicioChat.mensajesGuardados()` (D-12): la fachada no puede ver el repositorio, así que el conteo pasa por el servicio de chat.
 - **10c** · `FachadaCliente` termina la sesión una sola vez (R-49): `logout()` no avisa; `SESION_CERRADA` o la caída avisan un único `onDesconexion`, después de cerrar lo local en otro hilo (el LOGOUT de cortesía no debe bloquear al hilo lector que entrega la desconexión). `logout()` sin sesión cierra solo la conexión, para que `AppCliente.stop()` pueda llamarlo siempre.
 - **10c** · Un observador que falla no impide avisar a los demás; el primer error se relanza para que `DespachadorEventos` lo registre (la fachada no tiene SLF4J en la matriz).
+- **11a** · `FabricaVistas` lleva un registro `registrar(Clase, Contexto → controlador)`; cada pantalla (11b–11d) se registra en `AppCliente.registrarVistas` sin tocar la fábrica. `Contexto` = fachada + `hiloUI` + `fondo` (D-10) + `host:puerto` inicial + `navegar`. Una pantalla aún no construida muestra un error claro.
+- **11a** · `TipoVista` lleva su FXML y su tamaño inicial; `FabricaVistas.titulo(t)` da el título de cada ventana (C2 con el nombre del usuario). INFORMES se abre en una ventana secundaria, que se cierra al volver a LOGIN.
+- **11a** · `AppCliente.ensamblar(cfg)` es de paquete (no privado) para probar la pila completa sin JavaFX; `fondo` = hilos virtuales; `stop()` llama siempre a `fachada.logout()`.
+- **11a** · Verificado con `javafx:run` en este equipo (Wayland + JDK 21 + JavaFX 21.0.13): arranca, carga `config/cliente.properties` y muestra el error esperado hasta que exista C1.
 
 ---
 
@@ -626,7 +630,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 4 | 10a ✅ | 9a | H2 + repositorios + esquema (22 pruebas; 74 en total) |
 | 5 | 10b ✅ | 9c, 10a | Servicios (26 pruebas; 100 en total) |
 | 6 | 10c ✅ | 10b | Fachada + observadores (13 pruebas; 113 en total) |
-| 7 | 11a | 10c | AppCliente + navegación |
+| 7 | 11a ✅ | 10c | AppCliente + navegación (1 prueba de pila completa; 114 en total) |
 | 8 | 11b | 11a | C1 |
 | 9 | 11c | 11b | C2 |
 | 10 | 11d | 11b | C3 |
