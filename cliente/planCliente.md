@@ -6,6 +6,8 @@
 > `docs/arquitectura/servidor_clases_componentes.md` §7 (**«servidor §7»**).
 > **Stack: Java 21 + JavaFX 21 (LTS) + FXML + MVVM + Maven multimódulo + H2.**
 > Estado: **en ejecución**. D-03…D-14 aprobadas por el usuario (25-oct-2026) con las recomendaciones de §0. Sesión 0 hecha.
+> Fases 9a–11c terminadas (137 pruebas). **Integrada** la actualización del servidor (fases 7c–8, `origin/develop` 9f19799):
+> el contrato §7 no cambió y no hubo que tocar el cliente (`warning.md` §0.2).
 > El servidor **no se modifica**. Los riesgos citados (R-xx) están en `cliente/warning.md`.
 
 ---
@@ -35,7 +37,7 @@ Cada una, una vez aprobada, se refleja **primero** en `cliente_clases_componente
 
 `logout()` se mantiene `void` (catálogo) con espera acotada (R-14); no es una desviación.
 
-Surgidas al implementar la fase 10b (aplicadas; pendientes de reflejar en `docs/`):
+Surgidas al implementar (aplicadas; pendientes de reflejar en `docs/arquitectura/cliente_clases_componentes.md` y su `.drawio`):
 
 | ID | Decisión | Motivo |
 |---|---|---|
@@ -43,6 +45,11 @@ Surgidas al implementar la fase 10b (aplicadas; pendientes de reflejar en `docs/
 | D-16 | `ExcepcionServidor(codigo, mensaje)` en `utilerias-cliente`, con `exigirExito(r)` | La UI necesita el `CodigoError` para elegir el texto (C1, envío, informes); es transversal porque la lanzan los servicios y la ve la presentación |
 | D-17 | `IServicioChat.sincronizar(conv) : CompletableFuture<List<MensajeDTO>>` (devuelve solo los nuevos) y `cerrarSesion()` | Concreta D-11 sin que un servicio llame a los observadores; tras el logout no se escribe en una base cerrada |
 | D-18 | `CacheMensajesSesion.cargar(conv, lista)`, `contiene(conv)` y `limpiar()`; `agregar` solo añade a conversaciones cargadas | Un mensaje suelto en la caché ocultaría el historial de H2 |
+| D-19 | `IFachadaCliente.getPuerto() : int` (fase 11c) | La barra de C2 muestra «TCP :{puerto}» y ningún ViewModel conocía el puerto |
+
+Otras adiciones menores al catálogo, también pendientes de `docs/` (detalle en §12.1): `DespachadorEventos.suscribir(o)`,
+`IRepositorioMensajesLocal.FORO` / `claveConversacion(...)`, `IServicioChat.mensajesGuardados()`, `TipoVista` con FXML
+y tamaño, `FabricaVistas.registrar(...)` / `titulo(t)` y los artefactos `…-cliente` de `comunicacion/` (R-25).
 
 ---
 
@@ -483,10 +490,12 @@ BorderPane
 └── bottom: HBox «Fuente: comando INFORME → JSON del servidor · {desde}-{hasta} de {total} registros» · ◀ Anterior · Siguiente ▶
 ```
 
-Columnas por informe (mockup S3): **Usuarios registrados** → código, nombres, apellidos, programa, rol;
-**Usuarios conectados** → código, nombre completo, sesiones; **Mensajes** → fecha, canal, remitente,
-destinatario, tipo, texto/archivo, caracteres, palabras, nº imágenes; **Logs** → hora, tipo
-(CUPO_LLENO ámbar, ERROR rojo), usuario, IP, descripción.
+Columnas por informe (las mismas que el servidor, mockup S3; corregido en la revisión 3, R-27):
+**Usuarios registrados** → Código, Nombres, Apellidos, Programa, Rol; **Usuarios conectados** → Código,
+Nombre, Cantidad de sesiones; **Mensajes** → Hora, Tipo, Canal, Remitente, Destino (`todos` si es FORO),
+Hash (abreviado); **Logs** → Hora, Tipo (CUPO_LLENO ámbar, ERROR rojo), Usuario, IP, Descripción.
+Las filas llegan como `Map<String,Object>` (R-19): cada columna lee su clave (`codigo`, `nombreCompleto`,
+`cantidadSesiones`, `fecha`, `remitente`, `destinatario`, `hash`, `tipo`, `usuario`, `ip`, `descripcion`…).
 
 ---
 
@@ -641,6 +650,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 7 | 11a ✅ | 10c | AppCliente + navegación (1 prueba de pila completa; 114 en total) |
 | 8 | 11b ✅ | 11a | C1 (9 pruebas; 123 en total) |
 | 9 | 11c ✅ | 11b | C2 (14 pruebas; 137 en total) |
+| — | Integración ✅ | 11c | Pull del servidor (fases 7c–8): contrato sin cambios, 316 pruebas del servidor y 137 del cliente en verde |
 | 10 | 11d | 11b | C3 |
 | 11 | 11e | 11c, 11d | CSS y pulido |
 | 12 | 12 | todas | Integración + README |

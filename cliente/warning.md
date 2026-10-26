@@ -5,6 +5,8 @@
 > **Revisión 1** (OpenCode, 25-oct-2026): primer análisis y prueba en vivo del protocolo.
 > **Revisión 2** (Claude, 25-oct-2026): contraste línea a línea con el código del servidor,
 > corrección de recomendaciones, versiones verificadas en Maven Central y hallazgos nuevos.
+> **Revisión 3** (Claude, 25-oct-2026): integración de la actualización del servidor (fases 7c–8 del
+> compañero, `origin/develop` 9f19799) tras terminar el cliente hasta la fase 11c. Ver §0.2.
 > **El código del servidor no se modificó en ninguna de las dos revisiones.**
 
 ---
@@ -35,6 +37,32 @@ catálogo**, y añade 14 hallazgos que no estaban (marcados con **[nuevo]**).
 | R-17 | Ampliar el esquema H2 (`ORDEN/HASH/TAMANO`) | **No hace falta**: la UI solo necesita `idMensaje` + `TipoFiltro.values()`. Se mantiene el esquema §8 |
 | Versiones | JavaFX 21.0.7, H2 2.3.232 | JavaFX **21.0.13** y H2 **2.5.252** (últimas estables, regla del plan) |
 | `ISerializador` | El plan cambiaba la firma a `convertir(JsonNode, Class<T>)` + `aArbol` sin avisarlo | La firma del catálogo del cliente es `convertir(JsonNode, TypeReference<T>)`; se respeta (R-20) |
+
+### 0.2 Revisión 3: integración del servidor actualizado (sin impacto en el contrato)
+
+Se trajeron 18 commits de `origin/develop` (fases 7c y 8 del servidor, arreglos y documentación) y se
+integraron en la rama del cliente sin conflictos. Resultado de la auditoría:
+
+| Cambio del servidor | Impacto en el cliente |
+|---|---|
+| `dto-records`, componentes, interfaces, los 8 manejadores, `ReceptorConexiones`, `ControlSesiones`, `config/` | **Ninguno**: sin cambios (diff vacío). El contrato §7 (comandos, eventos, códigos, tramas) es idéntico |
+| `ImagenVersionDTO.rutaArchivo` se guarda siempre con `/` | Ninguno: el cliente no usa `rutaArchivo` (D-07) |
+| `LogEventos`: un fallo de la BD al registrar la conexión ya no deja el LOGIN a medias | Positivo: menos `ERROR_INTERNO` posibles en C1 |
+| `IFachadaServidor.imagen`, `ILogEventos.suscribir`, `ISerializador.sangrar` y paneles Swing (S1–S3) | Ninguno: son internos del servidor y de su vista de escritorio; el cliente tiene su propio `ISerializador` |
+| Servidor §1.2: «el ADMIN puede iniciar sesión desde un cliente y ocupa cupo» | Confirma D-09 y R-42 |
+| Servidor §1.2: «cualquier cliente ve los privados en `INFORME MENSAJES`»; «los DTO pueden exponer `rutaArchivo`» | Confirma R-46 y R-82 (ya no son riesgos abiertos: están acordados) |
+| `docs/aceptacion_servidor.md` + `ServidorPuntaAPuntaTest` (MySQL 8.4 y PostgreSQL 17) | Confirma en el servidor real cada suposición del cliente: `CUPO_LLENO` y `LOGOUT` cierran el canal tras responder (R-31), `SESION_CERRADA` con `SERVIDOR_DETENIDO`, ADMIN por push, filtro `tipoEvento` de LOGS |
+| `mockups_servidor.md` S3: formato del detalle del mensaje | La C3 del cliente usa las **mismas columnas** que S3 (ver R-27) |
+
+**Verificación tras integrar:** servidor `mvn -q verify` con JDK 21 → **316 pruebas, 0 fallos** (antes 282).
+Cliente `mvn -q verify` → **137 pruebas, 0 fallos**, sin cambios de código. `dto-records` no cambió, así que
+el artefacto instalado en `~/.m2` sigue siendo válido.
+
+### R-27 · **[nuevo, revisión 3]** Columnas de C3 mal copiadas en el plan
+
+El mockup C3 dice «columnas según el informe (las mismas que en el servidor, S3)». `planCliente.md` §9.3
+listaba otras columnas para `MENSAJES` (texto, caracteres, palabras…). **Corregido** a las de S3:
+Hora, Tipo, Canal, Remitente, Destino (`todos` si es FORO) y Hash abreviado.
 
 ---
 
@@ -286,11 +314,11 @@ matriz pide «sin Jackson ni DTO». El módulo no necesita nada de `utilerias-cl
 | R-39 | El servidor cierra el canal si su cola de salida (256) se llena | `CanalTCP.enviar` | Leer rápido: el hilo lector no hace I/O de H2 pesado de forma bloqueante y prolongada |
 | R-40 | No hay reanudación de sesión | Apagado ordenado | Volver a C1; no reintentar credenciales automáticamente |
 | R-41 | Un usuario puede tener varias sesiones | Cupo global (§6.2) | `EstadoUsuarioDTO.sesiones` puede ser > 1 |
-| R-42 | `ADMIN01` puede iniciar sesión como cliente | `ControlSesiones` no lo impide | Por defecto se permite (D-09). El ADMIN normalmente responde desde la vista del servidor |
+| R-42 | `ADMIN01` puede iniciar sesión como cliente | `ControlSesiones` no lo impide; **acordado** en servidor §1.2 (revisión 3): esa sesión ocupa cupo | Se permite (D-09). El ADMIN normalmente responde desde la vista del servidor |
 | R-43 | `HISTORIAL` privado usa el **código del otro**, no la clave H2 `menor\|mayor` | `ManejadorHistorial` | La fachada recibe `FORO` o un código; H2 calcula su propia clave |
 | R-44 | `OBTENER_IMAGEN` de un privado ajeno da `NO_ENCONTRADO` | `ManejadorObtenerImagen` | Solo pedir imágenes de mensajes visibles |
 | R-45 | Filtros de `LOGS`: `usuario` es igualdad exacta; `desde`/`hasta` son `LocalDateTime` inclusivos | `FiltroLogs.acepta` | `DatePicker` → `T00:00:00` y `T23:59:59.999999999` |
-| R-46 | Los informes exponen **todos** los mensajes (incluidos privados ajenos) y logs | `GeneradorInformes` | Es por diseño («el cliente ve todos los informes»); advertirlo en el README |
+| R-46 | Los informes exponen **todos** los mensajes (incluidos privados ajenos) y logs | `GeneradorInformes`; **acordado** en servidor §1.2 (revisión 3) | Es por diseño; advertirlo en el README del cliente (fase 12) |
 | R-47 | `HISTORIAL` devuelve como máximo 200 por defecto | `LIMITE_POR_DEFECTO` | Aceptar 200 (parámetro `limite` opcional, como cadena) |
 | R-48 | **[nuevo]** `MENSAJE_NUEVO` puede llegar **antes** que la respuesta `ENCOLADO` | La respuesta se encola después de que `despachar` vuelve; un consumidor rápido puede adelantarse | Los bytes originales pendientes se asocian por `idMensaje` en ambos órdenes: si el mensaje ya está en H2 cuando llega la respuesta, el `ADJUNTO ORIGINAL` se guarda en ese momento |
 | R-49 | **[nuevo]** `SESION_CERRADA` y el cierre del socket producen **dos** avisos de desconexión | `FachadaServidor.cerrarSesion` envía el push y luego cierra el canal | `onDesconexion` idempotente: el primer motivo gana (`CERRADA_POR_ADMIN` / `SERVIDOR_DETENIDO`) |
@@ -349,7 +377,7 @@ matriz pide «sin Jackson ni DTO». El módulo no necesita nada de `utilerias-cl
 
 | ID | Hallazgo |
 |---|---|
-| R-90 | `README.md` raíz dice «Siguiente: Fase 5», pero el repositorio va por la fase 7b |
+| R-90 | `README.md` raíz decía «Siguiente: Fase 5». Tras la revisión 3 dice «Siguiente: Fase 9», pero el cliente ya va por la 11c: se actualiza en la fase 12 |
 | R-91 | Los docs citan `.claude/contexto.txt` y `.claude/skills/SKILL.md`, que no existen |
 | R-92 | El contrato §7 muestra fechas con 3 decimales; el servidor envía hasta 9 |
 | R-93 | `cliente/README.md` no describe módulos, build ni configuración |
@@ -382,6 +410,9 @@ matriz pide «sin Jackson ni DTO». El módulo no necesita nada de `utilerias-cl
 ---
 
 ## 11. Checklist antes de implementar
+
+> Todas las decisiones D-03…D-14 fueron aprobadas por el usuario y aplicadas; D-15…D-19 surgieron al
+> implementar (ver `planCliente.md` §0). Se dejan las casillas como registro histórico.
 
 - [x] Stack confirmado: **JavaFX 21**.
 - [x] Servidor verificado: 282 pruebas en verde con JDK 21; 8 comandos registrados.
