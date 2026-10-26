@@ -1,11 +1,7 @@
 # Cliente · Mensajería Académica Unillanos
 
 Cliente de escritorio en **Java 21 + JavaFX 21** (MVVM) con persistencia local en **H2**. Habla con el
-servidor por **TCP** usando el contrato de `docs/arquitectura/servidor_clases_componentes.md` §7.
-
-- Diseño: `docs/arquitectura/cliente_clases_componentes.md` y `docs/mockups/mockups_cliente.md`.
-- Plan, decisiones (D-03…D-19) y estado: `cliente/planCliente.md`.
-- Riesgos y auditorías: `cliente/warning.md`.
+servidor por **TCP** mediante tramas JSON.
 
 ## Requisitos
 

@@ -21,7 +21,6 @@ Sistema de mensajería **cliente/servidor** para la comunidad académica de la u
 - [8. Pruebas automáticas](#8-pruebas-automáticas)
 - [9. Configuración](#9-configuración)
 - [10. Problemas comunes](#10-problemas-comunes)
-- [11. Documentación](#11-documentación)
 - [Estado del proyecto](#estado-del-proyecto)
 
 ---
@@ -32,7 +31,7 @@ Sistema de mensajería **cliente/servidor** para la comunidad académica de la u
 |---|---|---|
 | **Servidor** | Java 21, TCP, HikariCP, Flyway, MySQL/PostgreSQL | Escucha conexiones en el puerto **TCP 5000**, autentica usuarios, procesa textos e imágenes, encola mensajes, persiste la información y genera informes. |
 | **Cliente** | Java 21 + JavaFX 21, H2 | Interfaz gráfica de escritorio: inicio de sesión, chat (foro y privados), envío de imágenes con filtros e informes. |
-| **Comunicación** | TCP + tramas JSON | El servidor y el cliente intercambian peticiones, respuestas y eventos por el contrato descrito en `docs/arquitectura/servidor_clases_componentes.md` §7. |
+| **Comunicación** | TCP + tramas JSON | El servidor y el cliente intercambian peticiones, respuestas y eventos mediante tramas JSON sobre TCP. |
 | **Persistencia** | MySQL/PostgreSQL (servidor), H2 (cliente) | El servidor guarda usuarios, mensajes, logs, imágenes y archivos; el cliente guarda una base H2 por usuario. |
 
 Flujo resumido:
@@ -74,7 +73,6 @@ Flujo resumido:
 │   ├── persistencia/          Persistencia local H2
 │   ├── servicios/             Servicios y fachada del cliente
 │   └── presentacion/          Aplicación JavaFX (FXML, ViewModels, CSS)
-└── docs/                      Arquitectura, mockups, plan y criterios de aceptación
 ```
 
 ---
@@ -513,8 +511,6 @@ mvn verify -Pintegracion -pl paquetes/persistencia -am \
 
 **¿Qué hace?** Activa el perfil `integracion` y ejecuta las pruebas que necesitan MySQL/PostgreSQL. Usa una base **solo para pruebas**: se borran sus filas antes de cada prueba.
 
-La relación entre requisitos y pruebas está en `docs/aceptacion_servidor.md`.
-
 ---
 
 ## 9. Configuración
@@ -572,22 +568,6 @@ La relación entre requisitos y pruebas está en `docs/aceptacion_servidor.md`.
 | La ventana JavaFX no se dibuja bien en Wayland | JavaFX 21 corre sobre XWayland | Prueba añadiendo `-Dprism.order=sw` a la ejecución. |
 | H2 bloquea la base de un usuario | Se abrió el mismo usuario dos veces | Añade `;AUTO_SERVER=TRUE` a `h2.url`. |
 | El cliente de otra máquina no conecta | Cortafuegos o host incorrecto | Abre el puerto `5000` y escribe la IP del servidor en el login. |
-
----
-
-## 11. Documentación
-
-| Documento | Contenido |
-|---|---|
-| `docs/plan_construccion.md` | Plan de construcción por fases. |
-| `docs/aceptacion_servidor.md` | Requisitos del servidor y pruebas que los demuestran. |
-| `docs/arquitectura/servidor_clases_componentes.md` | Arquitectura, dependencias, flujos y protocolo del servidor. |
-| `docs/arquitectura/cliente_clases_componentes.md` | Arquitectura del cliente JavaFX, H2 y catálogo de clases. |
-| `docs/arquitectura/modelo_relacional.md` | Tablas, DDL y uso de cada tabla. |
-| `docs/mockups/mockups_servidor.md` | Pantallas S1–S4 del servidor. |
-| `docs/mockups/mockups_cliente.md` | Pantallas C1–C3 del cliente. |
-| `cliente/planCliente.md` | Plan, decisiones y estado del cliente. |
-| `cliente/warning.md` | Riesgos y auditorías del cliente. |
 
 ---
 
