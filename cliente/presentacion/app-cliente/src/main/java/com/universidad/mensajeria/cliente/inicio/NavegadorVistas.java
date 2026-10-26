@@ -53,6 +53,8 @@ public final class NavegadorVistas {
         if (informes == null) {
             informes = new Stage();
             informes.initOwner(stage);
+            informes.setMinWidth(800);
+            informes.setMinHeight(520);
             informes.setOnHidden(e -> informes = null);
         }
         informes.setScene(escena(raiz, TipoVista.INFORMES));

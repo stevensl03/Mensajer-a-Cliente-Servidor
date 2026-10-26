@@ -154,6 +154,7 @@ public final class VistaInformes {
         ventana.setTitle("JSON · " + vm.tipoProperty().get());
         var escena = new Scene(texto, 640, 520);
         escena.getStylesheets().addAll(tblDatos.getScene().getStylesheets());
+        VistaChat.cerrarConEscape(escena, ventana);
         ventana.setScene(escena);
         ventana.show();
     }

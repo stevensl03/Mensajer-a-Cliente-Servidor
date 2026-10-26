@@ -23,6 +23,9 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -83,6 +86,8 @@ public final class VistaChat {
     @FXML
     private Button btnEnviar;
     @FXML
+    private Button btnImagen;
+    @FXML
     private Label lblError;
     @FXML
     private Circle punto;
@@ -106,6 +111,16 @@ public final class VistaChat {
 
         txtBuscar.textProperty().bindBidirectional(vm.filtroProperty());
         lstUsuarios.setItems(vm.usuariosVisibles());
+        var sinUsuarios = new Label();
+        sinUsuarios.getStyleClass().add("texto-suave");
+        sinUsuarios.textProperty().bind(Bindings.when(Bindings.isEmpty(vm.usuarios()))
+                .then("Cargando usuarios…").otherwise("Ningún usuario coincide con la búsqueda"));
+        lstUsuarios.setPlaceholder(sinUsuarios);
+        txtBuscar.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                txtBuscar.clear();
+            }
+        });
         lstUsuarios.setCellFactory(l -> new CeldaUsuario());
         lstUsuarios.setOnMouseClicked(e -> {
             EstadoUsuarioDTO u = lstUsuarios.getSelectionModel().getSelectedItem();
@@ -128,7 +143,10 @@ public final class VistaChat {
         tabs.getSelectionModel().selectedItemProperty().addListener((o, a, tab) -> actualizarAyuda());
         actualizarAyuda();
 
-        btnEnviar.disableProperty().bind(txtMensaje.textProperty().isEmpty());
+        // Sin conexión no se puede escribir ni enviar (el punto de la barra está en rojo).
+        txtMensaje.disableProperty().bind(vm.conectadoProperty().not());
+        btnEnviar.disableProperty().bind(txtMensaje.textProperty().isEmpty().or(vm.conectadoProperty().not()));
+        btnImagen.disableProperty().bind(vm.conectadoProperty().not());
         lblEnviando.visibleProperty().bind(vm.enviandoProperty());
         lblError.textProperty().bind(vm.errorProperty());
         lblError.visibleProperty().bind(vm.errorProperty().isNotEmpty());
@@ -138,6 +156,13 @@ public final class VistaChat {
         lblEstado.textProperty().bind(vm.estadoConexionProperty());
         lblResumen.textProperty().bind(vm.resumenSesionProperty());
 
+        // Ctrl+F (Cmd+F en macOS): buscar usuarios.
+        txtMensaje.sceneProperty().addListener((o, a, escena) -> {
+            if (escena != null) {
+                escena.getAccelerators().put(new KeyCodeCombination(KeyCode.F, KeyCombination.SHORTCUT_DOWN),
+                        txtBuscar::requestFocus);
+            }
+        });
         Platform.runLater(txtMensaje::requestFocus);
     }
 
@@ -208,6 +233,7 @@ public final class VistaChat {
         ventana.setTitle("Imagen " + Objects.requireNonNullElse(m.nombreArchivo(), "") + " · 5 filtros");
         var escena = new Scene(rejilla);
         escena.getStylesheets().addAll(txtMensaje.getScene().getStylesheets());
+        cerrarConEscape(escena, ventana);
         ventana.setScene(escena);
         ventana.show();
     }
@@ -226,6 +252,15 @@ public final class VistaChat {
      * Cada conversación privada tiene una sola pestaña, que se conserva al
      * cerrarla: si llega un mensaje nuevo, vuelve a mostrarse.
      */
+    /** Esc cierra las ventanas secundarias. */
+    static void cerrarConEscape(Scene escena, Stage ventana) {
+        escena.setOnKeyPressed(e -> {
+            if (e.getCode() == KeyCode.ESCAPE) {
+                ventana.close();
+            }
+        });
+    }
+
     private Tab crearTab(String codigo) {
         Tab existente = tabsPrivadas.get(codigo);
         if (existente != null) {
@@ -323,11 +358,17 @@ public final class VistaChat {
                 miniatura.setPreserveRatio(true);
                 var filtros = new Button("Ver 5 filtros");
                 filtros.setOnAction(e -> onVerFiltros(m));
-                burbuja.getChildren().addAll(miniatura, new Label(m.nombreArchivo()), filtros);
-                vm.imagen(m, TipoFiltro.ORIGINAL).thenAccept(img -> Platform.runLater(() -> {
-                    if (getItem() == m) {
-                        miniatura.setImage(img);
+                var estado = new Label("Cargando imagen…");
+                estado.getStyleClass().add("texto-suave");
+                burbuja.getChildren().addAll(miniatura, estado, new Label(m.nombreArchivo()), filtros);
+                vm.imagen(m, TipoFiltro.ORIGINAL).whenComplete((img, e) -> Platform.runLater(() -> {
+                    if (getItem() != m) {
+                        return;
                     }
+                    miniatura.setImage(img);
+                    estado.setText(e == null ? "" : "No se pudo cargar la imagen");
+                    estado.setManaged(e != null);
+                    estado.setVisible(e != null);
                 }));
             }
             var fila = new HBox(burbuja);

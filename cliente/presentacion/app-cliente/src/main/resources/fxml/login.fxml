@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -50,7 +51,9 @@
                 </VBox.margin>
             </Label>
             <HBox spacing="6">
-                <TextField fx:id="txtServidor" promptText="host : puerto" HBox.hgrow="ALWAYS"/>
+                <TextField fx:id="txtServidor" promptText="host : puerto" HBox.hgrow="ALWAYS">
+                    <tooltip><Tooltip text="Servidor al que te conectas, como host:puerto (valor inicial de cliente.properties)"/></tooltip>
+                </TextField>
                 <ComboBox fx:id="cmbProtocolo" prefWidth="84"/>
             </HBox>
         </VBox>

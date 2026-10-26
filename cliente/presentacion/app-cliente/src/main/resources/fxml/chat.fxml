@@ -7,6 +7,7 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -29,8 +30,12 @@
                 <Label fx:id="lblPrograma" styleClass="cabecera-programa"/>
             </VBox>
             <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Informes" onAction="#onInformes" styleClass="boton-cabecera"/>
-            <Button text="Salir" onAction="#onSalir" styleClass="boton-peligro"/>
+            <Button text="Informes" onAction="#onInformes" styleClass="boton-cabecera">
+                <tooltip><Tooltip text="Ver los informes del servidor en otra ventana"/></tooltip>
+            </Button>
+            <Button text="Salir" onAction="#onSalir" styleClass="boton-peligro">
+                <tooltip><Tooltip text="Cerrar la sesión y volver al inicio"/></tooltip>
+            </Button>
         </HBox>
     </top>
 
@@ -40,7 +45,7 @@
                 <Insets top="12" right="10" bottom="10" left="12"/>
             </padding>
             <Label fx:id="lblConectados" styleClass="titulo-seccion"/>
-            <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código"/>
+            <TextField fx:id="txtBuscar" promptText="Buscar por nombre o código (Ctrl+F)"/>
             <ListView fx:id="lstUsuarios" VBox.vgrow="ALWAYS" styleClass="lista-usuarios"/>
             <Label text="Doble clic: abrir conversación privada" styleClass="texto-suave"/>
         </VBox>
@@ -62,7 +67,9 @@
                 </padding>
                 <TextField fx:id="txtMensaje" onAction="#onEnviar" HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblEnviando" text="enviando…" styleClass="texto-suave"/>
-                <Button text="Imagen" onAction="#onAdjuntarImagen"/>
+                <Button fx:id="btnImagen" text="Imagen" onAction="#onAdjuntarImagen">
+                    <tooltip><Tooltip text="Enviar una imagen png, jpg, jpeg, gif o bmp de hasta 5 MB"/></tooltip>
+                </Button>
                 <Button fx:id="btnEnviar" text="Enviar" onAction="#onEnviar" styleClass="boton-primario"/>
             </HBox>
             <Label fx:id="lblError" styleClass="error" maxWidth="Infinity">

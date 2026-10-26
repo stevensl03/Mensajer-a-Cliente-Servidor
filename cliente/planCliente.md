@@ -620,6 +620,9 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **11d** · Respuestas viejas descartadas por número de solicitud (cambiar de pestaña o filtrar dos veces); al cambiar de informe la tabla se vacía al instante. Las tarjetas se calculan con los informes sin filtrar (`USUARIOS_CONECTADOS`, `MENSAJES`, `LOGS`) que se piden al abrir.
 - **11d** · «Ver JSON» y «Actualizar» se muestran en las 4 pestañas (el mockup C3 los pone junto a los filtros de Logs; S3 los ofrece para todos los informes). Los filtros siguen visibles solo en Logs. Las fechas inválidas («Desde» > «Hasta») no llegan al servidor.
 - **11d** · El ViewModel importa `InformeRecibido` (paquete `servicios.informes`) solo porque es el tipo que devuelve `IFachadaCliente.informe` (D-08), igual que un DTO; no usa ningún servicio.
+- **11e** · Sin conexión, C2 deshabilita el campo de escritura, «Enviar» e «Imagen». La lista de usuarios muestra «Cargando usuarios…» o «Ningún usuario coincide con la búsqueda»; la miniatura de una imagen muestra «Cargando imagen…» o «No se pudo cargar la imagen».
+- **11e** · Atajos: Enter envía (C1 y C2), Ctrl+F busca usuarios, Esc limpia la búsqueda y cierra los diálogos «5 filtros» y «Ver JSON». Ayudas emergentes en Informes, Salir, Imagen (formatos y 5 MB), Actualizar, Ver JSON y el campo Servidor de C1. C3 con tamaño mínimo 800×520.
+- **11e** · Revisado: sin advertencias de CSS al cargar las tres pantallas, sin excepciones al arrancar con `javafx:run`, todos los textos en español; contraste de `#607D8B` sobre blanco ≈ 4,6:1 (AA para texto normal).
 
 ---
 
@@ -656,7 +659,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 9 | 11c ✅ | 11b | C2 (14 pruebas; 137 en total) |
 | — | Integración ✅ | 11c | Pull del servidor (fases 7c–8): contrato sin cambios, 316 pruebas del servidor y 137 del cliente en verde |
 | 10 | 11d ✅ | 11b | C3 (9 pruebas; 145 en total) |
-| 11 | 11e | 11c, 11d | CSS y pulido |
+| 11 | 11e ✅ | 11c, 11d | CSS y pulido (145 pruebas; prueba de C2 ampliada) |
 | 12 | 12 | todas | Integración + README |
 
 ---

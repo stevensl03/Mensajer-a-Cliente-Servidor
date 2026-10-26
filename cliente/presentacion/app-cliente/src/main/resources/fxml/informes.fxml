@@ -9,6 +9,7 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -87,8 +88,12 @@
                 </HBox>
                 <Region HBox.hgrow="ALWAYS"/>
                 <Label fx:id="lblCargando" text="Cargando…" styleClass="texto-suave"/>
-                <Button text="Actualizar" onAction="#onActualizar"/>
-                <Button text="{ } Ver JSON" onAction="#onVerJson"/>
+                <Button text="Actualizar" onAction="#onActualizar">
+                    <tooltip><Tooltip text="Volver a pedir este informe al servidor"/></tooltip>
+                </Button>
+                <Button text="{ } Ver JSON" onAction="#onVerJson">
+                    <tooltip><Tooltip text="Ver la respuesta del servidor tal como llegó (Esc cierra)"/></tooltip>
+                </Button>
             </HBox>
             <TableView fx:id="tblDatos" VBox.vgrow="ALWAYS"/>
         </VBox>

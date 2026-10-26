@@ -128,6 +128,28 @@ class FabricaVistasFxmlTest {
 
         assertEquals(2, tabs.getTabs().size(), "un privado nuevo abre su pestaña");
         assertEquals("Luis Gómez", tabs.getTabs().get(1).getText());
+
+        var mensaje = (TextField) raiz.lookup("#txtMensaje");
+        var enviar = (Button) raiz.lookup("#btnEnviar");
+        var imagen = (Button) raiz.lookup("#btnImagen");
+        var usuarios = (ListView<?>) raiz.lookup("#lstUsuarios");
+        enFx(() -> {
+            mensaje.setText("hola");
+            ((TextField) raiz.lookup("#txtBuscar")).setText("zzz");
+            return null;
+        });
+        assertFalse(enviar.isDisabled());
+        assertEquals("Ningún usuario coincide con la búsqueda", ((Label) usuarios.getPlaceholder()).getText());
+
+        enFx(() -> {
+            vm.onDesconexion("SERVIDOR_DETENIDO");
+            return null;
+        });
+
+        assertTrue(mensaje.isDisabled(), "sin conexión no se escribe");
+        assertTrue(enviar.isDisabled());
+        assertTrue(imagen.isDisabled());
+        assertEquals("Desconectado: El servidor se detuvo.", ((Label) raiz.lookup("#lblEstado")).getText());
     }
 
     @Test
