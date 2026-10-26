@@ -1,0 +1,15 @@
+# Finales de línea iguales en Windows y Linux: el repositorio guarda LF y
+# git no reescribe los archivos según la configuración de cada máquina.
+* text=auto eol=lf
+
+# Scripts de Windows con CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binarios: nunca se convierten
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.bmp binary
+*.jar binary
