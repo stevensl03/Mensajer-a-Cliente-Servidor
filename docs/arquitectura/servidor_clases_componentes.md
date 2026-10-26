@@ -184,7 +184,7 @@ Reglas que se comprueban con `grep` en la revisión:
 12. `gestor = new GestorColasDeMensajes(cfg.colaCapacidad())`.
 13. `clienteServidor = FabricaClienteServidor.crear(json, cfg)`.
 14. `protocolo = FabricaProtocolos.crear(TipoProtocolo.valueOf(cfg.protocolo()), cfg)`. `ConfiguracionServidor.protocolo()` devuelve `String` porque `utilerias-varias` no puede depender de un componente.
-15. `fachada = new FachadaServidor(protocolo, clienteServidor, servicios, usuarios, gestor, mensajes, new FabricaMensajes(), log, conexiones, json, cfg)`. Por dentro crea `NotificadorObservadores`, `EnrutadorMensajes`, `ControlSesiones`, `GeneradorInformes`, `ProcesadorMensajes`, `FabricaManejadoresComando`, `DespachadorComandos` y `ReceptorConexiones`, todas del mismo paquete.
+15. `fachada = new FachadaServidor(protocolo, clienteServidor, servicios, usuarios, gestor, mensajes, new FabricaMensajes(), log, conexiones, json, cfg)`. Por dentro crea `NotificadorObservadores`, `EnrutadorMensajes`, `ControlSesiones`, `GeneradorInformes`, `ProcesadorMensajes`, `FabricaManejadoresComando`, `DespachadorComandos` y `ReceptorConexiones`, todas del mismo paquete, y llama a `log.suscribir(notificador::evento)` para que las vistas reciban cada evento (`onEvento`).
 16. `vista = FabricaVistas.crear(TipoVista.valueOf(cfg.vista()), fachada)`.
 17. `fachada.iniciarServidor()`: llama a `gestor.iniciar(cfg.hilosConsumidores(), procesador)` y luego a `protocolo.iniciar(cfg.puerto(), receptor)`.
 18. `registrarApagado(fachada, vista)` y después `vista.iniciar()`. En la vista de consola, `iniciar()` contiene el bucle del menú.
@@ -820,6 +820,7 @@ Logs de eventos y mensajes.
   + consultar(f : FiltroLogs) : List<EventoLogDTO>
   + todos() : List<EventoLogDTO>
   + cargarHistorial() : void
+  + suscribir(o : Consumer<EventoLogDTO>) : void  «cada evento nuevo (no el historial); un oyente que falla no afecta a los demás»
   ```
 - **`FiltroLogs`** — «record». Campos nulos = sin filtro.
   ```text

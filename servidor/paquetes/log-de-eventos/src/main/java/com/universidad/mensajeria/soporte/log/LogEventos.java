@@ -18,6 +18,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Consumer;
 
 /**
  * {@link ILogEventos}: escribe en SLF4J (consola y archivo), indexa en memoria
@@ -30,6 +32,7 @@ public final class LogEventos implements ILogEventos {
     private final ConcurrentLinkedDeque<EventoLogDTO> eventos = new ConcurrentLinkedDeque<>();
     private final ConcurrentHashMap<TipoEvento, Queue<EventoLogDTO>> porTipo = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<String, Queue<EventoLogDTO>> porUsuario = new ConcurrentHashMap<>();
+    private final CopyOnWriteArrayList<Consumer<EventoLogDTO>> oyentes = new CopyOnWriteArrayList<>();
     private final IAlmacenarInformacion almacenamiento;
 
     public LogEventos(IAlmacenarInformacion almacenamiento) {
@@ -47,17 +50,33 @@ public final class LogEventos implements ILogEventos {
             LOG.warn("No se pudo persistir el evento {} ({})", e.id(), t, ex);
         }
         indexar(e);
+        avisar(e);
+    }
+
+    @Override
+    public void suscribir(Consumer<EventoLogDTO> o) {
+        oyentes.addIfAbsent(Objects.requireNonNull(o, "o"));
     }
 
     @Override
     public void conexion(SesionDTO s) {
-        almacenamiento.registrarConexion(s);
+        try {
+            almacenamiento.registrarConexion(s);
+        } catch (RuntimeException ex) {
+            // conexiones_usuario es solo historial: un fallo de la BD no debe dejar el LOGIN a medias.
+            LOG.warn("No se pudo persistir la conexión {}", s.idSesion(), ex);
+        }
         registrar(TipoEvento.LOGIN_OK, "LOGIN_OK sesion=" + s.idSesion(), s.codigo(), s.ip());
     }
 
     @Override
     public void desconexion(SesionDTO s, String motivo) {
-        almacenamiento.registrarDesconexion(s.idSesion(), LocalDateTime.now());
+        try {
+            almacenamiento.registrarDesconexion(s.idSesion(), LocalDateTime.now());
+        } catch (RuntimeException ex) {
+            // Si no se registra aquí, cerrarHuerfanas la cierra en el próximo arranque.
+            LOG.warn("No se pudo persistir la desconexión {}", s.idSesion(), ex);
+        }
         registrar(TipoEvento.DESCONEXION, "DESCONEXION sesion=" + s.idSesion() + " motivo=" + motivo,
                 s.codigo(), s.ip());
     }
@@ -85,6 +104,16 @@ public final class LogEventos implements ILogEventos {
         almacenamiento.historialLogs().stream()
                 .sorted(Comparator.comparing(EventoLogDTO::fecha))
                 .forEach(this::indexar);
+    }
+
+    private void avisar(EventoLogDTO e) {
+        for (Consumer<EventoLogDTO> o : oyentes) {
+            try {
+                o.accept(e);
+            } catch (RuntimeException ex) {
+                LOG.warn("Un oyente del log falló con el evento {}", e.id(), ex);
+            }
+        }
     }
 
     private void indexar(EventoLogDTO e) {
