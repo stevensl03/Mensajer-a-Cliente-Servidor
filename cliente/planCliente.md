@@ -578,6 +578,9 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - `ConexionTCP.conectar` espera (≤ 2 s) a que el lector de la conexión anterior termine su `alDesconectar`. Sin esto, el aviso tardío de una conexión cerrada podía fallar las peticiones y el `INFO_SERVIDOR` de la conexión nueva (reconexión rápida, D-06).
 - `ClienteProtocoloJSON` se crea solo con `FabricaProtocoloCliente` (constructor de paquete).
 - Una respuesta con formato inválido (p. ej. `exito=true` con un código de error) falla solo su petición, con `IllegalStateException`; una trama ilegible o un evento desconocido se registran y se descartan.
+- **10a** · `RepositorioMensajesH2.guardar` usa `INSERT` e ignora la clave duplicada (SQLState `23505`) en lugar de `MERGE … KEY(ID)`: así conserva el primer `SESION_ID` y `PROPIO` (R-54) y es atómico si push e `HISTORIAL` llegan a la vez. Los adjuntos sí usan `MERGE … KEY(MENSAJE_ID, ETAPA)`. Pendiente de reflejar en cliente §8.
+- **10a** · `IRepositorioMensajesLocal` expone `FORO` y `claveConversacion(a, b)` / `claveConversacion(m)` como miembros estáticos (como el servidor), para que los servicios calculen la clave `menor|mayor`.
+- **10a** · `ProveedorConexionH2` mantiene una conexión de guarda mientras la base está abierta; cada operación pide la suya. El esquema se ejecuta con `RUNSCRIPT FROM 'classpath:/schema.sql'`. Un adjunto sin su mensaje lanza `IllegalArgumentException` (R-55); los demás errores SQL, `IllegalStateException`.
 
 ---
 
@@ -606,7 +609,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 1 | 9a ✅ | 0 | POM padre + utilerías + configuración (13 pruebas en verde) |
 | 2 | 9b ✅ | 9a | TCP + tramas + reconexión (20 pruebas; 33 en total) |
 | 3 | 9c ✅ | 9b | Protocolo JSON + push (17 pruebas; 52 en total) |
-| 4 | 10a | 9a | H2 + repositorios + esquema |
+| 4 | 10a ✅ | 9a | H2 + repositorios + esquema (22 pruebas; 74 en total) |
 | 5 | 10b | 9c, 10a | Servicios |
 | 6 | 10c | 10b | Fachada + observadores |
 | 7 | 11a | 10c | AppCliente + navegación |
