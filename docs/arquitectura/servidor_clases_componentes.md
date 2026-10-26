@@ -443,6 +443,8 @@ Vista de escritorio (Swing) del servidor.
   + publicarEnForo(c : ContenidoDTO) : void
   + enviarPrivado(codigo : String, c : ContenidoDTO) : void
   + mostrarMensaje(m : MensajeDTO) : void
+  + refrescarConectados(l : List<EstadoUsuarioDTO>) : void  «columna «Conectados»; se refresca con onSesiones»
+  + cargarHistorial(informeMensajes : String) : void  «JSON de informe(MENSAJES), leído con ISerializador»
   ```
 - **`PanelInformes`** — «JPanel» clase. Los cuatro informes en tablas y su JSON.
   ```text
