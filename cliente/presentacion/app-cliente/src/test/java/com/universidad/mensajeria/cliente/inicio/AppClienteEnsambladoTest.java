@@ -96,7 +96,7 @@ class AppClienteEnsambladoTest {
                 h2.usuario=sa
                 h2.clave=
                 cache.mensajes.max=50
-                """.formatted(puerto, dir.toAbsolutePath()), StandardCharsets.UTF_8);
+                """.formatted(puerto, dir.toAbsolutePath().toString().replace('\\', '/')), StandardCharsets.UTF_8);
         return ConfiguracionCliente.cargar(archivo);
     }
 

@@ -53,7 +53,8 @@ class FabricaVistasFxmlTest {
 
     @BeforeAll
     static void iniciarToolkit() throws Exception {
-        boolean pantalla = System.getenv("DISPLAY") != null || System.getenv("WAYLAND_DISPLAY") != null;
+        // En Linux sin DISPLAY, AWT se declara headless; en Windows y macOS hay pantalla sin esas variables.
+        boolean pantalla = !java.awt.GraphicsEnvironment.isHeadless();
         if (!pantalla) {
             return;
         }
