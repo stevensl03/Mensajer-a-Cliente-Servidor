@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.universidad</groupId>
+    <artifactId>mensajeria-cliente</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <name>Mensajeria Academica - Cliente (POM padre)</name>
+
+    <properties>
+        <maven.compiler.release>21</maven.compiler.release>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+        <!-- Artefacto del servidor: mvn -q -pl transversales/dto-records -am install (desde servidor/) -->
+        <dto-records.version>1.0.0</dto-records.version>
+        <javafx.version>21.0.13</javafx.version>
+        <javafx-plugin.version>0.0.8</javafx-plugin.version>
+        <!-- Debe coincidir con el servidor: dto-records trae jackson-databind 2.19.2 -->
+        <jackson.version>2.19.2</jackson.version>
+        <h2.version>2.5.252</h2.version>
+        <slf4j.version>2.0.17</slf4j.version>
+        <logback.version>1.5.18</logback.version>
+        <junit.version>5.10.2</junit.version>
+        <surefire.version>3.5.4</surefire.version>
+    </properties>
+
+    <modules>
+        <!-- transversales -->
+        <module>transversales/utilerias-cliente</module>
+
+        <!-- comunicacion -->
+        <module>comunicacion/protocolo-comunicacion</module>
+        <module>comunicacion/protocolo-cliente-servidor</module>
+
+        <!-- persistencia local -->
+        <module>persistencia/persistencia-local</module>
+
+        <!-- servicios de aplicacion -->
+        <module>servicios/servicios-cliente</module>
+        <module>servicios/fachada-cliente</module>
+
+        <!-- presentacion -->
+        <module>presentacion/app-cliente</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- modulos del cliente -->
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>utilerias-cliente</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>protocolo-comunicacion-cliente</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>protocolo-cliente-servidor-cliente</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>persistencia-local</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>servicios-cliente</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>fachada-cliente</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+
+            <!-- contrato compartido con el servidor -->
+            <dependency>
+                <groupId>com.universidad</groupId>
+                <artifactId>dto-records</artifactId>
+                <version>${dto-records.version}</version>
+            </dependency>
+
+            <!-- librerias de terceros -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.fasterxml.jackson.datatype</groupId>
+                <artifactId>jackson-datatype-jsr310</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.h2database</groupId>
+                <artifactId>h2</artifactId>
+                <version>${h2.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter</artifactId>
+                <version>${junit.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-maven-plugin</artifactId>
+                    <version>${javafx-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

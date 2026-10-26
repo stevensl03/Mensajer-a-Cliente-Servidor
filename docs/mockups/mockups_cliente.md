@@ -25,7 +25,7 @@ Ventana de 420 × 560 con el título `Mensajería Académica — Iniciar sesión
 
 | Situación | Texto |
 |---|---|
-| `CUPO_LLENO` | `⚠ El servidor alcanzó el cupo de sesiones (N/N). Intenta más tarde.` |
+| `CUPO_LLENO` | `⚠ El servidor alcanzó el cupo de sesiones. Intenta más tarde.` (el protocolo no envía N/N) |
 | `CREDENCIALES_INVALIDAS` | `Código o contraseña incorrectos.` |
 | Sin conexión o tiempo agotado | `No fue posible conectar con {host}:{puerto}.` |
 

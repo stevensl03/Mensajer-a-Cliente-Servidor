@@ -22,6 +22,7 @@
 - **Solo `AppCliente` instancia clases concretas** (Composition Root).
 - Toda modificación de la UI ocurre en el hilo de JavaFX (`Platform.runLater`).
 - Java 21 + JavaFX. No inventar versiones de librerías: verificarlas en Maven Central.
+- Las desviaciones aprobadas respecto al diagrama original están en la §12 (D-03…D-14) y ya están reflejadas en este documento y en el `.drawio`.
 
 ## 1. Qué debe hacer el cliente
 
@@ -79,7 +80,7 @@ El cliente es un proyecto Maven multimódulo **aparte**, en la carpeta `cliente/
 | `protocolo-cliente-servidor` | `protocolo-comunicacion` (solo `IConexionServidor` / `IReceptorServidor`), `dto-records`, `utilerias-cliente`, `slf4j-api` |
 | `persistencia-local` | `dto-records`, `utilerias-cliente`, `h2` (`runtime`), `slf4j-api` |
 | `servicios-cliente` | `protocolo-cliente-servidor` (solo `IProtocoloCliente` / `IOyentePush`), `persistencia-local` (solo interfaces), `dto-records`, `utilerias-cliente` |
-| `fachada-cliente` | `servicios-cliente` (solo interfaces), `protocolo-cliente-servidor` (solo `IProtocoloCliente` / `IOyentePush`), `dto-records` |
+| `fachada-cliente` | `servicios-cliente` (solo interfaces), `protocolo-cliente-servidor` (solo `IProtocoloCliente` / `IOyentePush`), `dto-records`, `utilerias-cliente` (D-04) |
 | `app-cliente` | todos (Composition Root), `javafx-controls`, `javafx-fxml`, `logback-classic` (`runtime`) |
 
 Las clases concretas se usan **solo** en `AppCliente`. Las demás clases reciben interfaces por constructor.
@@ -91,19 +92,20 @@ Las clases concretas se usan **solo** en `AppCliente`. Las demás clases reciben
 1. `AppCliente.start(stage)`:
    - `cfg = ConfiguracionCliente.cargar(Path.of("config/cliente.properties"))`;
    - `json = new SerializadorJSON()`;
-   - `conexion = new FabricaConexiones().crear(cfg.protocolo(), cfg.maxTramaBytes())`;
+   - `conexion = new FabricaConexiones().crear(TipoProtocolo.valueOf(cfg.protocolo()), cfg.maxTramaBytes())` (D-03);
    - `protocolo = new FabricaProtocoloCliente().crear(conexion, json, Duration.ofSeconds(cfg.timeoutSegundos()))`;
    - `proveedor = new ProveedorConexionH2(cfg.urlH2(), cfg.usuarioH2(), cfg.claveH2())`;
    - `repos = new FabricaRepositoriosH2(proveedor)`;
-   - crea `ServicioUsuarios(protocolo, proveedor, repos.sesiones())`, `ServicioChat(protocolo, repos.mensajes(), new CacheMensajesSesion(cfg.cacheMax()))` y `ServicioInformes(protocolo)`;
-   - crea `FachadaCliente(usuarios, chat, informes, protocolo)` y llama a `protocolo.suscribir(fachada)`.
-2. `NavegadorVistas.ir(LOGIN)`. `FabricaVistas` carga el FXML con un *controller factory* que inyecta el ViewModel, y el ViewModel recibe `IFachadaCliente`.
+   - crea `ServicioUsuarios(protocolo, proveedor, repos.sesiones(), json)`, `ServicioChat(protocolo, repos.mensajes(), new CacheMensajesSesion(cfg.cacheMax()), json)` y `ServicioInformes(protocolo, json)` (D-04);
+   - crea `FachadaCliente(usuarios, chat, informes, protocolo, json)` y llama a `protocolo.suscribir(fachada)`;
+   - crea el ejecutor de fondo (hilos *daemon*) y `hiloUI = Platform::runLater` para los ViewModels (D-10).
+2. `NavegadorVistas.ir(LOGIN)`. `FabricaVistas` carga el FXML con un *controller factory* que inyecta el ViewModel, y el ViewModel recibe `IFachadaCliente`, `hiloUI` y el ejecutor de fondo.
 3. `stop()`: si hay sesión, `fachada.logout()`; después se cierra la conexión y la BD.
 
 ### 5.2 Login (pantalla C1)
 
 1. `LoginViewModel.ingresar()` separa `servidor` en `host:puerto` (el valor inicial viene de `cliente.properties`).
-2. `fachada.conectar(host, puerto)` → `protocolo.conectar` → `conexion.conectar(host, puerto, receptor)` → el servidor envía `INFO_SERVIDOR` y se guarda `ipServidor`.
+2. `fachada.conectar(host, puerto)` → (solo si `!conexion.estaConectada()`) `protocolo.conectar` → `conexion.conectar(host, puerto, receptor)` → el servidor envía `INFO_SERVIDOR` y se guarda `ipServidor`. `ConexionTCP` admite un nuevo `conectar` después de `cerrar()` (D-06); `CREDENCIALES_INVALIDAS` no cierra el canal.
 3. `fachada.login(codigo, clave)` → `ServicioUsuarios.login` → `protocolo.solicitar(LOGIN, {codigo, clave}, null)`.
 4. Si `exito`:
    - `proveedor.abrir(codigo)` crea o abre `./data/cliente_{codigo}` y ejecuta `schema.sql` si las tablas no existen;
@@ -112,7 +114,7 @@ Las clases concretas se usan **solo** en `AppCliente`. Las demás clases reciben
    - se navega a CHAT.
 5. Si falla, `error` muestra un texto según el código:
    - `CREDENCIALES_INVALIDAS` → «Código o contraseña incorrectos»;
-   - `CUPO_LLENO` → «El servidor alcanzó el cupo de sesiones (N/N). Intenta más tarde.»;
+   - `CUPO_LLENO` → «El servidor alcanzó el cupo de sesiones. Intenta más tarde.» (el protocolo no envía N/N);
    - error de red → «No fue posible conectar con host:puerto».
 
 ### 5.3 Chat (pantalla C2)
@@ -124,17 +126,17 @@ Las clases concretas se usan **solo** en `AppCliente`. Las demás clases reciben
   - `MENSAJE_NUEVO` → `chat.recibir(m)` guarda en H2 (MERGE por id, con `propio = remitente == yo`) y en la caché; después `observadores.onMensaje(m)`;
   - `USUARIO_CONECTADO` / `USUARIO_DESCONECTADO` → se vuelve a pedir `LISTAR_USUARIOS` → `onUsuarios`;
   - `SESION_CERRADA` → `onDesconexion(motivo)` y se vuelve a LOGIN.
-- **Abrir privado**: doble clic en un usuario → `abrirPrivado(codigo)` crea la pestaña y carga `historial(codigo)`. Primero lee la caché y H2, y luego actualiza con `HISTORIAL` del servidor.
+- **Abrir privado**: doble clic en un usuario → `abrirPrivado(codigo)` crea la pestaña y carga `historial(codigo)`. Primero lee la caché y H2 (lo devuelve de inmediato), y luego actualiza con `HISTORIAL` del servidor: cada mensaje recibido así se guarda y se notifica con `onMensaje` (D-11).
 - **Ver 5 filtros**: `imagen(m, etapa)` → primero `repoMensajes.adjunto(id, etapa)`; si no está, `OBTENER_IMAGEN` y se guarda como `ADJUNTO`.
-- **Barra de estado**: `Estoy conectado a: {ipServidor} · TCP :{puerto} · Sesión local H2 #{sesionLocal}`.
+- **Barra de estado**: `Estoy conectado a: {ipServidor} · TCP :{puerto} · Sesión local H2 #{sesionLocal} · {n} mensajes guardados` (`sesionLocal()` y `mensajesGuardados()` de la fachada, D-05 y D-12).
 
 ### 5.4 Informes (pantalla C3)
 
-`InformesViewModel.cargar(tipo, filtros)` → `fachada.informe` → `INFORME {tipo, tipoEvento?, usuario?, desde?, hasta?}`. Las `filas` se convierten en `Map<String,Object>` para la `TableView` (columnas = claves del primer elemento). El botón «Ver JSON» muestra la respuesta tal como llegó.
+`InformesViewModel.cargar(tipo, filtros)` → `fachada.informe` → `INFORME {tipo, tipoEvento?, usuario?, desde?, hasta?}`. Las `filas` se convierten en `Map<String,Object>` para la `TableView` (columnas = claves del primer elemento). El botón «Ver JSON» muestra la respuesta tal como llegó: `informe` devuelve `InformeRecibido(informe, json)` (D-08).
 
 ### 5.5 Salida o desconexión
 
-- «Salir»: `fachada.logout()` → `LOGOUT` → `repoSesion.cerrar(sesionLocal)` → `conexion.cerrar()` → LOGIN.
+- «Salir»: `fachada.logout()` → `LOGOUT` (espera acotada a 3 s; `logout()` sigue siendo `void`) → `repoSesion.cerrar(sesionLocal)` → `conexion.cerrar()` → LOGIN. Se llama fuera del hilo de JavaFX.
 - Si se pierde la conexión (`IReceptorServidor.alDesconectar`): todas las peticiones pendientes se completan con excepción, se cierra la sesión local y la UI muestra el motivo.
 
 ## 6. Concurrencia
@@ -197,7 +199,7 @@ CREATE TABLE IF NOT EXISTS ADJUNTO (
 );
 ```
 
-Se usa `MERGE INTO MENSAJE KEY(ID)` para no duplicar un mensaje que llega por push y también por `HISTORIAL`. El ADJUNTO ORIGINAL de una imagen propia se guarda cuando llega su `MENSAJE_NUEVO`, porque `MENSAJE` debe existir antes por la clave foránea.
+El esquema no guarda las 6 `ImagenVersionDTO`: un `MensajeDTO` leído de H2 tiene `imagenes = []` y la UI usa `idMensaje` + `TipoFiltro.values()` (D-07). Se usa `MERGE INTO MENSAJE KEY(ID)` (conservando el `SESION_ID` de la primera vez) para no duplicar un mensaje que llega por push y también por `HISTORIAL`. El ADJUNTO ORIGINAL de una imagen propia se guarda cuando llega su `MENSAJE_NUEVO`, porque `MENSAJE` debe existir antes por la clave foránea.
 
 ## 9. Cambiar de protocolo en el cliente
 
@@ -220,6 +222,7 @@ Arranque y navegación.
 - **`FabricaVistas`** — «Factory». Carga el FXML y entrega al controlador su ViewModel ya construido.
   ```text
   - fachada : IFachadaCliente
+  - hiloUI, fondo : Executor  «D-10»
   + crear(t : TipoVista) : Parent  «FXMLLoader + ViewModel»
   ```
 - **`NavegadorVistas`** — clase.
@@ -284,6 +287,7 @@ Estado observable de cada pantalla.
   - error : StringProperty
   - ocupado : BooleanProperty
   - fachada : IFachadaCliente
+  - hiloUI, fondo : Executor  «D-10»
   + ingresar() : CompletableFuture<Boolean>
   ```
 - **`ChatViewModel`** — «IObservadorCliente» clase. Recibe los avisos de la fachada y los pasa a la UI con Platform.runLater.
@@ -293,6 +297,7 @@ Estado observable de cada pantalla.
   - privados : ObservableMap<String, ObservableList<MensajeDTO>>
   - estadoConexion : StringProperty
   - fachada : IFachadaCliente
+  - hiloUI, fondo : Executor  «D-10»
   + enviarForo(texto : String) : void
   + enviarPrivado(codigo : String, texto : String) : void
   + enviarImagen(destino : String, f : File) : void
@@ -308,6 +313,7 @@ Estado observable de cada pantalla.
   - filas : ObservableList<Map<String,Object>>
   - json : StringProperty
   - fachada : IFachadaCliente
+  - hiloUI, fondo : Executor  «D-10»
   + cargar(t : TipoInforme, filtros : Map<String,String>) : void
   ```
 
@@ -325,8 +331,11 @@ Fachada del cliente.
   + enviarPrivado(destino : String, c : ContenidoDTO) : CompletableFuture<Void>
   + historial(conversacion : String) : List<MensajeDTO>
   + imagen(idMensaje : String, etapa : TipoFiltro) : CompletableFuture<byte[]>
-  + informe(t : TipoInforme, filtros : Map<String,String>) : CompletableFuture<InformeDTO>
+  + informe(t : TipoInforme, filtros : Map<String,String>) : CompletableFuture<InformeRecibido>  «D-08»
   + getIpServidor() : String
+  + usuarioActual() : Optional<UsuarioDTO>  «D-05»
+  + sesionLocal() : long  «D-05»
+  + mensajesGuardados() : long  «D-12»
   + suscribir(o : IObservadorCliente) : void
   ```
 - **`FachadaCliente`** — «Facade · IOyentePush» clase principal del componente. Orquesta los servicios y reparte los eventos push a los observadores.
@@ -335,6 +344,7 @@ Fachada del cliente.
   - chat : IServicioChat
   - informes : IServicioInformes
   - protocolo : IProtocoloCliente
+  - json : ISerializador  «D-04»
   - observadores : CopyOnWriteArrayList<IObservadorCliente>
   + onPush(e : EventoPushDTO) : void
   + onDesconexion(motivo : String) : void
@@ -360,6 +370,7 @@ Fachada del cliente.
   - protocolo : IProtocoloCliente
   - proveedor : IProveedorConexionBD
   - sesiones : IRepositorioSesion
+  - json : ISerializador  «D-04»
   - actual : UsuarioDTO
   - sesionLocal : long
   ```
@@ -378,6 +389,8 @@ Fachada del cliente.
   - protocolo : IProtocoloCliente
   - repo : IRepositorioMensajesLocal
   - cache : CacheMensajesSesion
+  - json : ISerializador  «D-04»
+  - originalesPendientes : Map<String, byte[]>
   - usuario : UsuarioDTO
   - sesionLocal : long
   ```
@@ -390,13 +403,19 @@ Fachada del cliente.
   ```
 - **`IServicioInformes`** — «interface».
   ```text
-  + obtener(t : TipoInforme, filtros : Map<String,String>) : CompletableFuture<InformeDTO>
+  + obtener(t : TipoInforme, filtros : Map<String,String>) : CompletableFuture<InformeRecibido>  «D-08»
+  ```
+- **`InformeRecibido`** — «record» (D-08), mismo paquete `…servicios.informes`.
+  ```text
+  + informe : InformeDTO
+  + json : String  «datos tal como llegaron, con sangría»
   ```
 
 #### Informes  ·  _componente_
 - **`ServicioInformes`** — «IServicioInformes» clase principal del componente. Comando INFORME; el cliente ve los 4 informes.
   ```text
   - protocolo : IProtocoloCliente
+  - json : ISerializador  «D-04»
   ```
 
 ### Capa de Comunicación
@@ -469,6 +488,7 @@ Transporte. Cambiar de protocolo solo toca este componente.
   - escritor : Thread «único escritor»
   - tramas : CodificadorTramas
   - receptor : IReceptorServidor
+  «reconectable: conectar() de nuevo tras cerrar() · D-06»
   ```
 - **`CodificadorTramas`** — «[int32 longitud][UTF-8]» clase.
   ```text
@@ -506,6 +526,7 @@ Base de datos H2 embebida, una por usuario.
   + guardarAdjunto(idMensaje : String, etapa : TipoFiltro, nombre : String, datos : byte[]) : void
   + adjunto(idMensaje : String, etapa : TipoFiltro) : Optional<byte[]>
   + conversacion(clave : String) : List<MensajeDTO>
+  + contar() : long  «D-12»
   ```
 - **`RepositorioMensajesH2`** — clase.
 - **`FabricaRepositoriosH2`** — «Factory».
@@ -534,7 +555,7 @@ Base de datos H2 embebida, una por usuario.
   + cargar(ruta : Path) : ConfiguracionCliente  {static}
   + host() : String
   + puerto() : int
-  + protocolo() : TipoProtocolo
+  + protocolo() : String  «D-03»
   + maxTramaBytes() : int
   + urlH2() : String
   + usuarioH2() : String
@@ -561,3 +582,22 @@ Base de datos H2 embebida, una por usuario.
 - [ ] Todo `MensajeDTO` recibido queda en H2, y también cada imagen descargada o enviada.
 - [ ] La barra de estado muestra «Estoy conectado a: IP».
 - [ ] Las pruebas pasan (`mvn -q verify` en `cliente/`).
+
+## 12. Desviaciones aprobadas (D-03…D-14)
+
+Aprobadas para la implementación del cliente (detalle en `cliente/planCliente.md` §0 y `cliente/warning.md`). Ya están aplicadas en este documento y en el `.drawio`.
+
+| ID | Cambio | Motivo |
+|---|---|---|
+| D-03 | `ConfiguracionCliente.protocolo()` devuelve `String`; `AppCliente` hace `TipoProtocolo.valueOf` | `utilerias-cliente` no puede depender de `protocolo-comunicacion` (mismo precedente que el servidor) |
+| D-04 | `ISerializador` en `ServicioUsuarios`, `ServicioChat`, `ServicioInformes` y `FachadaCliente`; `fachada-cliente` depende de `utilerias-cliente` | `RespuestaDTO.datos` y `EventoPushDTO.datos` son `JsonNode` |
+| D-05 | `usuarioActual()` y `sesionLocal()` en `IFachadaCliente` | C2 muestra «Tú», la cabecera y la sesión local |
+| D-06 | `ConexionTCP` se puede reconectar con el mismo `conectar(...)` | El servidor cierra el canal tras `LOGOUT`, `CUPO_LLENO` y `SESION_CERRADA` |
+| D-07 | El esquema H2 no cambia; `imagenes = []` al leer de H2 | La UI solo necesita `idMensaje` + `TipoFiltro` |
+| D-08 | `informe(...)` devuelve `InformeRecibido(informe, json)` | «Ver JSON» muestra la respuesta tal como llegó |
+| D-09 | Se permite iniciar sesión como `ADMIN01` desde el cliente | El servidor no lo impide |
+| D-10 | Los ViewModels y `FabricaVistas` reciben `Executor hiloUI` y `Executor fondo` | Probar los ViewModels sin iniciar JavaFX |
+| D-11 | `historial()` sigue síncrono; el refresco del servidor llega por `onMensaje` | §5.3 no definía cómo llegaba la actualización |
+| D-12 | `contar()` en `IRepositorioMensajesLocal` y `mensajesGuardados()` en `IFachadaCliente` | «{n} mensajes guardados» de la barra de estado |
+| D-13 | JavaFX 21.0.13, H2 2.5.252, Jackson 2.19.2 (el de `dto-records`) | Últimas estables verificadas en Maven Central |
+| D-14 | Sin `Launcher` ni jar ejecutable del cliente; se ejecuta con `mvn javafx:run` | La fase 12 no pide jar del cliente |
