@@ -616,6 +616,10 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 - **11c** · Sin emoji en C2 (📎, 📊, ➤, 🔍; R-70): textos «Imagen», «Informes», «Enviar» y el botón de cierre propio de las pestañas. Los motivos `CERRADA_POR_ADMIN` / `SERVIDOR_DETENIDO` se muestran en palabras.
 - **11c** · Cada pestaña privada se crea una vez y se conserva al cerrarla: si llega un mensaje de esa conversación, vuelve a mostrarse. Un privado nuevo de otra persona abre su pestaña sin quitar el foco.
 - **11c** · «enviando…» se apaga con el `MENSAJE_NUEVO` propio, con el rechazo del servidor o a los 15 s con «No se pudo confirmar el envío» (R-32). Las imágenes (miniatura y 5 filtros) se construyen fuera del hilo de JavaFX y se guardan en memoria por sesión.
+- **11d** · `InformesViewModel` nuevo en cada apertura de C3 (no recibe avisos). Columnas de S3 (R-27) con su formato en el ViewModel (`Columna(titulo, valor)`): hora `dd/MM HH:mm:ss`, hash abreviado a 12, `todos` como destino del foro; filas de LOGS en ámbar (`CUPO_LLENO`) y rojo (`ERROR`).
+- **11d** · Respuestas viejas descartadas por número de solicitud (cambiar de pestaña o filtrar dos veces); al cambiar de informe la tabla se vacía al instante. Las tarjetas se calculan con los informes sin filtrar (`USUARIOS_CONECTADOS`, `MENSAJES`, `LOGS`) que se piden al abrir.
+- **11d** · «Ver JSON» y «Actualizar» se muestran en las 4 pestañas (el mockup C3 los pone junto a los filtros de Logs; S3 los ofrece para todos los informes). Los filtros siguen visibles solo en Logs. Las fechas inválidas («Desde» > «Hasta») no llegan al servidor.
+- **11d** · El ViewModel importa `InformeRecibido` (paquete `servicios.informes`) solo porque es el tipo que devuelve `IFachadaCliente.informe` (D-08), igual que un DTO; no usa ningún servicio.
 
 ---
 
@@ -651,7 +655,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 8 | 11b ✅ | 11a | C1 (9 pruebas; 123 en total) |
 | 9 | 11c ✅ | 11b | C2 (14 pruebas; 137 en total) |
 | — | Integración ✅ | 11c | Pull del servidor (fases 7c–8): contrato sin cambios, 316 pruebas del servidor y 137 del cliente en verde |
-| 10 | 11d | 11b | C3 |
+| 10 | 11d ✅ | 11b | C3 (9 pruebas; 145 en total) |
 | 11 | 11e | 11c, 11d | CSS y pulido |
 | 12 | 12 | todas | Integración + README |
 

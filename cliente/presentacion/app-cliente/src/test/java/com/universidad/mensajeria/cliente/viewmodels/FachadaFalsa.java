@@ -32,6 +32,10 @@ public class FachadaFalsa implements IFachadaCliente {
     public java.util.function.Supplier<CompletableFuture<Void>> respuestaEnvio = () -> CompletableFuture.completedFuture(null);
     public final List<ContenidoDTO> contenidos = new CopyOnWriteArrayList<>();
     public volatile long guardados;
+    /** Respuesta de {@code informe(t, filtros)}; por defecto falla. */
+    public java.util.function.BiFunction<TipoInforme, Map<String, String>, CompletableFuture<InformeRecibido>> informes =
+            (t, f) -> CompletableFuture.failedFuture(new IllegalStateException("informe no configurado"));
+    public final List<Map<String, String>> filtrosPedidos = new CopyOnWriteArrayList<>();
 
     @Override
     public String conectar(String host, int puerto) {
@@ -92,7 +96,8 @@ public class FachadaFalsa implements IFachadaCliente {
     @Override
     public CompletableFuture<InformeRecibido> informe(TipoInforme t, Map<String, String> filtros) {
         llamadas.add("informe " + t);
-        return CompletableFuture.failedFuture(new IllegalStateException("informe no configurado"));
+        filtrosPedidos.add(filtros);
+        return informes.apply(t, filtros);
     }
 
     @Override

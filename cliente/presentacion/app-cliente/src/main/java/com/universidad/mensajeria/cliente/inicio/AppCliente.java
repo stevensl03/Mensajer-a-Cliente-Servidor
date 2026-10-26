@@ -16,8 +16,10 @@ import com.universidad.mensajeria.cliente.servicios.usuarios.ServicioUsuarios;
 import com.universidad.mensajeria.cliente.utilerias.ConfiguracionCliente;
 import com.universidad.mensajeria.cliente.utilerias.SerializadorJSON;
 import com.universidad.mensajeria.cliente.viewmodels.ChatViewModel;
+import com.universidad.mensajeria.cliente.viewmodels.InformesViewModel;
 import com.universidad.mensajeria.cliente.viewmodels.LoginViewModel;
 import com.universidad.mensajeria.cliente.vistas.VistaChat;
+import com.universidad.mensajeria.cliente.vistas.VistaInformes;
 import com.universidad.mensajeria.cliente.vistas.VistaLogin;
 import javafx.application.Application;
 import javafx.application.Platform;
@@ -27,6 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.file.Path;
+import java.time.Clock;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
@@ -131,6 +134,9 @@ public final class AppCliente extends Application {
         // Un único ChatViewModel, suscrito una vez: la fachada no tiene desuscribir (ver ChatViewModel).
         var chat = new AtomicReference<ChatViewModel>();
         fabrica.registrar(VistaChat.class, c -> new VistaChat(chat.updateAndGet(vm -> vm != null ? vm : nuevoChat(c))));
+        // C3: un ViewModel nuevo cada vez que se abre la ventana (no recibe avisos de la fachada).
+        fabrica.registrar(VistaInformes.class, c -> new VistaInformes(
+                new InformesViewModel(c.fachada(), c.hiloUI(), c.fondo(), Clock.systemDefaultZone())));
     }
 
     private static ChatViewModel nuevoChat(FabricaVistas.Contexto c) {

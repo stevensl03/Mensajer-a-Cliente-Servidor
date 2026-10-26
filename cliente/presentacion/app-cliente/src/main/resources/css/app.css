@@ -174,3 +174,38 @@
     -fx-background-color: #ECEFF1;
     -fx-border-color: -color-borde transparent transparent transparent;
 }
+
+/* C3 · Informes */
+.tarjeta {
+    -fx-background-color: white;
+    -fx-border-color: -color-borde;
+    -fx-border-radius: 6;
+    -fx-background-radius: 6;
+    -fx-padding: 10 14;
+}
+
+.tarjeta-valor {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-titulo;
+}
+
+.table-row-cell.fila-cupo {
+    -fx-background-color: #FFF8E1;
+}
+
+.table-row-cell.fila-cupo .table-cell {
+    -fx-text-fill: #E65100;
+}
+
+.table-row-cell.fila-error {
+    -fx-background-color: -color-peligro-fondo;
+}
+
+.table-row-cell.fila-error .table-cell {
+    -fx-text-fill: -color-peligro;
+}
+
+.json {
+    -fx-font-family: "Monospaced";
+}

@@ -2,6 +2,13 @@ package com.universidad.mensajeria.cliente.inicio;
 
 import com.universidad.mensajeria.cliente.viewmodels.FachadaFalsa;
 import com.universidad.mensajeria.cliente.viewmodels.ChatViewModel;
+import com.universidad.mensajeria.cliente.servicios.informes.InformeRecibido;
+import com.universidad.mensajeria.cliente.viewmodels.InformesViewModel;
+import com.universidad.mensajeria.cliente.vistas.VistaInformes;
+import com.universidad.mensajeria.dto.InformeDTO;
+import com.universidad.mensajeria.dto.TipoInforme;
+import javafx.scene.control.TableColumnBase;
+import javafx.scene.control.TableView;
 import com.universidad.mensajeria.cliente.vistas.VistaChat;
 import com.universidad.mensajeria.dto.Canal;
 import com.universidad.mensajeria.dto.EstadoUsuarioDTO;
@@ -25,6 +32,7 @@ import org.junit.jupiter.api.Test;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
@@ -120,6 +128,40 @@ class FabricaVistasFxmlTest {
 
         assertEquals(2, tabs.getTabs().size(), "un privado nuevo abre su pestaña");
         assertEquals("Luis Gómez", tabs.getTabs().get(1).getText());
+    }
+
+    @Test
+    void cargaInformesConTarjetasColumnasDeS3YFiltrosSoloEnLogs() throws Exception {
+        assumeTrue(toolkit, "sin entorno gráfico");
+        var fachada = new FachadaFalsa();
+        fachada.informes = (t, f) -> CompletableFuture.completedFuture(new InformeRecibido(new InformeDTO(t,
+                LocalDateTime.of(2026, 10, 25, 21, 0), "20201001", t == TipoInforme.USUARIOS_CONECTADOS
+                ? List.of(Map.of("codigo", "20201001", "nombreCompleto", "Ana Pérez", "cantidadSesiones", 2))
+                : List.of(Map.of("codigo", "20201001", "tipo", "ERROR"))), "{}"));
+        var vm = new InformesViewModel(fachada, Runnable::run, Runnable::run, java.time.Clock.systemDefaultZone());
+        var fabrica = new FabricaVistas(fachada, Runnable::run, Runnable::run, "127.0.0.1:5000", t -> { })
+                .registrar(VistaInformes.class, c -> new VistaInformes(vm));
+
+        Parent raiz = enFx(() -> fabrica.crear(TipoVista.INFORMES));
+
+        var tabla = (TableView<?>) raiz.lookup("#tblDatos");
+        var filtros = raiz.lookup("#filtros");
+        var tabs = (TabPane) raiz.lookup("#tabs");
+        assertEquals("2", ((Label) raiz.lookup("#lblSesiones")).getText());
+        assertEquals("1", ((Label) raiz.lookup("#lblErrores")).getText());
+        assertEquals(List.of("Código", "Nombres", "Apellidos", "Programa", "Rol"),
+                tabla.getColumns().stream().map(TableColumnBase::getText).toList());
+        assertFalse(filtros.isVisible(), "los filtros solo se ven en Logs");
+
+        enFx(() -> {
+            tabs.getSelectionModel().select(3);
+            return null;
+        });
+
+        assertTrue(filtros.isVisible());
+        assertEquals(List.of("Hora", "Tipo", "Usuario", "IP", "Descripción"),
+                tabla.getColumns().stream().map(TableColumnBase::getText).toList());
+        assertEquals("Mensajería Académica — Informes del servidor", fabrica.titulo(TipoVista.INFORMES));
     }
 
     @Test

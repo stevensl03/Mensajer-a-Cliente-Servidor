@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<!-- C3 · Informes (mockups_cliente.md): tarjetas de resumen, 4 informes en pestañas, filtros de Logs,
+     tabla paginada en el cliente y el JSON tal como llegó. La tabla es una sola y se mueve a la pestaña activa. -->
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.universidad.mensajeria.cliente.vistas.VistaInformes" styleClass="informes">
+
+    <top>
+        <HBox spacing="12" styleClass="tarjetas">
+            <padding>
+                <Insets top="12" right="12" bottom="4" left="12"/>
+            </padding>
+            <VBox styleClass="tarjeta" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblSesiones" styleClass="tarjeta-valor"/>
+                <Label text="Sesiones activas" styleClass="texto-suave"/>
+            </VBox>
+            <VBox styleClass="tarjeta" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblConectados" styleClass="tarjeta-valor"/>
+                <Label text="Usuarios conectados" styleClass="texto-suave"/>
+            </VBox>
+            <VBox styleClass="tarjeta" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblMensajesHoy" styleClass="tarjeta-valor"/>
+                <Label text="Mensajes de hoy" styleClass="texto-suave"/>
+            </VBox>
+            <VBox styleClass="tarjeta" HBox.hgrow="ALWAYS">
+                <Label fx:id="lblErrores" styleClass="tarjeta-valor"/>
+                <Label text="Errores" styleClass="texto-suave"/>
+            </VBox>
+        </HBox>
+    </top>
+
+    <center>
+        <TabPane fx:id="tabs" tabClosingPolicy="UNAVAILABLE">
+            <BorderPane.margin>
+                <Insets top="6" right="12" left="12"/>
+            </BorderPane.margin>
+            <Tab fx:id="tabRegistrados" text="Usuarios registrados"/>
+            <Tab fx:id="tabConectados" text="Usuarios conectados"/>
+            <Tab fx:id="tabMensajes" text="Mensajes"/>
+            <Tab fx:id="tabLogs" text="Logs"/>
+        </TabPane>
+    </center>
+
+    <bottom>
+        <VBox spacing="4">
+            <padding>
+                <Insets top="6" right="12" bottom="10" left="12"/>
+            </padding>
+            <Label fx:id="lblError" styleClass="error" maxWidth="Infinity"/>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <Label fx:id="lblPaginacion" styleClass="texto-suave"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Button fx:id="btnAnterior" text="‹ Anterior" onAction="#onAnterior"/>
+                <Button fx:id="btnSiguiente" text="Siguiente ›" onAction="#onSiguiente"/>
+            </HBox>
+        </VBox>
+    </bottom>
+
+    <!-- Contenido común de las pestañas: se mueve a la pestaña seleccionada. -->
+    <fx:define>
+        <VBox fx:id="contenido" spacing="8">
+            <padding>
+                <Insets top="10"/>
+            </padding>
+            <HBox spacing="8" alignment="CENTER_LEFT">
+                <HBox fx:id="filtros" spacing="8" alignment="CENTER_LEFT">
+                    <Label text="Tipo:"/>
+                    <ComboBox fx:id="cmbTipoEvento" prefWidth="150"/>
+                    <TextField fx:id="txtUsuario" promptText="Usuario (código)" prefWidth="140"/>
+                    <DatePicker fx:id="dpDesde" promptText="Desde" prefWidth="130"/>
+                    <DatePicker fx:id="dpHasta" promptText="Hasta" prefWidth="130"/>
+                    <Button text="Filtrar" onAction="#onFiltrar" styleClass="boton-primario"/>
+                </HBox>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lblCargando" text="Cargando…" styleClass="texto-suave"/>
+                <Button text="Actualizar" onAction="#onActualizar"/>
+                <Button text="{ } Ver JSON" onAction="#onVerJson"/>
+            </HBox>
+            <TableView fx:id="tblDatos" VBox.vgrow="ALWAYS"/>
+        </VBox>
+    </fx:define>
+</BorderPane>
