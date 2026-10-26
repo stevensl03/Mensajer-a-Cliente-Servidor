@@ -167,6 +167,54 @@ class ConexionTCPTest {
     }
 
     @Test
+    void elAvisoDeLaConexionAnteriorOcurreAntesDeAbrirLaSiguiente() throws Exception {
+        var termino = new java.util.concurrent.atomic.AtomicBoolean(false);
+        var lento = new ReceptorGrabador() {
+            @Override
+            public void alDesconectar(String motivo) {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
+                termino.set(true);
+                super.alDesconectar(motivo);
+            }
+        };
+        conexion.conectar(HOST, servidor.puerto(), lento);
+        servidor.aceptar();
+        conexion.cerrar();
+
+        conexion.conectar(HOST, servidor.puerto(), receptor);
+
+        assertTrue(termino.get(), "conectar() volvió antes del aviso de la conexión anterior");
+        servidor.aceptar();
+        assertTrue(conexion.estaConectada());
+    }
+
+    @Test
+    void sePuedeReconectarDesdeElPropioAvisoDeDesconexion() throws Exception {
+        var reconectado = new CountDownLatch(1);
+        var reconecta = new ReceptorGrabador() {
+            @Override
+            public void alDesconectar(String motivo) {
+                super.alDesconectar(motivo);
+                if (avisos.get() == 1) {
+                    conexion.conectar(HOST, servidor.puerto(), this);
+                    reconectado.countDown();
+                }
+            }
+        };
+        conexion.conectar(HOST, servidor.puerto(), reconecta);
+        servidor.aceptar().cerrar();
+
+        assertTrue(reconectado.await(5, java.util.concurrent.TimeUnit.SECONDS));
+        var par = servidor.aceptar();
+        par.enviar("{\"de\":\"nuevo\"}");
+        assertEquals("{\"de\":\"nuevo\"}", reconecta.siguiente());
+    }
+
+    @Test
     void noConectaDosVeces() throws Exception {
         conexion.conectar(HOST, servidor.puerto(), receptor);
         servidor.aceptar();

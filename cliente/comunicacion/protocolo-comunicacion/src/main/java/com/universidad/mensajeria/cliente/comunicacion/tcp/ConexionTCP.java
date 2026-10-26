@@ -33,7 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
  * <p>Es reconectable (D-06): el estado de cada conexión vive en un
  * {@link Enlace} propio, de modo que el hilo lector de una conexión ya cerrada
  * no puede afectar a la siguiente. {@code alDesconectar} se llama una sola vez
- * por conexión, desde su hilo lector.</p>
+ * por conexión, desde su hilo lector, y siempre antes de que un nuevo
+ * {@link #conectar} abra la siguiente.</p>
  */
 public final class ConexionTCP implements IConexionServidor {
 
@@ -72,6 +73,10 @@ public final class ConexionTCP implements IConexionServidor {
         try {
             if (estaConectada()) {
                 throw new IllegalStateException("Ya hay una conexión abierta con " + ipServidor);
+            }
+            Enlace previo = actual;
+            if (previo != null) {
+                previo.esperarFin();
             }
             Socket socket = new Socket();
             try {
@@ -181,6 +186,25 @@ public final class ConexionTCP implements IConexionServidor {
                 }
             }
             cerrarYa();
+        }
+
+        /**
+         * Espera (con plazo) a que el lector termine y avise la desconexión, para
+         * que ese aviso no llegue después de abrir la conexión siguiente.
+         */
+        void esperarFin() {
+            cerrarYa();
+            Thread hilo = lector;
+            if (hilo == null || Thread.currentThread() == hilo) {
+                return;
+            }
+            try {
+                if (!hilo.join(PLAZO_CIERRE)) {
+                    LOG.warn("El lector de la conexión anterior no terminó en {} s", PLAZO_CIERRE.toSeconds());
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
         }
 
         /** Cierra de inmediato, descartando lo pendiente. Idempotente. */

@@ -572,6 +572,13 @@ Ciclo de vida:
 
 Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`.
 
+### 12.1 Ajustes surgidos al implementar (fases 9b–9c)
+
+- `DespachadorEventos.suscribir(o)`: el catálogo solo tenía `despachar` y `desconexion`, pero `IProtocoloCliente.suscribir` necesita registrar oyentes. Pendiente de reflejar en `docs/arquitectura/cliente_clases_componentes.md` §10.
+- `ConexionTCP.conectar` espera (≤ 2 s) a que el lector de la conexión anterior termine su `alDesconectar`. Sin esto, el aviso tardío de una conexión cerrada podía fallar las peticiones y el `INFO_SERVIDOR` de la conexión nueva (reconexión rápida, D-06).
+- `ClienteProtocoloJSON` se crea solo con `FabricaProtocoloCliente` (constructor de paquete).
+- Una respuesta con formato inválido (p. ej. `exito=true` con un código de error) falla solo su petición, con `IllegalStateException`; una trama ilegible o un evento desconocido se registran y se descartan.
+
 ---
 
 ## 13. Criterios de terminado
@@ -598,7 +605,7 @@ Comando: `JAVA_HOME=/usr/lib/jvm/java-21-openjdk mvn -q verify` desde `cliente/`
 | 0 | Documentación ✅ | aprobación de D-03…D-14 | `cliente_clases_componentes.md` + `.drawio` actualizados |
 | 1 | 9a ✅ | 0 | POM padre + utilerías + configuración (13 pruebas en verde) |
 | 2 | 9b ✅ | 9a | TCP + tramas + reconexión (20 pruebas; 33 en total) |
-| 3 | 9c | 9b | Protocolo JSON + push |
+| 3 | 9c ✅ | 9b | Protocolo JSON + push (17 pruebas; 52 en total) |
 | 4 | 10a | 9a | H2 + repositorios + esquema |
 | 5 | 10b | 9c, 10a | Servicios |
 | 6 | 10c | 10b | Fachada + observadores |
