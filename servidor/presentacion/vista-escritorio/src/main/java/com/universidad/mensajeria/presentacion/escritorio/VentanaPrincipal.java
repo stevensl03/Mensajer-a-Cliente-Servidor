@@ -17,7 +17,6 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -49,6 +48,7 @@ public final class VentanaPrincipal extends JFrame implements IObservadorServido
     private final transient Datos datos;
     private final PanelMonitor monitor;
     private final PanelChatAdmin chat;
+    private final PanelInformes informes;
     private final JLabel estado = new JLabel();
     private final JPanel barra = new JPanel(new BorderLayout());
     private final AtomicBoolean deteniendo = new AtomicBoolean();
@@ -64,6 +64,7 @@ public final class VentanaPrincipal extends JFrame implements IObservadorServido
         this.datos = Datos.leer();
         this.monitor = new PanelMonitor(fachada, datos.maxSesiones());
         this.chat = new PanelChatAdmin(fachada, json, datos.maxTextoCaracteres(), datos.maxImagenBytes());
+        this.informes = new PanelInformes(fachada, json);
 
         estado.setBorder(BorderFactory.createEmptyBorder(6, 10, 6, 10));
         var actualizar = new JButton("⟳ Actualizar");
@@ -83,7 +84,7 @@ public final class VentanaPrincipal extends JFrame implements IObservadorServido
         var pestanas = new JTabbedPane();
         pestanas.addTab("Monitor", monitor);
         pestanas.addTab("Chat ADMIN", chat);
-        pestanas.addTab("Informes", pendiente("Los informes llegan en la fase 7c-3."));
+        pestanas.addTab("Informes", informes);
 
         setLayout(new BorderLayout());
         add(barra, BorderLayout.NORTH);
@@ -104,6 +105,7 @@ public final class VentanaPrincipal extends JFrame implements IObservadorServido
         SwingUtilities.invokeLater(() -> {
             actualizar();
             chat.cargarHistorial(fachada.informe(TipoInforme.MENSAJES, Map.of()));
+            informes.consultar(TipoInforme.USUARIOS_REGISTRADOS);
             setVisible(true);
         });
     }
@@ -171,11 +173,6 @@ public final class VentanaPrincipal extends JFrame implements IObservadorServido
         });
     }
 
-    private static JLabel pendiente(String texto) {
-        var l = new JLabel(texto, SwingConstants.CENTER);
-        l.setForeground(Color.GRAY);
-        return l;
-    }
 
     /** @return 1200×720, o el 90 % de la pantalla si es más pequeña. */
     static Dimension tamanoInicial(Dimension pantalla) {

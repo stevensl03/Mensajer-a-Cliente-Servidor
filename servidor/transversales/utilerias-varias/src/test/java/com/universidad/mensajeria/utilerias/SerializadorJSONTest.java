@@ -61,6 +61,18 @@ class SerializadorJSONTest {
     }
 
     @Test
+    void sangrarConservaElContenido() {
+        String compacto = "{\"tipo\":\"LOGS\",\"filas\":[{\"a\":1},{\"b\":\"ñ\"}]}";
+
+        String legible = json.sangrar(compacto);
+
+        assertTrue(legible.lines().count() > 1, legible);
+        assertTrue(legible.contains("  \"tipo\" : \"LOGS\""), legible);
+        assertEquals(json.desdeJson(compacto, JsonNode.class), json.desdeJson(legible, JsonNode.class));
+        assertThrows(IllegalArgumentException.class, () -> json.sangrar("no es json"));
+    }
+
+    @Test
     void jsonInvalidoOComandoDesconocido() {
         assertThrows(IllegalArgumentException.class, () -> json.desdeJson("no es json", PeticionDTO.class));
         assertThrows(IllegalArgumentException.class,

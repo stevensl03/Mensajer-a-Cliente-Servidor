@@ -507,8 +507,16 @@ public final class PanelChatAdmin extends JPanel {
         dialogo.setVisible(true);
     }
 
-    /** Pide la imagen a la fachada fuera del hilo de Swing y la muestra escalada. */
     private void cargarImagen(String id, TipoFiltro etapa, int lado, Consumer<ImageIcon> destino) {
+        cargarImagen(fachada, id, etapa, lado, destino);
+    }
+
+    /**
+     * Pide la imagen a la fachada fuera del hilo de Swing y entrega el icono
+     * escalado (lado mayor = {@code lado}) en el hilo de Swing. También la usa {@link PanelInformes}.
+     */
+    static void cargarImagen(IFachadaServidor fachada, String id, TipoFiltro etapa, int lado,
+                             Consumer<ImageIcon> destino) {
         Thread.ofVirtual().start(() -> fachada.imagen(id, etapa).map(PanelChatAdmin::leerImagen).ifPresent(img -> {
             double escala = Math.min(1.0, (double) lado / Math.max(img.getWidth(), img.getHeight()));
             Image escalada = img.getScaledInstance((int) Math.max(1, img.getWidth() * escala),
