@@ -8,6 +8,9 @@ almacen/
 *.mv.db
 *.trace.db
 
+# PID y logs de lo que lanza «make demo»
+.ejecucion/
+
 # IDE y sistema operativo
 .idea/
 *.iml
