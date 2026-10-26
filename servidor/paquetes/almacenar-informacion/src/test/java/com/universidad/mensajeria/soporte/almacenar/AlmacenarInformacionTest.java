@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -109,10 +110,11 @@ class AlmacenarInformacionTest {
 
         List<ImagenVersionDTO> versiones = guardado.imagenes();
         assertEquals(6, versiones.size());
-        assertEquals(raiz.resolve("originales/m2_foto.png").toString(), versiones.get(0).rutaArchivo());
+        assertEquals(conBarras(raiz.resolve("originales/m2_foto.png")), versiones.get(0).rutaArchivo());
         assertEquals("foto.png", versiones.get(0).nombreArchivo());
-        assertEquals(raiz.resolve("filtradas/m2_1_ESCALA_GRISES.png").toString(), versiones.get(1).rutaArchivo());
-        assertEquals(raiz.resolve("filtradas/m2_5_REDUCCION_TAMANO.png").toString(), versiones.get(5).rutaArchivo());
+        assertEquals(conBarras(raiz.resolve("filtradas/m2_1_ESCALA_GRISES.png")), versiones.get(1).rutaArchivo());
+        assertEquals(conBarras(raiz.resolve("filtradas/m2_5_REDUCCION_TAMANO.png")), versiones.get(5).rutaArchivo());
+        versiones.forEach(v -> assertFalse(v.rutaArchivo().contains("\\"), "la BD guarda rutas con /"));
         for (int i = 0; i < 6; i++) {
             assertEquals(i, versiones.get(i).orden());
             assertEquals(i + 1L, versiones.get(i).tamanoBytes());
@@ -165,6 +167,10 @@ class AlmacenarInformacionTest {
         var e = new EventoLogDTO("e1", TipoEvento.LOGIN_OK, "LOGIN_OK", "20201001", "10.0.0.5", AHORA);
         almacen.guardarLog(e);
         assertEquals(List.of(e), almacen.historialLogs());
+    }
+
+    private static String conBarras(Path p) {
+        return p.toString().replace('\\', '/');
     }
 
     private static MensajeDTO texto(String id) {

@@ -345,7 +345,7 @@ Los enums `TipoComando`, `TipoEventoPush` y `CodigoError` viajan por nombre: **n
 | Imagen original | `./almacen/originales/{idMensaje}_{nombreArchivo}` |
 | Imágenes filtradas | `./almacen/filtradas/{idMensaje}_{orden}_{ETAPA}.png` (orden 1–5) |
 
-La BD guarda en `imagenes_mensaje` la ruta, el tamaño y el hash de **las 6** versiones (la ORIGINAL incluida). La escritura de archivos ocurre antes de la transacción. Si la transacción falla, los archivos escritos se borran.
+La BD guarda en `imagenes_mensaje` la ruta, el tamaño y el hash de **las 6** versiones (la ORIGINAL incluida). Las rutas se guardan **siempre con `/`**, corra el servidor en Windows o en Linux; al leer se acepta también `\` (filas antiguas de un servidor en Windows). La escritura de archivos ocurre antes de la transacción. Si la transacción falla, los archivos escritos se borran.
 
 ## 12. Cambiar de protocolo (UDP, gRPC…) sin tocar nada fuera del componente
 
