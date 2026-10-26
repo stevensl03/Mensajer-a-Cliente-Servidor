@@ -16,6 +16,7 @@ Aplicación cliente/servidor para enviar mensajes de texto e imágenes a la comu
 .
 ├── docs/                      Documentación del diseño
 │   ├── plan_construccion.md   Plan por fases (punto de partida)
+│   ├── aceptacion_servidor.md Requisitos del servidor y la prueba que los demuestra
 │   ├── arquitectura/          Diagramas de clases por componentes y modelo relacional (.drawio + .md)
 │   └── mockups/               Pantallas del servidor y del cliente (.drawio + .md)
 ├── servidor/                  Proyecto Maven del servidor
@@ -58,6 +59,7 @@ mvn verify -Pintegracion -pl paquetes/persistencia -am -Dbd.motor=MYSQL -Dbd.url
 - Para PostgreSQL usa `-Dbd.motor=POSTGRESQL` y una URL `jdbc:postgresql://…`.
 - El esquema lo crea Flyway (`db/migration/{mysql|postgresql}/V1__esquema.sql`).
 - Sin `-Dbd.url`, las pruebas se omiten.
+- La **prueba de punta a punta** del servidor (`ServidorPuntaAPuntaTest`) corre con `-pl presentacion/inicio-servidor -am` y los mismos parámetros. Arranca el servidor real y lo recorre con clientes TCP. La relación entre requisitos y pruebas está en `docs/aceptacion_servidor.md`.
 - La caché L2 se prueba contra un Redis real con `-pl paquetes/almacenar-informacion -Dredis.puerto=6379` (sin esa propiedad, la prueba se omite).
 
 Para tener una BD de pruebas rápida con Docker:
@@ -76,5 +78,5 @@ Las rutas de `config/servidor.properties` (`./config`, `./almacen`, `logs/`) son
 
 El servidor se construye por fases según `docs/plan_construccion.md`:
 
-- **Terminadas:** Fase 0 (estructura), Fase 1 (transversales), Fase 2 (persistencia), Fase 3 (AlmacenarInformacion y caché) y Fase 4 (los 5 componentes).
-- **Siguiente:** Fase 5 (paquetes Mensajes, LogDeEventos y ConexionesClientes).
+- **Terminadas:** Fases 0 a 8: el servidor completo, con las vistas de consola y escritorio, y probado de punta a punta contra MySQL y PostgreSQL.
+- **Siguiente:** Fase 9 (estructura y comunicación del cliente).

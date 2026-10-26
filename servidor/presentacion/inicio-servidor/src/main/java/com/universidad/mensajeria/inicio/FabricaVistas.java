@@ -3,6 +3,7 @@ package com.universidad.mensajeria.inicio;
 import com.universidad.mensajeria.fachada.IFachadaServidor;
 import com.universidad.mensajeria.presentacion.consola.VistaConsola;
 import com.universidad.mensajeria.presentacion.escritorio.VentanaPrincipal;
+import com.universidad.mensajeria.utilerias.ISerializador;
 
 import java.util.Objects;
 
@@ -18,12 +19,14 @@ public final class FabricaVistas {
 
     /**
      * @param t tipo de vista.
-     * @param f fachada que usará la vista.
+     * @param f    fachada que usará la vista.
+     * @param json serializador del Composition Root; la vista de escritorio lee con él el JSON de los informes.
      * @return la vista, sin iniciar.
      */
-    public static IVista crear(TipoVista t, IFachadaServidor f) {
+    public static IVista crear(TipoVista t, IFachadaServidor f, ISerializador json) {
         Objects.requireNonNull(t, "t");
         Objects.requireNonNull(f, "f");
+        Objects.requireNonNull(json, "json");
         return switch (t) {
             case CONSOLA -> {
                 var consola = new VistaConsola(f);
@@ -31,7 +34,7 @@ public final class FabricaVistas {
                 yield adaptar(consola::iniciar, consola::detener);
             }
             case ESCRITORIO -> {
-                var ventana = new VentanaPrincipal(f);
+                var ventana = new VentanaPrincipal(f, json);
                 f.suscribir(ventana);
                 yield adaptar(ventana::iniciar, ventana::detener);
             }

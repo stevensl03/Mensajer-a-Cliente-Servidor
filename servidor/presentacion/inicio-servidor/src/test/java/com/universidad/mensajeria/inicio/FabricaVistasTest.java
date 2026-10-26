@@ -1,19 +1,21 @@
 package com.universidad.mensajeria.inicio;
-
 import com.universidad.mensajeria.dto.ContenidoDTO;
 import com.universidad.mensajeria.dto.EstadoUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
+import com.universidad.mensajeria.dto.TipoFiltro;
 import com.universidad.mensajeria.dto.TipoInforme;
 import com.universidad.mensajeria.fachada.IFachadaServidor;
 import com.universidad.mensajeria.fachada.IObservadorServidor;
 import com.universidad.mensajeria.presentacion.consola.VistaConsola;
 import com.universidad.mensajeria.presentacion.escritorio.VentanaPrincipal;
+import com.universidad.mensajeria.utilerias.SerializadorJSON;
 import org.junit.jupiter.api.Test;
 
 import java.awt.GraphicsEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -26,7 +28,7 @@ class FabricaVistasTest {
     void laConsolaQuedaSuscritaALaFachada() {
         var fachada = new FachadaFalsa();
 
-        assertNotNull(FabricaVistas.crear(TipoVista.CONSOLA, fachada));
+        assertNotNull(FabricaVistas.crear(TipoVista.CONSOLA, fachada, new SerializadorJSON()));
 
         assertEquals(1, fachada.observadores.size());
         assertInstanceOf(VistaConsola.class, fachada.observadores.get(0));
@@ -37,7 +39,7 @@ class FabricaVistasTest {
         assumeFalse(GraphicsEnvironment.isHeadless(), "sin entorno gráfico no se puede crear un JFrame");
         var fachada = new FachadaFalsa();
 
-        FabricaVistas.crear(TipoVista.ESCRITORIO, fachada);
+        FabricaVistas.crear(TipoVista.ESCRITORIO, fachada, new SerializadorJSON());
 
         assertInstanceOf(VentanaPrincipal.class, fachada.observadores.get(0));
     }
@@ -94,6 +96,11 @@ class FabricaVistasTest {
         @Override
         public String getIpServidor() {
             return "127.0.0.1";
+        }
+
+        @Override
+        public Optional<byte[]> imagen(String idMensaje, TipoFiltro etapa) {
+            return Optional.empty();
         }
     }
 }

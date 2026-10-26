@@ -75,8 +75,13 @@ public final class AlmacenamientoDirectorioLocal implements IAlmacenamientoArchi
         return segmento;
     }
 
+    /**
+     * Acepta rutas con {@code /} o con {@code \} (filas guardadas por un
+     * servidor que corrió en Windows): los nombres válidos nunca contienen
+     * {@code \}, así que siempre es un separador.
+     */
     private Path dentroDeLaRaiz(String ruta) {
-        Path archivo = Path.of(Objects.requireNonNull(ruta, "ruta")).normalize();
+        Path archivo = Path.of(Objects.requireNonNull(ruta, "ruta").replace('\\', '/')).normalize();
         if (!archivo.toAbsolutePath().startsWith(raiz.toAbsolutePath())) {
             throw new IllegalArgumentException("La ruta está fuera del directorio de archivos: " + ruta);
         }

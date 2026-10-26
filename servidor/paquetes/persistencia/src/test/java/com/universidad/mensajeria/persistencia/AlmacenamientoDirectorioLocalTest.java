@@ -44,6 +44,19 @@ class AlmacenamientoDirectorioLocalTest {
     }
 
     @Test
+    void leeYBorraRutasConBarrasDeCualquierSistema() {
+        var almacen = new AlmacenamientoDirectorioLocal(raiz);
+        Path ruta = almacen.guardar("filtradas", "m1_2_SEPIA.png", new byte[]{7});
+        String conBarras = ruta.toString().replace('\\', '/');
+        String estiloWindows = conBarras.replace('/', '\\');
+
+        assertArrayEquals(new byte[]{7}, almacen.leer(conBarras));
+        assertArrayEquals(new byte[]{7}, almacen.leer(estiloWindows));
+        almacen.borrar(estiloWindows);
+        assertFalse(Files.exists(ruta));
+    }
+
+    @Test
     void borrarEsIdempotente() {
         var almacen = new AlmacenamientoDirectorioLocal(raiz);
         Path ruta = almacen.guardar("originales", "m1_foto.png", new byte[]{1});

@@ -12,6 +12,7 @@ import com.universidad.mensajeria.dto.EstadoUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
 import com.universidad.mensajeria.dto.SolicitudMensajeDTO;
 import com.universidad.mensajeria.dto.TipoEventoPush;
+import com.universidad.mensajeria.dto.TipoFiltro;
 import com.universidad.mensajeria.dto.TipoInforme;
 import com.universidad.mensajeria.dto.TipoMensaje;
 import com.universidad.mensajeria.fachada.ICanalCliente;
@@ -35,6 +36,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,6 +52,7 @@ public final class FachadaServidor implements IFachadaServidor {
     private final IProtocoloComunicacion protocolo;
     private final IGestorMensajes gestorMensajes;
     private final IUsuariosDisponibles usuarios;
+    private final IAlmacenMensajes mensajes;
     private final IGestorConexiones conexiones;
     private final ISerializador json;
     private final ConfiguracionServidor cfg;
@@ -70,6 +73,7 @@ public final class FachadaServidor implements IFachadaServidor {
         this.protocolo = Objects.requireNonNull(protocolo, "protocolo");
         this.gestorMensajes = Objects.requireNonNull(gestorMensajes, "gestorMensajes");
         this.usuarios = Objects.requireNonNull(usuarios, "usuarios");
+        this.mensajes = Objects.requireNonNull(mensajes, "mensajes");
         this.conexiones = Objects.requireNonNull(conexiones, "conexiones");
         this.json = Objects.requireNonNull(json, "json");
         this.cfg = Objects.requireNonNull(cfg, "cfg");
@@ -77,6 +81,7 @@ public final class FachadaServidor implements IFachadaServidor {
 
         // Ensamblado interno (§6.1, paso 15): todas son clases de este paquete.
         notificador = new NotificadorObservadores();
+        log.suscribir(notificador::evento);
         enrutador = new EnrutadorMensajes(conexiones, clienteServidor, notificador, json);
         sesiones = new ControlSesiones(usuarios, conexiones, log, enrutador, notificador);
         informes = new GeneradorInformes(usuarios, conexiones, mensajes, log);
@@ -163,6 +168,14 @@ public final class FachadaServidor implements IFachadaServidor {
     @Override
     public String getIpServidor() {
         return protocolo.getIpServidor();
+    }
+
+    @Override
+    public Optional<byte[]> imagen(String idMensaje, TipoFiltro etapa) {
+        if (idMensaje == null || etapa == null) {
+            return Optional.empty();
+        }
+        return mensajes.imagen(idMensaje, etapa);
     }
 
     /** §6.4: la misma solicitud que arma un cliente, con el ADMIN como remitente y sin sesión. */

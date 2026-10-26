@@ -3,10 +3,12 @@ package com.universidad.mensajeria.fachada;
 import com.universidad.mensajeria.dto.ContenidoDTO;
 import com.universidad.mensajeria.dto.EstadoUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
+import com.universidad.mensajeria.dto.TipoFiltro;
 import com.universidad.mensajeria.dto.TipoInforme;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Lo que las vistas del servidor pueden pedir (patrón Facade). Las vistas
@@ -62,4 +64,13 @@ public interface IFachadaServidor {
 
     /** @return la IP del servidor. */
     String getIpServidor();
+
+    /**
+     * Las vistas la usan para mostrar las miniaturas de un mensaje de imagen.
+     *
+     * @param idMensaje mensaje de imagen.
+     * @param etapa     versión pedida (ORIGINAL o uno de los 5 filtros).
+     * @return los bytes de esa versión, o vacío si no existe.
+     */
+    Optional<byte[]> imagen(String idMensaje, TipoFiltro etapa);
 }

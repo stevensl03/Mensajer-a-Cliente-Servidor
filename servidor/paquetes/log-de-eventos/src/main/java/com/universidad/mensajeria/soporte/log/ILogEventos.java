@@ -5,6 +5,7 @@ import com.universidad.mensajeria.dto.SesionDTO;
 import com.universidad.mensajeria.dto.TipoEvento;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * Gestor de logs de la aplicación: SLF4J, estructuras en memoria y BD.
@@ -36,4 +37,13 @@ public interface ILogEventos {
 
     /** Carga en memoria el historial persistido. */
     void cargarHistorial();
+
+    /**
+     * Registra un oyente que recibe cada evento nuevo (no el historial). La
+     * fachada lo usa para avisar a las vistas; un oyente que falla no afecta a
+     * los demás ni al registro.
+     *
+     * @param o oyente.
+     */
+    void suscribir(Consumer<EventoLogDTO> o);
 }

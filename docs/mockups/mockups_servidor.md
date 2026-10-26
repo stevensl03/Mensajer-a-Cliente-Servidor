@@ -14,7 +14,7 @@
 
 ## Vista de escritorio (Swing): `VentanaPrincipal`
 
-**Título de la ventana:** `Servidor de Mensajería · Unillanos — ADMIN`.
+**Título de la ventana:** `Servidor de Mensajería Académica - ADMIN`.
 
 **Barra de estado superior** (igual en S1, S2 y S3), con fondo verde claro mientras el servidor está activo:
 
@@ -62,9 +62,9 @@ Dos columnas:
   - `MENSAJES`: Hora, Tipo, Canal, Remitente, Destino (`todos` si es FORO), Hash (abreviado).
   - `LOGS`: Hora, Tipo, Usuario, IP, Descripción.
 - **Detalle del mensaje seleccionado** (solo en `MENSAJES`), a la derecha:
-  - ID, Tipo · Canal, Remitente (código — nombre), Fecha (`yyyy-MM-dd HH:mm:ss.SSS`), SHA-256 y Archivo (nombre y tamaño);
+  - una línea por dato, con el atributo en negrita y el valor en texto normal (sin «·» ni «—»): ID, Tipo, Canal, Remitente (`código (nombre)`), Destino (`Todos` en el foro), Fecha (`yyyy-MM-dd HH:mm:ss.SSS`), SHA-256 y Archivo (nombre y tamaño) o Contenido (caracteres y palabras);
   - **Imágenes generadas (filtros secuenciales)**: 6 miniaturas en orden ORIGINAL, GRISES, SEPIA, ROTAR 180, BRILLO y REDUCCIÓN, leídas de las rutas de `MensajeDTO.imagenes`;
-  - línea `Rutas: ./almacen/originales · ./almacen/filtradas`;
+  - línea `Rutas: ./almacen/originales, ./almacen/filtradas`;
   - si el mensaje es de texto, en lugar de las imágenes se muestra el texto y sus conteos.
 
 ## S4 · Vista de consola (`VistaConsola` + `MenuConsola` + `ChatAdminConsola`)

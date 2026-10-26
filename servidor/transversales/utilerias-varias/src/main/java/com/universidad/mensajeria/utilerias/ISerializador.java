@@ -38,4 +38,11 @@ public interface ISerializador {
      * @throws IllegalArgumentException si el árbol no corresponde al tipo.
      */
     <T> T convertir(JsonNode n, Class<T> tipo);
+
+    /**
+     * @param json JSON compacto.
+     * @return el mismo JSON con sangría, para mostrarlo a una persona.
+     * @throws IllegalArgumentException si el texto no es JSON.
+     */
+    String sangrar(String json);
 }

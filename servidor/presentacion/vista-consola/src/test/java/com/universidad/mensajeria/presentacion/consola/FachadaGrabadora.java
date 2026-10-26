@@ -1,8 +1,8 @@
 package com.universidad.mensajeria.presentacion.consola;
-
 import com.universidad.mensajeria.dto.ContenidoDTO;
 import com.universidad.mensajeria.dto.EstadoUsuarioDTO;
 import com.universidad.mensajeria.dto.SesionDTO;
+import com.universidad.mensajeria.dto.TipoFiltro;
 import com.universidad.mensajeria.dto.TipoInforme;
 import com.universidad.mensajeria.fachada.IFachadaServidor;
 import com.universidad.mensajeria.fachada.IObservadorServidor;
@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 
 /** Fachada de prueba que graba cada llamada como texto. */
@@ -74,6 +75,11 @@ final class FachadaGrabadora implements IFachadaServidor {
     @Override
     public String getIpServidor() {
         return "192.168.1.10";
+    }
+
+    @Override
+    public Optional<byte[]> imagen(String idMensaje, TipoFiltro etapa) {
+        return Optional.empty();
     }
 
     private void lanzarSiHayFallo() {

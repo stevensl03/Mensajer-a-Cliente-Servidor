@@ -59,6 +59,9 @@
 - Hoy solo **TCP**; el cambio de protocolo debe ser sencillo y quedar dentro de `ProtocoloComunicacion`.
 - La BD es MySQL, pero el código debe funcionar también con PostgreSQL.
 - `Servicios` se divide en dos subcomponentes (texto e imágenes) para respetar la responsabilidad única.
+- Los mensajes privados solo los ven sus participantes en el chat (`HISTORIAL`, `MENSAJE_NUEVO`, `OBTENER_IMAGEN`), pero **cualquier cliente puede verlos en los informes** (`INFORME MENSAJES`), que incluyen todos los mensajes con su detalle.
+- Los DTO pueden exponer rutas internas del servidor (`rutaArchivo` de las imágenes): se acepta por ser un proyecto académico.
+- El ADMIN **puede iniciar sesión desde un cliente**; en ese caso esa sesión ocupa cupo como cualquier otra. Desde las vistas del servidor sigue sin ocuparlo.
 
 ## 2. Estructura del diagrama original (obligatoria)
 
@@ -181,8 +184,8 @@ Reglas que se comprueban con `grep` en la revisión:
 12. `gestor = new GestorColasDeMensajes(cfg.colaCapacidad())`.
 13. `clienteServidor = FabricaClienteServidor.crear(json, cfg)`.
 14. `protocolo = FabricaProtocolos.crear(TipoProtocolo.valueOf(cfg.protocolo()), cfg)`. `ConfiguracionServidor.protocolo()` devuelve `String` porque `utilerias-varias` no puede depender de un componente.
-15. `fachada = new FachadaServidor(protocolo, clienteServidor, servicios, usuarios, gestor, mensajes, new FabricaMensajes(), log, conexiones, json, cfg)`. Por dentro crea `NotificadorObservadores`, `EnrutadorMensajes`, `ControlSesiones`, `GeneradorInformes`, `ProcesadorMensajes`, `FabricaManejadoresComando`, `DespachadorComandos` y `ReceptorConexiones`, todas del mismo paquete.
-16. `vista = FabricaVistas.crear(TipoVista.valueOf(cfg.vista()), fachada)`.
+15. `fachada = new FachadaServidor(protocolo, clienteServidor, servicios, usuarios, gestor, mensajes, new FabricaMensajes(), log, conexiones, json, cfg)`. Por dentro crea `NotificadorObservadores`, `EnrutadorMensajes`, `ControlSesiones`, `GeneradorInformes`, `ProcesadorMensajes`, `FabricaManejadoresComando`, `DespachadorComandos` y `ReceptorConexiones`, todas del mismo paquete, y llama a `log.suscribir(notificador::evento)` para que las vistas reciban cada evento (`onEvento`).
+16. `vista = FabricaVistas.crear(TipoVista.valueOf(cfg.vista()), fachada, json)`. El mismo `ISerializador` de los pasos 2 y 15: la vista de escritorio lo usa para leer el JSON de `informe(...)`.
 17. `fachada.iniciarServidor()`: llama a `gestor.iniciar(cfg.hilosConsumidores(), procesador)` y luego a `protocolo.iniciar(cfg.puerto(), receptor)`.
 18. `registrarApagado(fachada, vista)` y después `vista.iniciar()`. En la vista de consola, `iniciar()` contiene el bucle del menú.
 
@@ -345,7 +348,7 @@ Los enums `TipoComando`, `TipoEventoPush` y `CodigoError` viajan por nombre: **n
 | Imagen original | `./almacen/originales/{idMensaje}_{nombreArchivo}` |
 | Imágenes filtradas | `./almacen/filtradas/{idMensaje}_{orden}_{ETAPA}.png` (orden 1–5) |
 
-La BD guarda en `imagenes_mensaje` la ruta, el tamaño y el hash de **las 6** versiones (la ORIGINAL incluida). La escritura de archivos ocurre antes de la transacción. Si la transacción falla, los archivos escritos se borran.
+La BD guarda en `imagenes_mensaje` la ruta, el tamaño y el hash de **las 6** versiones (la ORIGINAL incluida). Las rutas se guardan **siempre con `/`**, corra el servidor en Windows o en Linux; al leer se acepta también `\` (filas antiguas de un servidor en Windows). La escritura de archivos ocurre antes de la transacción. Si la transacción falla, los archivos escritos se borran.
 
 ## 12. Cambiar de protocolo (UDP, gRPC…) sin tocar nada fuera del componente
 
@@ -372,12 +375,12 @@ Arranque del servidor y raíz de composición.
 - **`ServidorApp`** — «Composition Root» clase. Único punto que conoce clases concretas: carga la configuración, crea cada módulo con su fábrica, inyecta por constructor y entrega IFachadaServidor a la vista elegida.
   ```text
   + main(args : String[]) : void
-  - ensamblar(cfg : ConfiguracionServidor) : IFachadaServidor
+  - ensamblar(cfg : ConfiguracionServidor, json : ISerializador) : IFachadaServidor
   - registrarApagado(f : IFachadaServidor, v : IVista) : void
   ```
 - **`FabricaVistas`** — «Factory». Crea VistaConsola o VentanaPrincipal según servidor.vista y las envuelve en un adaptador `IVista` (las vistas no pueden depender de `inicio-servidor`, así que no implementan `IVista` directamente; tienen los métodos `iniciar()` y `detener()`).
   ```text
-  + crear(t : TipoVista, f : IFachadaServidor) : IVista
+  + crear(t : TipoVista, f : IFachadaServidor, json : ISerializador) : IVista
   ```
 - **`IVista`** — «interface». Contrato común de las vistas del servidor.
   ```text
@@ -421,6 +424,7 @@ Vista de escritorio (Swing) del servidor.
 - **`VentanaPrincipal`** — «JFrame · IObservadorServidor» clase. Ventana Swing con tres pestañas: Monitor, Chat ADMIN e Informes. Toda actualización de UI va por SwingUtilities.invokeLater.
   ```text
   - fachada : IFachadaServidor
+  - json : ISerializador  «lee el JSON de los informes»
   + iniciar() : void
   + detener() : void
   + onMensaje(m : MensajeDTO) : void
@@ -431,6 +435,7 @@ Vista de escritorio (Swing) del servidor.
   ```text
   + refrescarSesiones(l : List<SesionDTO>) : void
   + agregarMensaje(m : MensajeDTO) : void
+  + agregarEvento(e : EventoLogDTO, activas : int) : void  «tarjetas de LOGIN_OK y CUPO_LLENO»
   + cerrarSesion(idSesion : String) : void
   ```
 - **`PanelChatAdmin`** — «JPanel · ADMIN» clase. Chat del administrador: foro y privados, texto e imagen.
@@ -438,10 +443,13 @@ Vista de escritorio (Swing) del servidor.
   + publicarEnForo(c : ContenidoDTO) : void
   + enviarPrivado(codigo : String, c : ContenidoDTO) : void
   + mostrarMensaje(m : MensajeDTO) : void
+  + refrescarConectados(l : List<EstadoUsuarioDTO>) : void  «columna «Conectados»; se refresca con onSesiones»
+  + cargarHistorial(informeMensajes : String) : void  «JSON de informe(MENSAJES), leído con ISerializador»
   ```
 - **`PanelInformes`** — «JPanel» clase. Los cuatro informes en tablas y su JSON.
   ```text
   + mostrar(t : TipoInforme, json : String) : void
+  - detalle(m : MensajeDTO) : void  «ficha del mensaje y sus 6 miniaturas, pedidas con fachada.imagen»
   ```
 
 ### Capa de Servicios
@@ -469,6 +477,7 @@ Orquestación de casos de uso. Depende solo de las 5 interfaces y de Mensajes, L
   + cerrarSesion(idSesion : String) : void
   + suscribir(o : IObservadorServidor) : void
   + getIpServidor() : String
+  + imagen(idMensaje : String, etapa : TipoFiltro) : Optional<byte[]>  «las vistas muestran las miniaturas; pasa por la caché»
   ```
 - **`ReceptorConexiones`** — «IReceptorConexiones» clase. Recibe los eventos del transporte: interpreta el JSON con IClienteServidor y despacha el comando.
   ```text
@@ -817,6 +826,7 @@ Logs de eventos y mensajes.
   + consultar(f : FiltroLogs) : List<EventoLogDTO>
   + todos() : List<EventoLogDTO>
   + cargarHistorial() : void
+  + suscribir(o : Consumer<EventoLogDTO>) : void  «cada evento nuevo (no el historial); un oyente que falla no afecta a los demás»
   ```
 - **`FiltroLogs`** — «record». Campos nulos = sin filtro.
   ```text
@@ -1237,6 +1247,7 @@ Configuración, hash, JSON e imágenes.
   + desdeJson(s : String, t : Class<T>) : T
   + aArbol(o : Object) : JsonNode
   + convertir(n : JsonNode, t : Class<T>) : T
+  + sangrar(json : String) : String  «JSON con sangría para mostrarlo en las vistas»
   ```
 - **`SerializadorJSON`** — «Jackson» clase.
   ```text
@@ -1262,6 +1273,7 @@ Contratos compartidos entre capas.
   + cerrarSesion(idSesion : String) : void
   + suscribir(o : IObservadorServidor) : void
   + getIpServidor() : String
+  + imagen(idMensaje : String, etapa : TipoFiltro) : Optional<byte[]>  «las vistas muestran las miniaturas; pasa por la caché»
   ```
 - **`IObservadorServidor`** — «Observer» interfaz. Lo implementan las vistas para enterarse de lo que ocurre.
   ```text
