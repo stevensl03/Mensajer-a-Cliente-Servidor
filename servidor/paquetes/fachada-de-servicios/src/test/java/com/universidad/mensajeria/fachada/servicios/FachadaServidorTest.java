@@ -1,12 +1,14 @@
 package com.universidad.mensajeria.fachada.servicios;
-
 import com.fasterxml.jackson.databind.JsonNode;
 import com.universidad.mensajeria.componentes.protocolo.IReceptorConexiones;
+import com.universidad.mensajeria.dto.Canal;
 import com.universidad.mensajeria.dto.CodigoError;
 import com.universidad.mensajeria.dto.ContenidoDTO;
+import com.universidad.mensajeria.dto.MensajeDTO;
 import com.universidad.mensajeria.dto.PeticionDTO;
 import com.universidad.mensajeria.dto.TipoComando;
 import com.universidad.mensajeria.dto.TipoEvento;
+import com.universidad.mensajeria.dto.TipoFiltro;
 import com.universidad.mensajeria.dto.TipoInforme;
 import com.universidad.mensajeria.dto.TipoMensaje;
 import com.universidad.mensajeria.dto.UsuarioDTO;
@@ -25,6 +27,7 @@ import static com.universidad.mensajeria.fachada.servicios.UsuariosFalso.ADMIN;
 import static com.universidad.mensajeria.fachada.servicios.UsuariosFalso.ANA;
 import static com.universidad.mensajeria.fachada.servicios.UsuariosFalso.LUIS;
 import static com.universidad.mensajeria.fachada.servicios.UsuariosFalso.MARIA;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -255,6 +258,19 @@ class FachadaServidorTest {
 
         assertEquals(List.of(ana.getId() + ":DESCONEXION"), log.desconexiones);
         assertEquals(cfg.maxSesiones(), conexiones.cuposLibres());
+    }
+
+    @Test
+    void imagenDevuelveLaVersionPedidaParaLasVistas() {
+        byte[] original = {1, 2, 3};
+        almacen.sembrar(new MensajeDTO("m-img", TipoMensaje.IMAGEN, Canal.FORO, ANA.codigo(), null,
+                java.time.LocalDateTime.now(), "h", null, 0, 0, "foto.png", List.of()), original);
+
+        assertArrayEquals(original, fachada.imagen("m-img", TipoFiltro.ORIGINAL).orElseThrow());
+        assertTrue(fachada.imagen("m-img", TipoFiltro.SEPIA).isEmpty());
+        assertTrue(fachada.imagen("no-existe", TipoFiltro.ORIGINAL).isEmpty());
+        assertTrue(fachada.imagen(null, TipoFiltro.ORIGINAL).isEmpty());
+        assertTrue(fachada.imagen("m-img", null).isEmpty());
     }
 
     @Test
